@@ -136,10 +136,11 @@ export const auth = {
                         ${this.isAdmin() ? '<span class="badge badge-info text-xs">Admin</span>' : ''}
                     </span>
                     <div class="user-dropdown-menu">
-                        <a href="${CONFIG.ROUTES.PROFILE}" class="dropdown-item">Hồ sơ cá nhân</a>
+                        <a href="${CONFIG.ROUTES.PROFILE}" class="dropdown-item">Quản lý tài khoản</a>
                         <a href="${CONFIG.ROUTES.ORDERS}" class="dropdown-item">Đơn hàng của tôi</a>
                         <a href="${CONFIG.ROUTES.WARRANTY}" class="dropdown-item">Bảo hành điện tử</a>
-                        ${this.isAdmin() ? `<a href="${CONFIG.ROUTES.ADMIN_DASHBOARD}" class="dropdown-item">Trang quản trị</a>` : ''}
+                        <a href="setpassword.html" class="dropdown-item">Đổi mật khẩu</a>
+                        ${this.isAdmin() ? `<a href="${CONFIG.ROUTES.ADMIN_DASHBOARD}" class="dropdown-item" style="color: var(--brand-green); font-weight: 600;">Trang quản trị Admin</a>` : ''}
                         <div class="dropdown-divider"></div>
                         <button type="button" id="btnLogout" class="dropdown-item text-danger">Đăng xuất</button>
                     </div>

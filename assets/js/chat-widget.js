@@ -64,11 +64,12 @@ class GeminiChatWidget {
                     right: 24px;
                     width: 360px;
                     max-width: calc(100vw - 32px);
-                    height: 480px;
-                    background: #FFFFFF;
-                    border: 1px solid #E5E7EB;
+                    height: 460px;
+                    background: var(--surface, #FFFFFF);
+                    color: var(--text-primary, #0F172A);
+                    border: 1px solid var(--border, #E5E7EB);
                     border-radius: 12px;
-                    box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+                    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
                     z-index: 1001;
                     flex-direction: column;
                     overflow: hidden;
