@@ -145,7 +145,14 @@
                             <div style="font-weight:600; font-size:var(--text-xs);">${item.customerName}</div>
                             <div class="tabular-nums" style="font-size:var(--text-xs); color:var(--text-secondary);">${item.customerPhone}</div>
                         </td>
-                        <td style="font-size:var(--text-xs); max-width:200px;">${item.branchName}</td>
+                        <td style="font-size:var(--text-xs); max-width:220px;">
+                            <div style="margin-bottom:4px;">
+                                ${item.serviceMethod === 'AT_HOME'
+                                    ? '<span class="badge badge-warning">Sửa tại nhà</span>'
+                                    : '<span class="badge badge-info">Tại cửa hàng</span>'}
+                            </div>
+                            <div>${item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName) : item.branchName}</div>
+                        </td>
                         <td>
                             <div style="font-weight:600; font-size:var(--text-xs);">${item.deviceModel}</div>
                             <div style="font-size:11px; color:var(--text-secondary);">${item.serviceType}</div>

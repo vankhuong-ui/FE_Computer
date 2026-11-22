@@ -3,61 +3,96 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HK COMPUTER — Máy tính Chính hãng & Trung tâm Sửa chữa</title>
-    <link rel="stylesheet" href="./assets/css/base.css?v=4" />
-    <link rel="stylesheet" href="./assets/css/components.css?v=4" />
+    <title>HK COMPUTER — Máy tính Chính hãng &amp; Trung tâm Sửa chữa</title>
+    <link rel="stylesheet" href="./assets/css/base.css?v=5" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=5" />
     <style>
-        .hero-minimal {
-            padding: 40px 0 32px;
-            border-bottom: 1px solid var(--border);
+        /* Editorial Banner (Authentic Tech Store, no SaaS 4-box clutter) */
+        .editorial-banner {
+            margin: 24px 0 20px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            position: relative;
+            min-height: 230px;
+            background:
+                linear-gradient(90deg, rgba(9, 15, 28, 0.92) 0%, rgba(9, 15, 28, 0.72) 55%, rgba(9, 15, 28, 0.25) 100%),
+                url('https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=1400&q=80') center/cover no-repeat;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 36px 40px;
+        }
+
+        @media (max-width: 640px) {
+            .editorial-banner { padding: 24px 20px; min-height: 200px; }
+        }
+
+        .editorial-content {
+            max-width: 560px;
+            color: #FFFFFF;
+        }
+
+        .editorial-kicker {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #34D399;
+            margin-bottom: 10px;
+        }
+
+        .editorial-content h1 {
+            color: #FFFFFF;
+            font-size: clamp(1.5rem, 2.8vw, 2.15rem);
+            line-height: 1.22;
+            margin-bottom: 10px;
+        }
+
+        .editorial-content p {
+            color: rgba(248, 250, 252, 0.82);
+            font-size: var(--text-sm);
+            margin-bottom: 20px;
+        }
+
+        /* Subtle Single-Line Trust Strip */
+        .trust-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            padding: 12px 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
             margin-bottom: 32px;
         }
 
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
-            gap: 20px;
-            align-items: stretch;
+        .trust-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
         }
 
-        @media (max-width: 860px) {
-            .hero-grid { grid-template-columns: 1fr; }
+        .trust-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--brand-green);
+            flex-shrink: 0;
         }
 
-        .hero-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
+        /* Catalog Toolbar & Grid */
+        .catalog-header {
             display: flex;
-            flex-direction: column;
+            align-items: baseline;
             justify-content: space-between;
-            gap: 20px;
-        }
-
-        .hero-metrics {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .mini-stat {
-            background: var(--surface-subtle);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-        }
-
-        .mini-stat-title {
-            font-size: var(--text-sm);
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .mini-stat-desc {
-            font-size: var(--text-xs);
-            color: var(--text-secondary);
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
         }
 
         .catalog-toolbar {
@@ -66,7 +101,7 @@
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            padding: 14px 16px;
+            padding: 12px 14px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -76,18 +111,34 @@
         .toolbar-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        /* Store Locator & Repair Booking */
+        .stock-dot-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .stock-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--brand-green);
+        }
+
+        /* Store Directory & Repair Booking */
         .repair-section {
             margin: 56px 0 64px;
             padding-top: 40px;
@@ -96,8 +147,8 @@
 
         .repair-grid {
             display: grid;
-            grid-template-columns: 1.15fr 1fr;
-            gap: 24px;
+            grid-template-columns: 1.05fr 1fr;
+            gap: 28px;
             align-items: start;
         }
 
@@ -105,25 +156,89 @@
             .repair-grid { grid-template-columns: 1fr; }
         }
 
-        .branch-scroll-list {
+        .city-tabs {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
-            max-height: 540px;
-            overflow-y: auto;
-            padding-right: 4px;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
         }
 
-        .branch-item {
+        .city-tab {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .city-tab:hover {
+            color: var(--text-primary);
+            background: var(--surface-hover);
+        }
+
+        .city-tab.active {
+            background: var(--surface);
+            color: var(--brand-green);
+            border-color: var(--border);
+        }
+
+        .store-directory {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 16px;
-            transition: border-color var(--transition-fast);
+            overflow: hidden;
         }
 
-        .branch-item:hover {
+        .store-row {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+            transition: background-color var(--transition-fast);
+        }
+
+        .store-row:last-child {
+            border-bottom: none;
+        }
+
+        .store-row:hover {
+            background: var(--surface-subtle);
+        }
+
+        .method-segment {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface-subtle);
+            cursor: pointer;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            color: var(--text-primary);
+            transition: border-color var(--transition-fast), background-color var(--transition-fast);
+        }
+
+        .method-option.active {
             border-color: var(--brand-green);
+            background: var(--brand-green-soft);
+            color: var(--brand-green);
         }
 
         .form-row-2 {
@@ -147,72 +262,51 @@
     </style>
 </head>
 <body>
-    <!-- Shared Minimalist Header (Text-only HK COMPUTER + Light/Dark Toggle + Account Menu) -->
     <header id="appHeader"></header>
 
     <main class="container">
-        <!-- 1. Minimalist Hero -->
-        <section class="hero-minimal">
-            <div class="hero-grid">
-                <div class="hero-card">
-                    <div>
-                        <span class="badge badge-success" style="margin-bottom: 12px;">Hệ thống 10 chi nhánh toàn quốc</span>
-                        <h1 style="font-size: var(--text-3xl); margin-bottom: 12px;">
-                            Máy tính chính hãng.<br />Sửa chữa &amp; Bảo hành tận tâm.
-                        </h1>
-                        <p style="font-size: var(--text-sm);">
-                            Mua sắm Laptop, PC Gaming, linh kiện chuẩn hãng với thanh toán VietQR SePay tự động — hoặc đặt lịch sửa chữa, vệ sinh, nâng cấp Laptop lấy ngay tại 10 chi nhánh HK COMPUTER.
-                        </p>
-                    </div>
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                        <a href="#catalog" class="btn btn-primary">Khám phá sản phẩm</a>
-                        <a href="#repair-center" class="btn btn-accent">Đặt lịch sửa chữa Laptop</a>
-                        <a href="warranty.html" class="btn btn-secondary">Tra cứu bảo hành</a>
-                    </div>
-                </div>
-
-                <div class="hero-metrics">
-                    <div class="mini-stat">
-                        <div class="mini-stat-title">Chính hãng 100%</div>
-                        <div class="mini-stat-desc">Xuất VAT đầy đủ, nguyên seal từ NSX.</div>
-                    </div>
-                    <div class="mini-stat">
-                        <div class="mini-stat-title">Bảo hành điện tử</div>
-                        <div class="mini-stat-desc">Kích hoạt tự động 12–36 tháng, đổi mới 1-1.</div>
-                    </div>
-                    <div class="mini-stat">
-                        <div class="mini-stat-title">Sửa lấy ngay 30–60p</div>
-                        <div class="mini-stat-desc">Xem trực tiếp kỹ thuật viên thao tác tại quầy.</div>
-                    </div>
-                    <div class="mini-stat">
-                        <div class="mini-stat-title">VietQR SePay &amp; VNPay</div>
-                        <div class="mini-stat-desc">Xác nhận thanh toán tự động sau 3 giây.</div>
-                    </div>
+        <!-- 1. Compact Visual Editorial Banner -->
+        <section class="editorial-banner">
+            <div class="editorial-content">
+                <div class="editorial-kicker">HK COMPUTER · HỆ THỐNG MÁY TÍNH &amp; KỸ THUẬT</div>
+                <h1>Laptop, PC chuẩn chính hãng &amp; Dịch vụ sửa chữa lấy ngay.</h1>
+                <p>Bảo hành điện tử minh bạch, thanh toán VietQR tự động và hỗ trợ kỹ thuật trực tiếp tại cửa hàng hoặc tận nhà.</p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="#catalog" class="btn btn-primary">Xem sản phẩm</a>
+                    <a href="#repair-center" class="btn btn-accent">Đặt lịch sửa chữa</a>
                 </div>
             </div>
         </section>
 
-        <!-- 2. Live Product Catalog -->
+        <!-- 2. Subtle Single-Line Trust Strip -->
+        <div class="trust-strip">
+            <span class="trust-item"><span class="trust-dot"></span>Chính hãng 100% xuất VAT</span>
+            <span class="trust-item"><span class="trust-dot"></span>Bảo hành điện tử 1 đổi 1</span>
+            <span class="trust-item"><span class="trust-dot"></span>Sửa chữa xem trực tiếp lấy ngay</span>
+            <span class="trust-item"><span class="trust-dot"></span>Thanh toán VietQR SePay &amp; VNPay</span>
+        </div>
+
+        <!-- 3. Product-First Live Catalog -->
         <section id="catalog">
-            <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
-                <h2 style="font-size: var(--text-2xl);">Sản phẩm tại HK COMPUTER</h2>
+            <div class="catalog-header">
+                <h2 style="font-size: var(--text-xl);">Danh mục sản phẩm</h2>
                 <span id="catalogStatus" style="font-size: var(--text-xs); color: var(--text-secondary);">Đang tải...</span>
             </div>
 
             <div class="catalog-toolbar">
                 <div class="toolbar-group">
-                    <select id="categoryFilter" class="select" style="width: auto; min-width: 170px;">
+                    <select id="categoryFilter" class="select" style="width: auto; min-width: 168px;">
                         <option value="">Tất cả danh mục</option>
                     </select>
-                    <select id="brandFilter" class="select" style="width: auto; min-width: 160px;">
+                    <select id="brandFilter" class="select" style="width: auto; min-width: 156px;">
                         <option value="">Tất cả thương hiệu</option>
                     </select>
                     <button type="button" id="btnResetFilter" class="btn btn-secondary btn-sm" style="display: none;">Xóa lọc</button>
                 </div>
 
                 <div class="toolbar-group" style="flex: 1; justify-content: flex-end; min-width: 240px;">
-                    <input type="text" id="searchInput" class="input" style="max-width: 300px;" placeholder="Tìm tên laptop, VGA, linh kiện..." />
-                    <button type="button" id="btnSearch" class="btn btn-primary btn-sm">Tìm</button>
+                    <input type="text" id="searchInput" class="input" style="max-width: 300px;" placeholder="Tìm tên máy, VGA, linh kiện..." />
+                    <button type="button" id="btnSearch" class="btn btn-primary btn-sm">Tìm kiếm</button>
                 </div>
             </div>
 
@@ -220,27 +314,26 @@
             <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 16px;"></div>
         </section>
 
-        <!-- 3. 10 Store Locations & Repair Appointment Booking -->
+        <!-- 4. Clean Store Directory & Smart Repair Booking -->
         <section id="repair-center" class="repair-section">
             <div style="margin-bottom: 24px;">
-                <span class="badge badge-info" style="margin-bottom: 8px;">Trung tâm Dịch vụ Kỹ thuật</span>
-                <h2 style="font-size: var(--text-2xl); margin-bottom: 6px;">Hệ thống 10 Cửa hàng &amp; Đặt lịch Sửa chữa Laptop</h2>
+                <h2 style="font-size: var(--text-2xl); margin-bottom: 6px;">Hệ thống cửa hàng &amp; Đặt lịch sửa chữa</h2>
                 <p style="font-size: var(--text-sm);">
-                    Chọn chi nhánh gần nhất để mang máy tới kiểm tra miễn phí, vệ sinh tản nhiệt, nâng cấp RAM/SSD hoặc sửa chữa phần cứng lấy ngay.
+                    Chọn khu vực để xem địa chỉ trung tâm gần bạn, hoặc đặt lịch để kỹ thuật viên hỗ trợ tại cửa hàng / tận nhà.
                 </p>
             </div>
 
             <div class="repair-grid">
-                <!-- Left: 10 Branches Locator -->
+                <!-- Left: Compact Region-Filtered Store Directory -->
                 <div>
-                    <div id="cityFilterPills" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;"></div>
-                    <div id="branchList" class="branch-scroll-list"></div>
+                    <div id="cityFilterTabs" class="city-tabs"></div>
+                    <div id="branchList" class="store-directory"></div>
                 </div>
 
-                <!-- Right: Repair Booking Form -->
+                <!-- Right: Smart Repair Booking Form (No Email, At Store / At Home Switch) -->
                 <div class="card">
-                    <h3 style="font-size: var(--text-xl); margin-bottom: 4px;">Đặt lịch hẹn sửa chữa</h3>
-                    <p style="font-size: var(--text-xs); margin-bottom: 18px;">Đặt trước để được ưu tiên tiếp nhận ngay khi đến cửa hàng, không phải chờ đợi.</p>
+                    <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">Đặt lịch sửa chữa Laptop / PC</h3>
+                    <p style="font-size: var(--text-xs); margin-bottom: 18px;">Chỉ cần Họ tên &amp; SĐT — kỹ thuật viên sẽ gọi xác nhận trong 10 phút.</p>
 
                     <form id="repairBookingForm">
                         <div class="form-row-2">
@@ -254,30 +347,45 @@
                             </div>
                         </div>
 
+                        <!-- Method Switch: At Store vs At Home -->
                         <div class="form-group">
-                            <label class="form-label" for="repairEmail">Email nhận xác nhận (Tùy chọn)</label>
-                            <input type="email" id="repairEmail" class="input" placeholder="email@gmail.com" />
+                            <label class="form-label">Phương thức sửa chữa *</label>
+                            <div class="method-segment">
+                                <label class="method-option active" data-method-opt="AT_STORE">
+                                    <input type="radio" name="repairMethod" value="AT_STORE" checked style="accent-color: var(--brand-green);" />
+                                    <span>Mang tới cửa hàng</span>
+                                </label>
+                                <label class="method-option" data-method-opt="AT_HOME">
+                                    <input type="radio" name="repairMethod" value="AT_HOME" style="accent-color: var(--brand-green);" />
+                                    <span>Sửa tại nhà / Tận nơi</span>
+                                </label>
+                            </div>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label" for="repairBranch">Chi nhánh tiếp nhận *</label>
-                            <select id="repairBranch" class="select" required></select>
+                        <div class="form-group" id="repairBranchGroup">
+                            <label class="form-label" for="repairBranch">Chọn cơ sở tiếp nhận *</label>
+                            <select id="repairBranch" class="select"></select>
+                        </div>
+
+                        <div class="form-group" id="repairHomeAddrGroup" style="display: none;">
+                            <label class="form-label" for="repairHomeAddress">Địa chỉ sửa tận nhà *</label>
+                            <input type="text" id="repairHomeAddress" class="input" placeholder="Số nhà, đường, phường/xã, quận/huyện..." />
                         </div>
 
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label" for="repairDevice">Tên máy / Model *</label>
-                                <input type="text" id="repairDevice" class="input" placeholder="VD: Dell XPS 15 / MacBook Air M2" required />
+                                <label class="form-label" for="repairDevice">Dòng máy *</label>
+                                <input type="text" id="repairDevice" class="input" placeholder="VD: Dell XPS 15 / MacBook Air" required />
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="repairService">Dịch vụ yêu cầu *</label>
+                                <label class="form-label" for="repairService">Dịch vụ dự kiến *</label>
                                 <select id="repairService" class="select" required>
-                                    <option value="Vệ sinh máy & Tra keo tản nhiệt">Vệ sinh máy &amp; Tra keo tản nhiệt</option>
-                                    <option value="Nâng cấp RAM / Ổ cứng SSD">Nâng cấp RAM / Ổ cứng SSD</option>
-                                    <option value="Sửa chữa phần cứng / Nguồn / Mainboard">Sửa chữa phần cứng / Nguồn / Mainboard</option>
+                                    <option value="Kiểm tra lỗi tổng quát (Miễn phí)">Kiểm tra lỗi tổng quát — Miễn phí</option>
+                                    <option value="Vệ sinh & Tra keo tản nhiệt (150.000đ)">Vệ sinh &amp; Tra keo — 150.000đ (~45p)</option>
+                                    <option value="Nâng cấp RAM / Ổ cứng SSD">Nâng cấp RAM / SSD — Miễn phí lắp</option>
+                                    <option value="Cài đặt Windows & Phần mềm (100.000đ)">Cài Windows &amp; Phần mềm — 100.000đ</option>
                                     <option value="Thay Pin / Màn hình / Bàn phím">Thay Pin / Màn hình / Bàn phím</option>
-                                    <option value="Cài đặt Windows / Phần mềm đồ họa">Cài đặt Windows / Phần mềm đồ họa</option>
-                                    <option value="Kiểm tra & Tiếp nhận bảo hành">Kiểm tra &amp; Tiếp nhận bảo hành</option>
+                                    <option value="Sửa phần cứng / Nguồn / Mainboard">Sửa phần cứng / Nguồn / Mainboard</option>
                                 </select>
                             </div>
                         </div>
@@ -300,12 +408,12 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label" for="repairIssue">Mô tả tình trạng máy (Tùy chọn)</label>
-                            <textarea id="repairIssue" class="textarea" rows="3" placeholder="VD: Máy nóng nhanh, quạt kêu to hoặc sạc không vào pin..."></textarea>
+                            <label class="form-label" for="repairIssue">Ghi chú tình trạng máy (Tùy chọn)</label>
+                            <textarea id="repairIssue" class="textarea" rows="2" placeholder="VD: Quạt kêu to, pin chai, cần kiểm tra trước khi thay..."></textarea>
                         </div>
 
                         <button type="submit" id="btnSubmitRepair" class="btn btn-accent btn-lg" style="width: 100%;">
-                            Xác nhận đặt lịch sửa chữa
+                            Xác nhận đặt lịch
                         </button>
                     </form>
 
@@ -315,9 +423,8 @@
         </section>
     </main>
 
-    <!-- Shared Minimalist Footer -->
     <footer id="appFooter"></footer>
 
-    <script type="module" src="./assets/js/home.js"></script>
+    <script type="module" src="./assets/js/home.js?v=5"></script>
 </body>
 </html>

@@ -4,32 +4,99 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng ký tài khoản — HK COMPUTER</title>
-    <link rel="stylesheet" href="./assets/css/base.css?v=4" />
-    <link rel="stylesheet" href="./assets/css/components.css?v=4" />
+    <link rel="stylesheet" href="./assets/css/base.css?v=5" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=5" />
     <style>
-        .auth-topbar {
-            height: 64px;
+        .split-auth {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            min-height: 100dvh;
+        }
+
+        @media (max-width: 900px) {
+            .split-auth { grid-template-columns: 1fr; }
+            .auth-showcase { display: none !important; }
+        }
+
+        .auth-showcase {
+            position: relative;
+            background:
+                linear-gradient(155deg, rgba(11, 17, 32, 0.9) 0%, rgba(6, 26, 18, 0.9) 60%, rgba(243, 112, 33, 0.45) 100%),
+                url('https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1400&q=80') center/cover no-repeat;
+            color: #FFFFFF;
+            padding: 48px 56px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .showcase-brand {
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #FFFFFF;
+            display: inline-flex;
+            gap: 6px;
+        }
+
+        .showcase-brand span:first-child { color: #34D399; }
+
+        .showcase-headline {
+            font-size: clamp(1.9rem, 3vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.18;
+            letter-spacing: -0.03em;
+            color: #FFFFFF;
+            margin-bottom: 16px;
+        }
+
+        .showcase-sub {
+            color: rgba(226, 232, 240, 0.84);
+            font-size: var(--text-sm);
+            max-width: 44ch;
+            margin-bottom: 32px;
+        }
+
+        .showcase-perks {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            max-width: 460px;
+        }
+
+        .perk-card {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            backdrop-filter: blur(8px);
+        }
+
+        .auth-pane {
             background: var(--surface);
-            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 28px 40px;
+        }
+
+        @media (max-width: 560px) {
+            .auth-pane { padding: 20px; }
+        }
+
+        .auth-pane-top {
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
-        .auth-page-body {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 32px 16px;
-        }
-        .auth-card {
+
+        .auth-form-wrap {
+            margin: auto;
             width: 100%;
-            max-width: 440px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 32px;
-            box-shadow: var(--shadow-subtle);
+            max-width: 400px;
+            padding: 12px 0;
         }
+
         .auth-divider {
             display: flex;
             align-items: center;
@@ -37,77 +104,107 @@
             color: var(--text-muted);
             font-size: var(--text-xs);
         }
-        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+
+        .auth-divider::before, .auth-divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
         .auth-divider span { padding: 0 12px; }
     </style>
 </head>
 <body>
-    <header class="auth-topbar">
-        <div class="container" style="display:flex; align-items:center; justify-content:space-between;">
-            <a href="index.html" class="brand-logo">
-                <span class="brand-hk">HK</span>
-                <span class="brand-computer">COMPUTER</span>
+    <div class="split-auth">
+        <!-- Left Flagship Showcase -->
+        <aside class="auth-showcase">
+            <a href="index.html" class="showcase-brand">
+                <span>HK</span><span>COMPUTER</span>
             </a>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối">🌙</button>
-                <a href="index.html" class="btn btn-outline btn-sm">← Về cửa hàng</a>
+
+            <div>
+                <h2 class="showcase-headline">Trải nghiệm mua sắm<br />&amp; sửa chữa chuẩn mực.</h2>
+                <p class="showcase-sub">
+                    Đăng ký thành viên HK COMPUTER để tự động lưu phiếu bảo hành điện tử, nhận ưu đãi vệ sinh máy và theo dõi lịch hẹn sửa chữa mọi lúc.
+                </p>
+
+                <div class="showcase-perks">
+                    <div class="perk-card">
+                        <div style="font-size: var(--text-lg); font-weight: 800; color: #34D399; margin-bottom: 4px;">12–36 tháng</div>
+                        <div style="font-size: var(--text-xs); color: rgba(226,232,240,0.78);">Bảo hành điện tử chính hãng, không cần giữ giấy</div>
+                    </div>
+                    <div class="perk-card">
+                        <div style="font-size: var(--text-lg); font-weight: 800; color: #FB923C; margin-bottom: 4px;">45 phút</div>
+                        <div style="font-size: var(--text-xs); color: rgba(226,232,240,0.78);">Sửa chữa, nâng cấp lấy ngay hoặc đặt lịch tại nhà</div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </header>
 
-    <main class="auth-page-body">
-        <div class="auth-card">
-            <div style="margin-bottom: 24px;">
-                <h1 style="font-size: var(--text-2xl); margin-bottom: 6px;">Tạo tài khoản</h1>
-                <p style="font-size: var(--text-xs);">Trở thành thành viên HK COMPUTER để theo dõi bảo hành điện tử và đặt lịch sửa chữa nhanh.</p>
+            <div style="font-size: var(--text-xs); color: rgba(226, 232, 240, 0.6);">
+                © 2026 HK COMPUTER. Trải nghiệm — Chính hãng — Tận tâm.
+            </div>
+        </aside>
+
+        <!-- Right Register Form -->
+        <main class="auth-pane">
+            <div class="auth-pane-top">
+                <a href="index.html" class="btn btn-outline btn-sm">← Về trang chủ</a>
+                <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
             </div>
 
-            <form id="registerForm">
-                <div class="form-group">
-                    <label class="form-label" for="accountname">Họ và tên hiển thị</label>
-                    <input type="text" id="accountname" class="input" placeholder="Nguyễn Văn A" required minlength="2" />
+            <div class="auth-form-wrap">
+                <div style="margin-bottom: 24px;">
+                    <h1 style="font-size: var(--text-3xl); margin-bottom: 8px;">Tạo tài khoản</h1>
+                    <p style="font-size: var(--text-sm);">Đăng ký miễn phí chỉ mất 30 giây.</p>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="gmail">Email (Gmail)</label>
-                    <input type="email" id="gmail" class="input" placeholder="ban@gmail.com" required autocomplete="email" />
-                </div>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label" for="accountname">Họ và tên</label>
+                        <input type="text" id="accountname" class="input" style="height: 42px;" placeholder="Nguyễn Văn A" required minlength="2" />
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="password">Mật khẩu</label>
-                    <input type="password" id="password" class="input" placeholder="Tối thiểu 6 ký tự" required minlength="6" autocomplete="new-password" />
-                </div>
+                    <div class="form-group">
+                        <label class="form-label" for="gmail">Địa chỉ Email</label>
+                        <input type="email" id="gmail" class="input" style="height: 42px;" placeholder="ban@gmail.com" required autocomplete="email" />
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
-                    <input type="password" id="confirmPassword" class="input" placeholder="Nhập lại mật khẩu" required minlength="6" autocomplete="new-password" />
-                </div>
+                    <div class="form-group">
+                        <label class="form-label" for="password">Mật khẩu</label>
+                        <input type="password" id="password" class="input" style="height: 42px;" placeholder="Tối thiểu 6 ký tự" required minlength="6" autocomplete="new-password" />
+                    </div>
 
-                <button type="submit" id="btnRegister" class="btn btn-primary" style="width: 100%; height: 42px; margin-top: 6px;">
-                    Đăng ký tài khoản
+                    <div class="form-group">
+                        <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
+                        <input type="password" id="confirmPassword" class="input" style="height: 42px;" placeholder="Nhập lại mật khẩu" required minlength="6" autocomplete="new-password" />
+                    </div>
+
+                    <button type="submit" id="btnRegister" class="btn btn-primary" style="width: 100%; height: 44px; font-size: var(--text-sm); margin-top: 6px;">
+                        Đăng ký tài khoản
+                    </button>
+                </form>
+
+                <div class="auth-divider"><span>Hoặc đăng ký nhanh</span></div>
+
+                <button type="button" id="btnGoogleLogin" class="btn btn-secondary" style="width: 100%; height: 44px;">
+                    <svg width="17" height="17" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.55 10.78l7.98-6.19z" />
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                    </svg>
+                    <span>Tiếp tục với Google</span>
                 </button>
-            </form>
 
-            <div class="auth-divider"><span>Hoặc đăng ký nhanh</span></div>
-
-            <button type="button" id="btnGoogleLogin" class="btn btn-secondary" style="width: 100%; height: 42px;">
-                <svg width="16" height="16" viewBox="0 0 48 48">
-                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.55 10.78l7.98-6.19z" />
-                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-                </svg>
-                <span>Tiếp tục với Google</span>
-            </button>
-
-            <div style="margin-top: 24px; text-align: center; font-size: var(--text-xs); color: var(--text-secondary);">
-                Đã có tài khoản? <a href="dang-nhap.html" style="color: var(--brand-green); font-weight: 600;">Đăng nhập</a>
+                <div style="margin-top: 24px; text-align: center; font-size: var(--text-xs); color: var(--text-secondary);">
+                    Đã có tài khoản? <a href="dang-nhap.html" style="color: var(--brand-green); font-weight: 700;">Đăng nhập ngay</a>
+                </div>
             </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script type="module">
-        import { theme } from './assets/js/theme.js';
+        import { theme } from './assets/js/theme.js?v=5';
         import { api } from './assets/js/api.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';

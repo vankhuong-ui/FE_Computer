@@ -1,6 +1,6 @@
 /**
- * chat-widget.js - AI Tư vấn Laptop & Cấu hình (HK COMPUTER)
- * Full Light & Dark Mode contrast support
+ * chat-widget.js - Compact Circular AI Laptop Advisor Button (HK COMPUTER)
+ * Minimal unobtrusive fab that expands label on hover; full Light & Dark mode contrast.
  */
 
 import { api } from './api.js';
@@ -12,7 +12,7 @@ class GeminiChatWidget {
         this.messages = [
             {
                 role: 'assistant',
-                text: 'Xin chào! Tôi là trợ lý AI Tư vấn Laptop & PC của HK COMPUTER. Bạn cần tư vấn chọn máy, kiểm tra tồn kho hay đặt lịch sửa chữa?'
+                text: 'Xin chào! Tôi là trợ lý AI Tư vấn Laptop & PC của HK COMPUTER. Bạn cần chọn máy theo ngân sách, kiểm tra tồn kho hay tư vấn nâng cấp?'
             }
         ];
         this.render();
@@ -25,15 +25,16 @@ class GeminiChatWidget {
         widget.id = 'gemini-chat-widget';
         widget.innerHTML = `
             <style>
-                .ai-widget-button {
+                .ai-fab {
                     position: fixed;
                     bottom: 22px;
                     right: 22px;
+                    height: 46px;
+                    padding: 0 14px;
                     background: #008B45;
                     color: #FFFFFF;
-                    border: 1px solid rgba(255, 255, 255, 0.16);
+                    border: 1px solid rgba(255, 255, 255, 0.14);
                     border-radius: 9999px;
-                    padding: 10px 18px;
                     display: inline-flex;
                     align-items: center;
                     gap: 8px;
@@ -42,17 +43,30 @@ class GeminiChatWidget {
                     font-weight: 600;
                     cursor: pointer;
                     z-index: 1000;
-                    box-shadow: 0 8px 24px rgba(0, 139, 69, 0.35);
-                    transition: transform 150ms ease, background-color 150ms ease;
+                    box-shadow: 0 8px 22px rgba(0, 139, 69, 0.32);
+                    transition: transform 160ms ease, background-color 160ms ease, box-shadow 160ms ease;
                 }
-                .ai-widget-button:hover {
+                .ai-fab:hover {
                     background: #006B35;
                     transform: translateY(-2px);
+                    box-shadow: 0 10px 26px rgba(0, 139, 69, 0.42);
                 }
-                .ai-widget-panel {
+                .ai-fab-label {
+                    max-width: 0;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    opacity: 0;
+                    transition: max-width 220ms ease, opacity 180ms ease;
+                }
+                .ai-fab:hover .ai-fab-label,
+                .ai-fab:focus-visible .ai-fab-label {
+                    max-width: 150px;
+                    opacity: 1;
+                }
+                .ai-panel {
                     display: none;
                     position: fixed;
-                    bottom: 76px;
+                    bottom: 78px;
                     right: 22px;
                     width: 360px;
                     max-width: calc(100vw - 32px);
@@ -61,7 +75,7 @@ class GeminiChatWidget {
                     color: var(--text-primary, #0F172A);
                     border: 1px solid var(--border, #E2E8F0);
                     border-radius: 14px;
-                    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+                    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.24);
                     z-index: 1001;
                     flex-direction: column;
                     overflow: hidden;
@@ -75,11 +89,8 @@ class GeminiChatWidget {
                     color: #FFFFFF;
                 }
                 .ai-panel-title {
-                    font-size: 14px;
+                    font-size: 13px;
                     font-weight: 700;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
                 }
                 .ai-panel-close {
                     background: none;
@@ -139,15 +150,14 @@ class GeminiChatWidget {
                 }
             </style>
 
-            <button type="button" class="ai-widget-button" id="btnToggleAi" aria-label="AI Tư vấn Laptop">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="2" y1="20" x2="22" y2="20"></line>
+            <button type="button" class="ai-fab" id="btnToggleAi" aria-label="AI Tư vấn Laptop" title="AI Tư vấn Laptop">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span>AI Tư vấn Laptop</span>
+                <span class="ai-fab-label">AI Tư vấn Laptop</span>
             </button>
 
-            <div class="ai-widget-panel" id="aiPanel">
+            <div class="ai-panel" id="aiPanel">
                 <div class="ai-panel-header">
                     <span class="ai-panel-title">AI Tư vấn Laptop — HK COMPUTER</span>
                     <button type="button" class="ai-panel-close" id="btnCloseAi">×</button>
@@ -212,9 +222,7 @@ class GeminiChatWidget {
     renderMessages() {
         const container = document.getElementById('aiMessagesContainer');
         if (!container) return;
-        container.innerHTML = this.messages.map(m => `
-            <div class="ai-msg ai-msg-${m.role}">${m.text}</div>
-        `).join('');
+        container.innerHTML = this.messages.map(m => `<div class="ai-msg ai-msg-${m.role}">${m.text}</div>`).join('');
         container.scrollTop = container.scrollHeight;
     }
 }

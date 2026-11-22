@@ -1,6 +1,5 @@
 /**
- * home.js - Modular Homepage Controller for HK COMPUTER
- * Handles: Live Product Catalog, 10-Branch Store Locator, and Repair Appointment Booking (POST /api/repairs)
+ * home.js - Product-First Homepage & Compact Store Directory Controller for HK COMPUTER
  */
 
 import { api } from './api.js';
@@ -8,15 +7,15 @@ import { auth } from './auth.js';
 import { cart } from './cart.js';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
-import { initStoreLayout } from './layout.js?v=4';
-import './chat-widget.js?v=4';
+import { initStoreLayout } from './layout.js?v=5';
+import './chat-widget.js?v=5';
 
 let currentPage = 0;
 const pageSize = 10;
 let selectedCategory = '';
 let selectedBrand = '';
 let searchQuery = '';
-let selectedCity = 'Tất cả';
+let selectedCity = CONFIG.BRANCHES[0]?.city || 'Hà Nội';
 
 const productsGrid = document.getElementById('productsGrid');
 const paginationBar = document.getElementById('paginationBar');
@@ -26,15 +25,18 @@ const searchInput = document.getElementById('searchInput');
 const btnResetFilter = document.getElementById('btnResetFilter');
 const catalogStatus = document.getElementById('catalogStatus');
 
-const cityFilterPills = document.getElementById('cityFilterPills');
+const cityFilterTabs = document.getElementById('cityFilterTabs');
 const branchListEl = document.getElementById('branchList');
 const repairBranchSelect = document.getElementById('repairBranch');
+const repairBranchGroup = document.getElementById('repairBranchGroup');
+const repairHomeAddrGroup = document.getElementById('repairHomeAddrGroup');
+const repairHomeAddress = document.getElementById('repairHomeAddress');
 const repairForm = document.getElementById('repairBookingForm');
 const bookingReceipt = document.getElementById('bookingReceipt');
 
 const formatVnd = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n || 0);
 
-// ==================== 1. CATALOG (LIVE BACKEND) ====================
+// ==================== 1. LIVE CATALOG ====================
 async function loadFilters() {
     try {
         const [cats, brands] = await Promise.all([
@@ -84,13 +86,13 @@ async function loadProducts(page = 0) {
         const totalElements = pageObj?.totalElements ?? items.length;
 
         btnResetFilter.style.display = (selectedCategory || selectedBrand || searchQuery) ? 'inline-flex' : 'none';
-        catalogStatus.textContent = `${totalElements} sản phẩm sẵn có`;
+        catalogStatus.textContent = `${totalElements} sản phẩm`;
 
         if (!items.length) {
             productsGrid.innerHTML = `
                 <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 48px 24px;">
                     <p style="color: var(--text-primary); font-weight: 600; margin-bottom: 6px;">Không tìm thấy sản phẩm phù hợp</p>
-                    <p style="font-size: var(--text-xs); margin: 0 auto;">Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm khác.</p>
+                    <p style="font-size: var(--text-xs); margin: 0 auto;">Thử từ khóa hoặc bộ lọc khác.</p>
                 </div>
             `;
             paginationBar.innerHTML = '';
@@ -106,19 +108,22 @@ async function loadProducts(page = 0) {
                     <a href="detailproductuser.html?id=${p.id}" class="product-image-box" style="margin-bottom: 12px;">
                         <img src="${img}" alt="${name}" loading="lazy" />
                     </a>
-                    <div class="product-category-tag">SKU #${p.id}</div>
+                    <div class="stock-dot-row">
+                        <span class="stock-dot"></span>
+                        <span>Sẵn hàng</span>
+                    </div>
                     <a href="detailproductuser.html?id=${p.id}" class="product-title" title="${name}">${name}</a>
                     <div class="mono-spec" style="font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 12px;" title="${specs}">
                         ${specs}
                     </div>
                     <div class="product-card-footer" style="padding-top: 12px;">
                         <span class="product-price" style="font-size: var(--text-base); color: var(--brand-orange);">${formatVnd(p.price)}</span>
-                        <button type="button" class="btn btn-primary btn-sm btn-add-cart"
+                        <button type="button" class="btn btn-secondary btn-sm btn-add-cart"
                             data-id="${p.id}"
                             data-name="${name.replace(/"/g, '&quot;')}"
                             data-price="${p.price || 0}"
                             data-img="${img}">
-                            + Giỏ
+                            Thêm vào giỏ
                         </button>
                     </div>
                 </article>
@@ -141,54 +146,54 @@ async function loadProducts(page = 0) {
         ).join('') : '';
         paginationBar.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadProducts(Number(b.dataset.page))));
     } catch (err) {
-        catalogStatus.textContent = 'Không thể kết nối máy chủ';
+        catalogStatus.textContent = 'Chưa kết nối máy chủ';
         productsGrid.innerHTML = `
             <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 40px 24px;">
-                <p style="color: var(--text-primary); font-weight: 600; margin-bottom: 8px;">Chưa kết nối được Backend (${CONFIG.API_BASE_URL})</p>
-                <button type="button" id="btnRetryCatalog" class="btn btn-secondary btn-sm">Thử tải lại</button>
+                <p style="color: var(--text-primary); font-weight: 600; margin-bottom: 8px;">Chưa kết nối được máy chủ dữ liệu</p>
+                <button type="button" id="btnRetryCatalog" class="btn btn-secondary btn-sm">Tải lại</button>
             </div>
         `;
         document.getElementById('btnRetryCatalog')?.addEventListener('click', () => loadProducts(0));
     }
 }
 
-// ==================== 2. 10-BRANCH STORE LOCATOR ====================
-function initBranches() {
-    const cities = ['Tất cả', ...new Set(CONFIG.BRANCHES.map(b => b.city))];
+// ==================== 2. COMPACT STORE DIRECTORY (DYNAMIC, REGION-FIRST) ====================
+function renderBranches() {
+    const cities = [...new Set(CONFIG.BRANCHES.map(b => b.city))];
 
-    cityFilterPills.innerHTML = cities.map(city => {
-        const count = city === 'Tất cả' ? CONFIG.BRANCHES.length : CONFIG.BRANCHES.filter(b => b.city === city).length;
-        return `<button type="button" class="btn btn-sm ${city === selectedCity ? 'btn-primary' : 'btn-secondary'} city-pill" data-city="${city}">${city} (${count})</button>`;
-    }).join('');
+    cityFilterTabs.innerHTML = cities.map(city =>
+        `<button type="button" class="city-tab ${city === selectedCity ? 'active' : ''}" data-city="${city}">${city}</button>`
+    ).join('');
 
-    cityFilterPills.querySelectorAll('.city-pill').forEach(btn => {
+    cityFilterTabs.querySelectorAll('.city-tab').forEach(btn => {
         btn.addEventListener('click', () => {
             selectedCity = btn.dataset.city;
-            initBranches();
+            renderBranches();
         });
     });
 
-    const filtered = selectedCity === 'Tất cả'
-        ? CONFIG.BRANCHES
-        : CONFIG.BRANCHES.filter(b => b.city === selectedCity);
+    const filtered = CONFIG.BRANCHES.filter(b => b.city === selectedCity);
 
     branchListEl.innerHTML = filtered.map(b => {
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}`;
         return `
-            <div class="branch-item">
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:4px;">
-                    <strong style="font-size: var(--text-sm); color: var(--text-primary);">${b.name}</strong>
-                    <span class="badge badge-success">${b.city}</span>
+            <div class="store-row">
+                <div style="flex: 1; min-width: 220px;">
+                    <div style="font-weight: 600; font-size: var(--text-sm); color: var(--text-primary); margin-bottom: 4px;">
+                        ${b.name}
+                    </div>
+                    <div style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 4px;">
+                        ${b.address}
+                    </div>
+                    <div style="font-size: 11px; color: var(--text-muted);" class="tabular-nums">
+                        ${b.hours} · ${b.phone} · ${b.services}
+                    </div>
                 </div>
-                <div style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 4px;">${b.address}</div>
-                <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">
-                    ${b.services} • <span class="tabular-nums">${b.hours}</span> • <span class="tabular-nums">${b.phone}</span>
-                </div>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <div style="display: flex; gap: 8px; align-items: center; shrink: 0;">
+                    <a href="${mapUrl}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Chỉ đường</a>
                     <button type="button" class="btn btn-secondary btn-sm btn-pick-branch" data-branch="${b.name} — ${b.address}">
-                        Đặt lịch tại đây
+                        Chọn cơ sở
                     </button>
-                    <a href="${mapUrl}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Chỉ đường Maps ↗</a>
                 </div>
             </div>
         `;
@@ -196,50 +201,68 @@ function initBranches() {
 
     branchListEl.querySelectorAll('.btn-pick-branch').forEach(btn => {
         btn.addEventListener('click', () => {
+            // Switch form to AT_STORE and select branch
+            const storeRadio = document.querySelector('input[name="repairMethod"][value="AT_STORE"]');
+            if (storeRadio) {
+                storeRadio.checked = true;
+                storeRadio.dispatchEvent(new Event('change'));
+            }
             repairBranchSelect.value = btn.dataset.branch;
             repairBranchSelect.focus();
-            toast.info('Đã chọn chi nhánh tiếp nhận sửa chữa.');
+            toast.info('Đã chọn cơ sở tiếp nhận sửa chữa.');
         });
     });
 
-    // Populate select dropdown once
-    if (repairBranchSelect && repairBranchSelect.options.length <= 1) {
+    if (repairBranchSelect && repairBranchSelect.options.length === 0) {
         repairBranchSelect.innerHTML = CONFIG.BRANCHES.map(b =>
             `<option value="${b.name} — ${b.address}">${b.name} (${b.city})</option>`
         ).join('');
     }
 }
 
-// ==================== 3. REPAIR BOOKING FORM (POST /api/repairs) ====================
+// ==================== 3. SMART REPAIR BOOKING (AT_STORE / AT_HOME, NO EMAIL) ====================
 function initRepairForm() {
-    // Default appointment date = today
     const dateInput = document.getElementById('repairDate');
     if (dateInput && !dateInput.value) {
-        const today = new Date();
-        dateInput.min = today.toISOString().split('T')[0];
-        dateInput.value = today.toISOString().split('T')[0];
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
     }
 
-    // Pre-fill logged-in user info
     const user = auth.getUser();
-    if (user) {
+    if (user?.accountname) {
         const nameInput = document.getElementById('repairName');
-        const emailInput = document.getElementById('repairEmail');
-        if (nameInput && !nameInput.value) nameInput.value = user.accountname || '';
-        if (emailInput && !emailInput.value) emailInput.value = user.gmail || '';
+        if (nameInput && !nameInput.value) nameInput.value = user.accountname;
     }
+
+    document.querySelectorAll('input[name="repairMethod"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            const isHome = radio.value === 'AT_HOME';
+            repairBranchGroup.style.display = isHome ? 'none' : 'flex';
+            repairHomeAddrGroup.style.display = isHome ? 'flex' : 'none';
+            repairHomeAddress.required = isHome;
+
+            document.querySelectorAll('[data-method-opt]').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.methodOpt === radio.value);
+            });
+        });
+    });
 
     repairForm?.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const method = document.querySelector('input[name="repairMethod"]:checked')?.value || 'AT_STORE';
         const btn = document.getElementById('btnSubmitRepair');
         btn.disabled = true;
         btn.textContent = 'Đang gửi lịch hẹn...';
 
+        const currentUser = auth.getUser();
         const payload = {
             customerName: document.getElementById('repairName').value.trim(),
             customerPhone: document.getElementById('repairPhone').value.trim(),
-            customerEmail: document.getElementById('repairEmail').value.trim(),
-            branchName: repairBranchSelect.value,
+            customerEmail: currentUser?.gmail || null,
+            serviceMethod: method,
+            branchName: method === 'AT_STORE' ? repairBranchSelect.value : '',
+            homeAddress: method === 'AT_HOME' ? repairHomeAddress.value.trim() : null,
             deviceModel: document.getElementById('repairDevice').value.trim(),
             serviceType: document.getElementById('repairService').value,
             appointmentDate: document.getElementById('repairDate').value,
@@ -249,42 +272,44 @@ function initRepairForm() {
 
         try {
             const saved = await api.post(CONFIG.ENDPOINTS.REPAIRS.CREATE, payload);
-            toast.success(`Đặt lịch sửa chữa thành công! Mã lịch hẹn #${saved.id}`);
+            toast.success(`Đặt lịch thành công! Mã lịch hẹn #${saved.id}`);
+            const methodLabel = saved.serviceMethod === 'AT_HOME' ? 'Kỹ thuật viên sửa tại nhà' : 'Mang tới cửa hàng';
             bookingReceipt.style.display = 'block';
             bookingReceipt.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                    <strong style="color: var(--brand-green);">✓ Đã xác nhận tiếp nhận lịch hẹn #${saved.id}</strong>
-                    <span class="badge badge-warning">Chờ xác nhận</span>
+                    <strong style="color: var(--brand-green);">Đã tiếp nhận lịch hẹn #${saved.id}</strong>
+                    <span class="badge badge-info">${methodLabel}</span>
                 </div>
                 <div style="font-size: var(--text-xs); color: var(--text-secondary);">
                     <div>Khách hàng: <b>${saved.customerName}</b> (${saved.customerPhone})</div>
                     <div>Thiết bị: <b>${saved.deviceModel}</b> — ${saved.serviceType}</div>
-                    <div>Thời gian: <b class="tabular-nums">${saved.appointmentTime} ngày ${saved.appointmentDate}</b></div>
-                    <div>Chi nhánh: ${saved.branchName}</div>
+                    <div>Thời gian: <b class="tabular-nums">${saved.appointmentTime} · ${saved.appointmentDate}</b></div>
+                    <div>Địa điểm: ${saved.serviceMethod === 'AT_HOME' ? saved.homeAddress : saved.branchName}</div>
                 </div>
             `;
             repairForm.reset();
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            repairBranchGroup.style.display = 'flex';
+            repairHomeAddrGroup.style.display = 'none';
+            document.querySelectorAll('[data-method-opt]').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.methodOpt === 'AT_STORE');
+            });
         } catch (err) {
-            toast.error(err.message || 'Không thể đặt lịch sửa chữa. Vui lòng thử lại.');
+            toast.error(err.message || 'Không thể đặt lịch sửa chữa.');
         } finally {
             btn.disabled = false;
-            btn.textContent = 'Xác nhận đặt lịch sửa chữa';
+            btn.textContent = 'Xác nhận đặt lịch';
         }
     });
 }
 
-// ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', () => {
     initStoreLayout({ activeNav: 'home' });
 
     categoryFilter?.addEventListener('change', () => { selectedCategory = categoryFilter.value; searchQuery = ''; loadProducts(0); });
     brandFilter?.addEventListener('change', () => { selectedBrand = brandFilter.value; searchQuery = ''; loadProducts(0); });
 
-    const runSearch = () => {
-        searchQuery = searchInput.value.trim();
-        loadProducts(0);
-    };
+    const runSearch = () => { searchQuery = searchInput.value.trim(); loadProducts(0); };
     document.getElementById('btnSearch')?.addEventListener('click', runSearch);
     searchInput?.addEventListener('keydown', (e) => { if (e.key === 'Enter') runSearch(); });
 
@@ -296,6 +321,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadFilters();
     loadProducts(0);
-    initBranches();
+    renderBranches();
     initRepairForm();
 });
