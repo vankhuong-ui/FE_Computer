@@ -274,6 +274,7 @@
             <a href="admin-inventory.html"><span class="icon">📊</span> Tồn kho</a>
             <a href="admin-orders.html"><span class="icon">📋</span> Đơn hàng</a>
             <a href="admin-payment.html"><span class="icon">💳</span> Thanh toán</a>
+            <a href="admin-warranty.html"><span class="icon">🛡️</span> Bảo hành</a>
             <a href="admin-support.html"><span class="icon">🛟</span> Hỗ trợ</a>
         </nav>
     </aside>
@@ -299,6 +300,7 @@
                     <div class="stat-card"><div class="number" id="statProducts">-</div><div class="label">Sản phẩm</div></div>
                     <div class="stat-card"><div class="number" id="statOrders">-</div><div class="label">Đơn hàng</div></div>
                     <div class="stat-card"><div class="number" id="statUsers">-</div><div class="label">Người dùng</div></div>
+                    <div class="stat-card"><div class="number" id="statWarranty">-</div><div class="label">Phiếu bảo hành</div></div>
                     <div class="stat-card"><div class="number" id="statSupport">-</div><div class="label">Hỗ trợ</div></div>
                 </div>
                 <h3 style="margin:24px 0 16px;">⚡ Quản lý nhanh</h3>
@@ -314,6 +316,9 @@
                     </div>
                     <div class="menu-item" onclick="window.location.href='admin-inventory.html'">
                         <div class="icon">📊</div><div class="name">Tồn kho</div>
+                    </div>
+                    <div class="menu-item" onclick="window.location.href='admin-warranty.html'">
+                        <div class="icon">🛡️</div><div class="name">Bảo hành điện tử</div>
                     </div>
                     <div class="menu-item" onclick="window.location.href='admin-support.html'">
                         <div class="icon">🛟</div><div class="name">Hỗ trợ</div>
@@ -340,7 +345,8 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE_URL = localStorage.getItem('CUSTOM_API_BASE_URL') || (isLocal ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com');
 
         const headerActions = document.getElementById('headerActions');
 
@@ -431,6 +437,9 @@
 
                 const supports = await fetchData(`${API_BASE_URL}/api/support/admin/all?page=0&size=1`);
                 document.getElementById('statSupport').textContent = supports?.totalElements || 0;
+
+                const warranties = await fetchData(`${API_BASE_URL}/api/warranty/admin/all?page=0&size=1`);
+                document.getElementById('statWarranty').textContent = warranties?.totalElements || 0;
             } catch(e) {
                 console.error('Lỗi tải thống kê:', e);
             }

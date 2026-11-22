@@ -29,7 +29,8 @@
         </div>
     </div>
     <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE_URL = localStorage.getItem('CUSTOM_API_BASE_URL') || (isLocal ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com');
 
         const container = document.getElementById('resultContent');
 

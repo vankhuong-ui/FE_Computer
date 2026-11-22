@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Bảo hành Điện tử — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <style>
+        .serial-badge {
+            font-family: var(--font-mono);
+            font-size: var(--text-xs);
+            padding: 3px 8px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xs);
+            font-weight: var(--font-semibold);
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 480px;
+            width: 100%;
+            padding: 28px;
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar">
+            <a href="trangchu-admin.html" class="admin-brand">
+                <span class="brand-dot"></span>
+                <span>HOANG89 ADMIN</span>
+            </a>
+
+            <ul class="admin-menu">
+                <li class="admin-menu-section-label">Tổng quan</li>
+                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
+
+                <li class="admin-menu-section-label">Danh mục & Kho</li>
+                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
+                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
+                <li class="admin-menu-item"><a href="admin-brand.html">🏷️ Thương hiệu</a></li>
+                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
+
+                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
+                <li class="admin-menu-item"><a href="admin-orders.html">📋 Đơn hàng</a></li>
+                <li class="admin-menu-item"><a href="admin-payment.html">💳 Thanh toán</a></li>
+                <li class="admin-menu-item"><a href="admin-warranty.html" class="active">🛡️ Bảo hành điện tử</a></li>
+                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
+
+                <li class="admin-menu-section-label">Người dùng</li>
+                <li class="admin-menu-item"><a href="admin-account.html">👤 Tài khoản</a></li>
+                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">
+                    Hệ thống Quản trị Bảo hành Điện tử (RMA)
+                </div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
+                    <div id="authNavArea"></div>
+                </div>
+            </header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Phiếu Yêu cầu Bảo hành</h1>
+                        <p style="font-size: var(--text-xs);">Tiếp nhận thiết bị, cập nhật tiến độ sửa chữa và ghi chú kỹ thuật cho khách hàng.</p>
+                    </div>
+                </div>
+
+                <!-- Metrics Row -->
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <div class="metric-label">Tổng phiếu bảo hành</div>
+                        <div class="metric-value" id="metricTotal">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Chờ tiếp nhận</div>
+                        <div class="metric-value" id="metricPending">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Đang kiểm tra / sửa chữa</div>
+                        <div class="metric-value" id="metricRepairing">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Đã hoàn tất trả máy</div>
+                        <div class="metric-value" id="metricCompleted">0</div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Mã Serial</th>
+                                <th>Khách hàng & SĐT</th>
+                                <th>Thiết bị</th>
+                                <th>Mô tả lỗi</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú kỹ thuật</th>
+                                <th>Ngày tạo</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="warrantyTableBody">
+                            <tr>
+                                <td colspan="9" style="text-align: center; padding: 32px;">Đang tải dữ liệu bảo hành...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pagination-bar" id="paginationBar"></div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Update Warranty Status Modal -->
+    <div class="modal-backdrop" id="updateModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg);">Cập nhật tiến độ bảo hành</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="updateForm">
+                <input type="hidden" id="editClaimId" />
+
+                <div class="form-group">
+                    <label class="form-label" for="editStatus">Trạng thái xử lý</label>
+                    <select id="editStatus" class="select">
+                        <option value="PENDING">PENDING — Chờ tiếp nhận</option>
+                        <option value="RECEIVED">RECEIVED — Đã tiếp nhận thiết bị tại TTBH</option>
+                        <option value="REPAIRING">REPAIRING — Đang kiểm tra / Sửa chữa / Đổi mới</option>
+                        <option value="COMPLETED">COMPLETED — Đã hoàn tất bảo hành & Bàn giao</option>
+                        <option value="REJECTED">REJECTED — Từ chối bảo hành (Vi phạm quy định)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="editAdminNote">Phản hồi / Ghi chú của kỹ thuật viên</label>
+                    <textarea id="editAdminNote" class="textarea" rows="4" placeholder="Nhập kết quả kiểm tra kỹ thuật hoặc hướng xử lý (Ví dụ: Đã đổi mới 1-1 sản phẩm mới)..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Đóng</button>
+                    <button type="submit" id="btnSaveStatus" class="btn btn-primary">Lưu cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
+
+        const warrantyTableBody = document.getElementById('warrantyTableBody');
+        const paginationBar = document.getElementById('paginationBar');
+        const updateModal = document.getElementById('updateModal');
+        const updateForm = document.getElementById('updateForm');
+
+        let currentPage = 0;
+        let currentItems = [];
+
+        function getStatusBadge(status) {
+            const s = (status || '').toUpperCase();
+            if (s === 'PENDING') return `<span class="badge badge-warning">Chờ tiếp nhận</span>`;
+            if (s === 'RECEIVED') return `<span class="badge badge-info">Đã nhận máy</span>`;
+            if (s === 'REPAIRING') return `<span class="badge badge-info">Đang sửa chữa</span>`;
+            if (s === 'COMPLETED') return `<span class="badge badge-success">Hoàn tất</span>`;
+            if (s === 'REJECTED') return `<span class="badge badge-danger">Từ chối</span>`;
+            return `<span class="badge">${status}</span>`;
+        }
+
+        async function loadClaims(page = 0) {
+            if (!auth.requireAdmin()) return;
+            currentPage = page;
+
+            try {
+                const data = await api.get(CONFIG.ENDPOINTS.WARRANTY.ADMIN_ALL, { page, size: 10 });
+                const items = data?.content || [];
+                const totalPages = data?.totalPages || 1;
+                const totalElements = data?.totalElements || items.length;
+                currentItems = items;
+
+                // Update metrics
+                document.getElementById('metricTotal').textContent = totalElements;
+                document.getElementById('metricPending').textContent = items.filter(i => i.status === 'PENDING').length;
+                document.getElementById('metricRepairing').textContent = items.filter(i => i.status === 'RECEIVED' || i.status === 'REPAIRING').length;
+                document.getElementById('metricCompleted').textContent = items.filter(i => i.status === 'COMPLETED').length;
+
+                if (items.length === 0) {
+                    warrantyTableBody.innerHTML = `
+                        <tr><td colspan="9" style="text-align: center; padding: 32px; color: var(--text-secondary);">Chưa có phiếu yêu cầu bảo hành nào trong hệ thống.</td></tr>
+                    `;
+                    paginationBar.innerHTML = '';
+                    return;
+                }
+
+                warrantyTableBody.innerHTML = items.map(item => `
+                    <tr>
+                        <td class="tabular-nums">#${item.id}</td>
+                        <td><span class="serial-badge">${item.serialCode}</span></td>
+                        <td>
+                            <div style="font-weight: var(--font-medium); font-size: var(--text-xs);">${item.customerEmail || 'User #' + item.accountId}</div>
+                            <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">${item.contactPhone || '-'}</div>
+                        </td>
+                        <td style="font-weight: var(--font-medium);">${item.productName || 'SP #' + item.productId}</td>
+                        <td>
+                            <div style="font-weight: var(--font-semibold); font-size: var(--text-xs);">${item.issueType}</div>
+                            <div style="font-size: var(--text-xs); color: var(--text-secondary); max-width: 240px;">${item.description}</div>
+                        </td>
+                        <td>${getStatusBadge(item.status)}</td>
+                        <td style="font-size: var(--text-xs); color: var(--text-secondary); max-width: 200px;">
+                            ${item.adminNote || '<i>Chưa có ghi chú</i>'}
+                        </td>
+                        <td class="tabular-nums" style="font-size: var(--text-xs);">
+                            ${item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '-'}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-secondary btn-sm btn-edit-claim" data-id="${item.id}">
+                                Xử lý
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                document.querySelectorAll('.btn-edit-claim').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const claim = currentItems.find(c => c.id === Number(btn.dataset.id));
+                        if (!claim) return;
+                        document.getElementById('editClaimId').value = claim.id;
+                        document.getElementById('editStatus').value = claim.status || 'PENDING';
+                        document.getElementById('editAdminNote').value = claim.adminNote || '';
+                        updateModal.classList.add('active');
+                    });
+                });
+
+                renderPagination(currentPage, totalPages);
+            } catch (err) {
+                warrantyTableBody.innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 32px;" class="text-danger">${err.message}</td></tr>
+                `;
+            }
+        }
+
+        function renderPagination(current, total) {
+            if (total <= 1) {
+                paginationBar.innerHTML = '';
+                return;
+            }
+            let html = '';
+            for (let i = 0; i < total; i++) {
+                html += `<button class="btn ${i === current ? 'btn-primary' : 'btn-secondary'} btn-sm" data-page="${i}">${i + 1}</button>`;
+            }
+            paginationBar.innerHTML = html;
+            paginationBar.querySelectorAll('button').forEach(b => {
+                b.addEventListener('click', () => loadClaims(Number(b.dataset.page)));
+            });
+        }
+
+        document.getElementById('btnCloseModal').addEventListener('click', () => updateModal.classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => updateModal.classList.remove('active'));
+
+        updateForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = Number(document.getElementById('editClaimId').value);
+            const status = document.getElementById('editStatus').value;
+            const adminNote = document.getElementById('editAdminNote').value.trim();
+
+            const btn = document.getElementById('btnSaveStatus');
+            btn.disabled = true;
+            btn.textContent = 'Đang lưu...';
+
+            try {
+                await api.patch(CONFIG.ENDPOINTS.WARRANTY.ADMIN_UPDATE_STATUS(id, status), { adminNote });
+                toast.success(`Đã cập nhật phiếu bảo hành #${id}`);
+                updateModal.classList.remove('active');
+                loadClaims(currentPage);
+            } catch (err) {
+                toast.error(err.message || 'Không thể cập nhật trạng thái bảo hành');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Lưu cập nhật';
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.initHeaderNav();
+            loadClaims(0);
+        });
+    </script>
+</body>
+</html>

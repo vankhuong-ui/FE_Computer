@@ -184,8 +184,9 @@
     <header class="header">
         <div class="logo">My<span>Shop</span></div>
         <div class="nav-links">
-            <a href="trangchu.html">Trang chủ</a>
-            <a href="trangchu.html">Sản phẩm</a>
+            <a href="index.html">Trang chủ</a>
+            <a href="order.html">Đơn hàng</a>
+            <a href="warranty.html">Bảo hành</a>
             <a href="cart.html" class="cart-link">
                 🛒 <span class="badge" id="cartCount">0</span>
             </a>
@@ -215,7 +216,8 @@
 
     <!-- GIỮ NGUYÊN TOÀN BỘ LOGIC JAVASCRIPT -->
     <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const API_BASE_URL = localStorage.getItem('CUSTOM_API_BASE_URL') || (isLocal ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com');
 
         const cartContainer = document.getElementById('cartContainer');
         const cartCount = document.getElementById('cartCount');
