@@ -22,8 +22,11 @@ class GeminiChatWidget {
     render() {
         if (document.getElementById('gemini-chat-widget')) return;
 
+        const hasDock = !!document.getElementById('hk-floating-dock');
+
         const widget = document.createElement('div');
         widget.id = 'gemini-chat-widget';
+        if (hasDock) widget.classList.add('has-hk-dock');
         widget.innerHTML = `
             <style>
                 .ai-widget-button {
