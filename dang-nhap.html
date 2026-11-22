@@ -3,341 +3,233 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng Nhập — HK COMPUTER</title>
-
-    <!-- Minimalist Design System (taste-skill compliant) -->
-    <link rel="stylesheet" href="./assets/css/base.css" />
-    <link rel="stylesheet" href="./assets/css/components.css" />
-
+    <title>Đăng nhập — HK COMPUTER</title>
+    <link rel="stylesheet" href="./assets/css/base.css?v=4" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=4" />
     <style>
-        body {
+        .auth-topbar {
+            height: 64px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+        }
+        .auth-page-body {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100dvh;
-            padding: 24px;
-            background-color: var(--canvas);
+            padding: 32px 16px;
         }
-
-        .auth-container {
-            width: 100%;
-            max-width: 400px;
-        }
-
         .auth-card {
+            width: 100%;
+            max-width: 420px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 32px;
+            box-shadow: var(--shadow-subtle);
         }
-
-        .auth-header {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-
-        .auth-brand {
-            font-size: var(--text-sm);
-            font-weight: var(--font-semibold);
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            display: inline-block;
-        }
-
-        .auth-title {
-            font-size: var(--text-2xl);
-            letter-spacing: -0.025em;
-            margin-bottom: 6px;
-        }
-
-        .auth-subtitle {
-            font-size: var(--text-xs);
-            color: var(--text-secondary);
-        }
-
         .auth-divider {
             display: flex;
             align-items: center;
-            text-align: center;
             margin: 20px 0;
             color: var(--text-muted);
             font-size: var(--text-xs);
         }
-
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .auth-divider span {
-            padding: 0 10px;
-        }
-
-        .auth-links {
-            margin-top: 24px;
-            text-align: center;
-            font-size: var(--text-xs);
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+        .auth-divider span { padding: 0 12px; }
+        .pwd-wrap { position: relative; }
+        .pwd-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
             color: var(--text-secondary);
+            font-size: var(--text-xs);
+            cursor: pointer;
         }
-
-        .auth-links a {
-            color: var(--text-primary);
-            font-weight: var(--font-medium);
-            text-decoration: underline;
-        }
-
-        /* Minimal Modal */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(2px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal-content {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            width: 100%;
-            max-width: 400px;
-            padding: 28px;
-            animation: modal-enter 200ms var(--ease-out);
-        }
-
-        @keyframes modal-enter {
-            from { opacity: 0; transform: scale(0.96); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
+    <header class="auth-topbar">
+        <div class="container" style="display:flex; align-items:center; justify-content:space-between;">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-hk">HK</span>
+                <span class="brand-computer">COMPUTER</span>
+            </a>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối">🌙</button>
+                <a href="index.html" class="btn btn-outline btn-sm">← Về cửa hàng</a>
+            </div>
+        </div>
+    </header>
 
-    <div class="auth-container">
+    <main class="auth-page-body">
         <div class="auth-card">
-            <div class="auth-header">
-                <a href="index.html" class="auth-brand">HK COMPUTER</a>
-                <h1 class="auth-title">Đăng nhập</h1>
-                <p class="auth-subtitle">Nhập thông tin tài khoản của bạn để tiếp tục</p>
+            <div style="margin-bottom: 24px;">
+                <h1 style="font-size: var(--text-2xl); margin-bottom: 6px;">Đăng nhập</h1>
+                <p style="font-size: var(--text-xs);">Đăng nhập để quản lý đơn hàng, bảo hành điện tử và lịch hẹn sửa chữa tại HK COMPUTER.</p>
             </div>
 
             <form id="loginForm">
                 <div class="form-group">
-                    <label class="form-label" for="gmail">Địa chỉ Gmail</label>
-                    <input type="email" id="gmail" class="input" placeholder="tenban@gmail.com" required autocomplete="email" />
+                    <label class="form-label" for="gmail">Email đăng nhập</label>
+                    <input type="email" id="gmail" class="input" placeholder="ban@gmail.com" required autocomplete="email" />
                 </div>
 
                 <div class="form-group">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
                         <label class="form-label" for="password">Mật khẩu</label>
-                        <a href="#" id="linkForgotPassword" style="font-size: var(--text-xs); color: var(--text-secondary);">Quên mật khẩu?</a>
+                        <a href="#" id="linkForgotPassword" style="font-size: var(--text-xs); color: var(--brand-green); font-weight: 500;">Quên mật khẩu?</a>
                     </div>
-                    <input type="password" id="password" class="input" placeholder="••••••••" required autocomplete="current-password" />
+                    <div class="pwd-wrap">
+                        <input type="password" id="password" class="input" placeholder="Nhập mật khẩu" required autocomplete="current-password" style="padding-right: 52px;" />
+                        <button type="button" class="pwd-toggle" id="btnTogglePwd">Hiện</button>
+                    </div>
                 </div>
 
-                <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                <button type="submit" id="btnLogin" class="btn btn-primary" style="width: 100%; height: 42px; margin-top: 6px;">
                     Đăng nhập
                 </button>
             </form>
 
-            <div class="auth-divider">
-                <span>Hoặc tiếp tục với</span>
-            </div>
+            <div class="auth-divider"><span>Hoặc tiếp tục với</span></div>
 
-            <button type="button" id="btnGoogleLogin" class="btn btn-secondary" style="width: 100%;">
+            <button type="button" id="btnGoogleLogin" class="btn btn-secondary" style="width: 100%; height: 42px;">
                 <svg width="16" height="16" viewBox="0 0 48 48">
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
                     <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
                     <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.55 10.78l7.98-6.19z" />
                     <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                 </svg>
-                <span>Google Account</span>
+                <span>Đăng nhập bằng Google</span>
             </button>
 
-            <div class="auth-links">
-                Chưa có tài khoản? <a href="dang-ky.html">Đăng ký ngay</a>
+            <div style="margin-top: 24px; text-align: center; font-size: var(--text-xs); color: var(--text-secondary);">
+                Chưa có tài khoản? <a href="dang-ky.html" style="color: var(--brand-green); font-weight: 600;">Đăng ký ngay</a>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Minimalist Forgot Password Modal -->
-    <div class="modal-backdrop" id="forgotModal">
-        <div class="modal-content">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <!-- Forgot Password Modal -->
+    <div class="hk-modal-backdrop" id="forgotModal">
+        <div class="hk-modal-box" style="max-width: 400px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
                 <h3 style="font-size: var(--text-lg);">Khôi phục mật khẩu</h3>
-                <button type="button" id="btnCloseForgot" style="background:none; border:none; cursor:pointer; font-size:18px;">×</button>
+                <button type="button" id="btnCloseForgot" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-secondary);">×</button>
             </div>
-
-            <!-- Step 1: Send OTP -->
             <div id="step1Forgot">
-                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 16px;">
-                    Nhập email đã đăng ký. Hệ thống sẽ gửi mã OTP xác nhận về hòm thư của bạn.
-                </p>
+                <p style="font-size: var(--text-xs); margin-bottom: 14px;">Nhập email đã đăng ký để nhận mã OTP 6 số đặt lại mật khẩu.</p>
                 <div class="form-group">
-                    <label class="form-label">Gmail</label>
-                    <input type="email" id="forgotEmail" class="input" placeholder="tenban@gmail.com" />
+                    <label class="form-label">Email</label>
+                    <input type="email" id="forgotEmail" class="input" placeholder="ban@gmail.com" />
                 </div>
-                <button type="button" id="btnSendOtp" class="btn btn-primary" style="width: 100%;">
-                    Gửi mã xác nhận
-                </button>
+                <button type="button" id="btnSendOtp" class="btn btn-primary" style="width: 100%;">Gửi mã OTP</button>
             </div>
-
-            <!-- Step 2: Verify & Reset -->
             <div id="step2Forgot" class="hidden">
-                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 16px;">
-                    Mã xác nhận đã gửi tới <b id="displayTargetEmail" style="color: var(--text-primary);"></b>.
-                </p>
+                <p style="font-size: var(--text-xs); margin-bottom: 14px;">Mã OTP đã gửi tới <b id="displayTargetEmail"></b>.</p>
                 <div class="form-group">
-                    <label class="form-label">Mã OTP (6 chữ số)</label>
+                    <label class="form-label">Mã OTP (6 số)</label>
                     <input type="text" id="resetOtpCode" class="input tabular-nums" placeholder="123456" maxlength="6" />
                 </div>
                 <div class="form-group">
                     <label class="form-label">Mật khẩu mới</label>
                     <input type="password" id="resetNewPassword" class="input" placeholder="Tối thiểu 6 ký tự" />
                 </div>
-                <button type="button" id="btnResetPassword" class="btn btn-primary" style="width: 100%;">
-                    Đặt lại mật khẩu
-                </button>
+                <button type="button" id="btnResetPassword" class="btn btn-primary" style="width: 100%;">Đặt lại mật khẩu</button>
             </div>
         </div>
     </div>
 
-    <!-- Logic Script (ES Module) -->
     <script type="module">
-        import './assets/js/theme.js';
+        import { theme } from './assets/js/theme.js';
         import { auth } from './assets/js/auth.js';
         import { api } from './assets/js/api.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';
 
-        const loginForm = document.getElementById('loginForm');
-        const btnLogin = document.getElementById('btnLogin');
-        const btnGoogleLogin = document.getElementById('btnGoogleLogin');
+        theme.init();
 
-        // Modal Elements
-        const linkForgotPassword = document.getElementById('linkForgotPassword');
-        const forgotModal = document.getElementById('forgotModal');
-        const btnCloseForgot = document.getElementById('btnCloseForgot');
-        const step1Forgot = document.getElementById('step1Forgot');
-        const step2Forgot = document.getElementById('step2Forgot');
-        const forgotEmail = document.getElementById('forgotEmail');
-        const btnSendOtp = document.getElementById('btnSendOtp');
-        const displayTargetEmail = document.getElementById('displayTargetEmail');
-        const resetOtpCode = document.getElementById('resetOtpCode');
-        const resetNewPassword = document.getElementById('resetNewPassword');
-        const btnResetPassword = document.getElementById('btnResetPassword');
-
-        // Check if already authenticated
         if (auth.isAuthenticated()) {
             window.location.href = auth.isAdmin() ? CONFIG.ROUTES.ADMIN_DASHBOARD : CONFIG.ROUTES.HOME;
         }
 
-        // Handle Standard Login
-        loginForm.addEventListener('submit', async (e) => {
+        const pwdInput = document.getElementById('password');
+        const btnTogglePwd = document.getElementById('btnTogglePwd');
+        btnTogglePwd.addEventListener('click', () => {
+            const isPwd = pwdInput.type === 'password';
+            pwdInput.type = isPwd ? 'text' : 'password';
+            btnTogglePwd.textContent = isPwd ? 'Ẩn' : 'Hiện';
+        });
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const gmail = document.getElementById('gmail').value.trim();
-            const password = document.getElementById('password').value;
-
-            btnLogin.disabled = true;
-            btnLogin.textContent = 'Đang xác thực...';
+            const password = pwdInput.value;
+            const btn = document.getElementById('btnLogin');
+            btn.disabled = true;
+            btn.textContent = 'Đang xác thực...';
 
             try {
-                const user = await auth.login(gmail, password);
-                toast.success('Đăng nhập thành công.');
-
+                await auth.login(gmail, password);
+                toast.success('Đăng nhập thành công!');
                 const redirectParam = new URLSearchParams(window.location.search).get('redirect');
                 setTimeout(() => {
-                    if (redirectParam) {
-                        window.location.href = decodeURIComponent(redirectParam);
-                    } else if (auth.isAdmin()) {
-                        window.location.href = CONFIG.ROUTES.ADMIN_DASHBOARD;
-                    } else {
-                        window.location.href = CONFIG.ROUTES.HOME;
-                    }
+                    if (redirectParam) window.location.href = decodeURIComponent(redirectParam);
+                    else window.location.href = auth.isAdmin() ? CONFIG.ROUTES.ADMIN_DASHBOARD : CONFIG.ROUTES.HOME;
                 }, 500);
             } catch (err) {
-                toast.error(err.message || 'Tài khoản hoặc mật khẩu không chính xác.');
-                btnLogin.disabled = false;
-                btnLogin.textContent = 'Đăng nhập';
+                toast.error(err.message || 'Email hoặc mật khẩu không chính xác.');
+                btn.disabled = false;
+                btn.textContent = 'Đăng nhập';
             }
         });
 
-        // Google OAuth2 Login
-        btnGoogleLogin.addEventListener('click', () => {
+        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
             window.location.href = `${CONFIG.API_BASE_URL}/oauth2/authorization/google`;
         });
 
-        // Forgot Password Flow
-        linkForgotPassword.addEventListener('click', (e) => {
+        const forgotModal = document.getElementById('forgotModal');
+        const step1 = document.getElementById('step1Forgot');
+        const step2 = document.getElementById('step2Forgot');
+        document.getElementById('linkForgotPassword').addEventListener('click', (e) => {
             e.preventDefault();
-            forgotModal.style.display = 'flex';
+            forgotModal.classList.add('active');
+        });
+        document.getElementById('btnCloseForgot').addEventListener('click', () => {
+            forgotModal.classList.remove('active');
+            step1.classList.remove('hidden');
+            step2.classList.add('hidden');
         });
 
-        btnCloseForgot.addEventListener('click', () => {
-            forgotModal.style.display = 'none';
-            step1Forgot.classList.remove('hidden');
-            step2Forgot.classList.add('hidden');
-        });
-
-        btnSendOtp.addEventListener('click', async () => {
-            const email = forgotEmail.value.trim();
-            if (!email) {
-                toast.warning('Vui lòng nhập địa chỉ Gmail.');
-                return;
-            }
-
-            btnSendOtp.disabled = true;
-            btnSendOtp.textContent = 'Đang gửi...';
-
+        document.getElementById('btnSendOtp').addEventListener('click', async () => {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) { toast.warning('Vui lòng nhập email.'); return; }
             try {
                 await api.post(`${CONFIG.ENDPOINTS.AUTH.SEND_OTP}?gmail=${encodeURIComponent(email)}`);
-                toast.success('Đã gửi mã xác nhận về email của bạn.');
-                displayTargetEmail.textContent = email;
-                step1Forgot.classList.add('hidden');
-                step2Forgot.classList.remove('hidden');
-            } catch (err) {
-                toast.error(err.message || 'Không thể gửi mã xác nhận.');
-            } finally {
-                btnSendOtp.disabled = false;
-                btnSendOtp.textContent = 'Gửi mã xác nhận';
-            }
+                toast.success('Đã gửi mã OTP về email.');
+                document.getElementById('displayTargetEmail').textContent = email;
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+            } catch (err) { toast.error(err.message); }
         });
 
-        btnResetPassword.addEventListener('click', async () => {
-            const email = forgotEmail.value.trim();
-            const code = resetOtpCode.value.trim();
-            const newPassword = resetNewPassword.value.trim();
-
-            if (!code || !newPassword) {
-                toast.warning('Vui lòng nhập đầy đủ mã OTP và mật khẩu mới.');
-                return;
-            }
-
-            btnResetPassword.disabled = true;
-            btnResetPassword.textContent = 'Đang xử lý...';
-
+        document.getElementById('btnResetPassword').addEventListener('click', async () => {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const code = document.getElementById('resetOtpCode').value.trim();
+            const newPassword = document.getElementById('resetNewPassword').value.trim();
+            if (!code || !newPassword) { toast.warning('Vui lòng nhập đủ OTP và mật khẩu mới.'); return; }
             try {
                 await api.put(`${CONFIG.ENDPOINTS.AUTH.FORGOT_PASSWORD}?gmail=${encodeURIComponent(email)}&code=${encodeURIComponent(code)}&newPassword=${encodeURIComponent(newPassword)}`);
-                toast.success('Đổi mật khẩu thành công! Vui lòng đăng nhập.');
-                forgotModal.style.display = 'none';
-                step1Forgot.classList.remove('hidden');
-                step2Forgot.classList.add('hidden');
-            } catch (err) {
-                toast.error(err.message || 'Mã OTP không đúng hoặc đã hết hạn.');
-            } finally {
-                btnResetPassword.disabled = false;
-                btnResetPassword.textContent = 'Đặt lại mật khẩu';
-            }
+                toast.success('Đặt lại mật khẩu thành công! Vui lòng đăng nhập.');
+                forgotModal.classList.remove('active');
+                step1.classList.remove('hidden');
+                step2.classList.add('hidden');
+            } catch (err) { toast.error(err.message); }
         });
     </script>
 </body>

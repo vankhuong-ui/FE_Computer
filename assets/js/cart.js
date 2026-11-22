@@ -10,7 +10,7 @@ import { toast } from './toast.js';
 
 class CartManager {
     constructor() {
-        this.STORAGE_KEY = 'hoang89_cart_guest';
+        this.STORAGE_KEY = 'hk_cart_guest';
         this.items = this.loadLocal();
     }
 
@@ -123,13 +123,12 @@ class CartManager {
 
     updateHeaderBadge() {
         const count = parseInt(localStorage.getItem('cartCount') || this.getCount() || '0');
-        const badge = document.getElementById('cartBadgeCount') || document.getElementById('cartCount');
-        if (badge) {
+        document.querySelectorAll('#cartBadgeCount, #cartCount, #dropdownCartBadge').forEach(badge => {
             badge.textContent = count;
             if (badge.id === 'cartBadgeCount') {
                 badge.style.display = count > 0 ? 'inline-flex' : 'none';
             }
-        }
+        });
     }
 }
 

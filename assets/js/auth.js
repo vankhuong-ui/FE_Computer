@@ -125,32 +125,84 @@ export const auth = {
     initHeaderNav() {
         const user = this.getUser();
         const authNavArea = document.getElementById('authNavArea');
+        const guestCartBtn = document.getElementById('headerCartBtn');
         if (!authNavArea) return;
 
+        const cartCount = parseInt(localStorage.getItem('cartCount') || '0');
+
         if (user) {
+            // Đã đăng nhập: ẩn nút icon giỏ hàng ngoài header, gộp vào thanh Tài khoản
+            if (guestCartBtn) guestCartBtn.style.display = 'none';
+
+            const displayName = user.accountname || user.gmail || 'Tài khoản';
+            const initial = displayName[0].toUpperCase();
+
             authNavArea.innerHTML = `
-                <div class="user-menu-wrapper">
-                    <span class="user-chip">
-                        <span class="user-avatar-initial">${(user.accountname || user.gmail || 'U')[0].toUpperCase()}</span>
-                        <span class="user-name">${user.accountname || user.gmail}</span>
-                        ${this.isAdmin() ? '<span class="badge badge-info text-xs">Admin</span>' : ''}
-                    </span>
-                    <div class="user-dropdown-menu">
-                        <a href="${CONFIG.ROUTES.PROFILE}" class="dropdown-item">Quản lý tài khoản</a>
-                        <a href="${CONFIG.ROUTES.ORDERS}" class="dropdown-item">Đơn hàng của tôi</a>
-                        <a href="${CONFIG.ROUTES.WARRANTY}" class="dropdown-item">Bảo hành điện tử</a>
-                        <a href="setpassword.html" class="dropdown-item">Đổi mật khẩu</a>
-                        ${this.isAdmin() ? `<a href="${CONFIG.ROUTES.ADMIN_DASHBOARD}" class="dropdown-item" style="color: var(--brand-green); font-weight: 600;">Trang quản trị Admin</a>` : ''}
+                <div class="user-menu-wrapper" id="accountMenuWrapper">
+                    <button type="button" class="account-bar-btn" id="accountBarBtn" aria-expanded="false" aria-haspopup="true">
+                        <span class="user-avatar-initial">${initial}</span>
+                        <span style="max-width: 110px; overflow: hidden; text-overflow: ellipsis;">${displayName}</span>
+                        <span style="font-size: 10px; color: var(--text-muted);">▾</span>
+                    </button>
+                    <div class="user-dropdown-menu" id="accountDropdownMenu">
+                        <div class="dropdown-user-header">
+                            <div style="font-size: var(--text-xs); font-weight: 700; color: var(--text-primary);">${displayName}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary); word-break: break-all;">${user.gmail || ''}</div>
+                        </div>
+                        <a href="${CONFIG.ROUTES.PROFILE}" class="dropdown-item">
+                            <span>Quản lý tài khoản cá nhân</span>
+                        </a>
+                        <a href="${CONFIG.ROUTES.ORDERS}" class="dropdown-item">
+                            <span>Đơn hàng của tôi</span>
+                        </a>
+                        <a href="${CONFIG.ROUTES.CART}" class="dropdown-item">
+                            <span>Giỏ hàng của tôi</span>
+                            <span class="badge badge-warning tabular-nums" id="dropdownCartBadge">${cartCount}</span>
+                        </a>
+                        <a href="${CONFIG.ROUTES.WARRANTY}" class="dropdown-item">
+                            <span>Bảo hành điện tử</span>
+                        </a>
+                        <a href="setpassword.html" class="dropdown-item">
+                            <span>Đổi mật khẩu</span>
+                        </a>
+                        ${this.isAdmin() ? `
+                            <div class="dropdown-divider"></div>
+                            <a href="${CONFIG.ROUTES.ADMIN_DASHBOARD}" class="dropdown-item" style="color: var(--brand-green); font-weight: 700;">
+                                <span>Trang quản trị Admin</span>
+                            </a>
+                        ` : ''}
                         <div class="dropdown-divider"></div>
-                        <button type="button" id="btnLogout" class="dropdown-item text-danger">Đăng xuất</button>
+                        <button type="button" id="btnLogout" class="dropdown-item text-danger">
+                            <span>Đăng xuất</span>
+                        </button>
                     </div>
                 </div>
             `;
+
+            const btn = document.getElementById('accountBarBtn');
+            const menu = document.getElementById('accountDropdownMenu');
+            const wrapper = document.getElementById('accountMenuWrapper');
+
+            btn?.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = menu.classList.toggle('open');
+                btn.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            document.addEventListener('click', (e) => {
+                if (wrapper && !wrapper.contains(e.target)) {
+                    menu?.classList.remove('open');
+                    btn?.setAttribute('aria-expanded', 'false');
+                }
+            });
 
             document.getElementById('btnLogout')?.addEventListener('click', () => {
                 this.logout();
             });
         } else {
+            // Chưa đăng nhập: hiển thị icon giỏ hàng gọn ở ngoài header
+            if (guestCartBtn) guestCartBtn.style.display = 'inline-flex';
+
             authNavArea.innerHTML = `
                 <a href="${CONFIG.ROUTES.LOGIN}" class="btn btn-secondary btn-sm">Đăng nhập</a>
                 <a href="${CONFIG.ROUTES.REGISTER}" class="btn btn-primary btn-sm">Đăng ký</a>
