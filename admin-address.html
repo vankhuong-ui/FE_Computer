@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Địa chỉ — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
 </head>
 <body>
     <div class="admin-layout">
@@ -46,7 +46,7 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
 
         async function loadAddresses(page = 0) {
             if (!auth.requireAdmin()) return;

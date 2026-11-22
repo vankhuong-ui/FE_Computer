@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bảng điều khiển — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
     <style>
         .quick-grid {
             display: grid;
@@ -115,7 +115,7 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
 
         async function loadStats() {
             if (!auth.requireAdmin()) return;

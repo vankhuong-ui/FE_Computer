@@ -2,7 +2,7 @@
  * admin-layout.js - Shared Minimalist Sidebar & Topbar for HK COMPUTER Admin Portal
  */
 
-import { theme } from './theme.js';
+import { theme } from './theme.js?v=6';
 import { auth } from './auth.js';
 
 const MENU_GROUPS = [

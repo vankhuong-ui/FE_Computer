@@ -3,9 +3,9 @@
  * Strictly follows taste-skill / minimalist directives
  */
 
-@import url('./tokens.css');
-@import url('./base.css');
-@import url('./components.css');
+@import url('./tokens.css?v=6');
+@import url('./base.css?v=6');
+@import url('./components.css?v=6');
 
 .admin-layout {
     display: flex;
