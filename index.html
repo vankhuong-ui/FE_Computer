@@ -3,1035 +3,321 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HK COMPUTER — Hệ thống Laptop, PC Gaming & Linh kiện Chính hãng</title>
-
-    <!-- Fonts & Icons -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        hk: {
-                            green: '#008B45',
-                            greenDark: '#006B35',
-                            greenLight: '#E8F5EE',
-                            orange: '#F37021',
-                            orangeDark: '#D95B10',
-                            bg: '#F4F6F8'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['"Be Vietnam Pro"', 'system-ui', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Shared Toast & Design Tokens -->
-    <link rel="stylesheet" href="./assets/css/tokens.css" />
+    <title>HK COMPUTER — Máy tính Chính hãng & Trung tâm Sửa chữa</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
     <link rel="stylesheet" href="./assets/css/components.css" />
-
     <style>
-        body {
-            background-color: #F4F6F8;
-            font-family: 'Be Vietnam Pro', system-ui, sans-serif;
-            color: #1E293B;
+        .hero-minimal {
+            padding: 40px 0 32px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
         }
-        .mega-menu-item:hover .mega-flyout {
-            display: block;
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            align-items: stretch;
         }
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+
+        @media (max-width: 860px) {
+            .hero-grid { grid-template-columns: 1fr; }
         }
-        /* Override dropdown styling cleanly inside Tailwind header */
-        #authNavArea .user-chip {
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            padding: 5px 12px;
-            border-radius: 9999px;
-            font-size: 13px;
-            color: #0F172A;
+
+        .hero-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
         }
-        #authNavArea .user-avatar-initial {
-            background: #008B45;
-            color: #FFFFFF;
+
+        .hero-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .mini-stat {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .mini-stat-title {
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .mini-stat-desc {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+        }
+
+        .catalog-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .toolbar-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        /* Store Locator & Repair Booking */
+        .repair-section {
+            margin: 56px 0 64px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .repair-grid {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .repair-grid { grid-template-columns: 1fr; }
+        }
+
+        .branch-scroll-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 540px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .branch-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            transition: border-color var(--transition-fast);
+        }
+
+        .branch-item:hover {
+            border-color: var(--brand-green);
+        }
+
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 560px) {
+            .form-row-2 { grid-template-columns: 1fr; }
+        }
+
+        .receipt-box {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: var(--brand-green-soft);
+            border: 1px solid var(--brand-green);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
+    <!-- Shared Minimalist Header (Text-only HK COMPUTER + Light/Dark Toggle + Account Menu) -->
+    <header id="appHeader"></header>
 
-    <!-- ==================== 1. TOP UTILITY BAR ==================== -->
-    <div class="bg-hk-greenDark text-white text-xs py-2 border-b border-white/10">
-        <div class="max-w-[1280px] mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
-            <div class="flex items-center gap-4 flex-wrap">
-                <a href="#footer-showrooms" class="hover:text-amber-200 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-location-dot text-hk-orange"></i>
-                    <span>Hệ thống cửa hàng</span>
-                </a>
-                <span class="opacity-30 hidden sm:inline">|</span>
-                <a href="warranty.html" class="hover:text-amber-200 transition flex items-center gap-1.5 font-medium">
-                    <i class="fa-solid fa-shield-halved text-hk-orange"></i>
-                    <span>Tra cứu bảo hành</span>
-                </a>
-            </div>
-            <div class="flex items-center gap-4 flex-wrap">
-                <a href="tel:18006889" class="hover:text-amber-200 transition flex items-center gap-1.5 font-semibold">
-                    <i class="fa-solid fa-phone-volume text-hk-orange"></i>
-                    <span>Hotline tư vấn: <strong class="text-amber-300">1800 6889</strong> (Miễn phí)</span>
-                </a>
-                <span class="opacity-30 hidden md:inline">|</span>
-                <span class="hidden md:flex items-center gap-1.5 text-emerald-100">
-                    <i class="fa-regular fa-clock"></i>
-                    <span>Giờ mở cửa: 8:00 - 21:00</span>
-                </span>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== 2. STICKY MAIN HEADER ==================== -->
-    <header class="sticky top-0 z-50 bg-white shadow-sm border-b border-slate-200">
-        <div class="max-w-[1280px] mx-auto px-4 py-3 flex items-center justify-between gap-4">
-
-            <!-- LEFT: BRAND LOGO (SHIELD + TIGER + CIRCUIT + LAPTOP) -->
-            <a href="index.html" class="flex items-center gap-2.5 shrink-0 group">
-                <svg class="w-12 h-12 shrink-0 transition-transform duration-200 group-hover:scale-105" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="HK Computer Logo">
-                    <defs>
-                        <linearGradient id="hkShieldGrad" x1="10" y1="6" x2="70" y2="74" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#00A651" />
-                            <stop offset="100%" stop-color="#006B35" />
-                        </linearGradient>
-                        <linearGradient id="hkTigerGrad" x1="24" y1="20" x2="56" y2="54" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stop-color="#FF8A3D" />
-                            <stop offset="100%" stop-color="#F37021" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Protective Shield Base -->
-                    <path d="M40 5L69 15.5V37.5C69 55.2 56.7 68.7 40 75C23.3 68.7 11 55.2 11 37.5V15.5L40 5Z" fill="url(#hkShieldGrad)" stroke="#005529" stroke-width="2" />
-                    <path d="M40 9.5L64.5 18.5V37.5C64.5 52.6 54 64.2 40 69.8C26 64.2 15.5 52.6 15.5 37.5V18.5L40 9.5Z" fill="#063B20" fill-opacity="0.35" stroke="#4ADE80" stroke-opacity="0.35" stroke-width="1" />
-
-                    <!-- Circuit Board Traces -->
-                    <path d="M17 27H24L27 24M17 42H23L26 45M63 26H56L53 23" stroke="#86EFAC" stroke-width="1.4" stroke-linecap="round" stroke-opacity="0.8" />
-                    <circle cx="17" cy="27" r="1.8" fill="#86EFAC" />
-                    <circle cx="17" cy="42" r="1.8" fill="#86EFAC" />
-                    <circle cx="63" cy="26" r="1.8" fill="#86EFAC" />
-
-                    <!-- Stylized Fierce Tiger Face -->
-                    <path d="M24 23L31 18L35 23H45L49 18L56 23L53 34L57 40L48 52L40 56L32 52L23 40L27 34L24 23Z" fill="url(#hkTigerGrad)" stroke="#FFFFFF" stroke-width="1.4" stroke-linejoin="round" />
-                    <!-- Tiger Forehead Stripes -->
-                    <path d="M40 22V28M35 24L37 28M45 24L43 28" stroke="#7C2D12" stroke-width="2" stroke-linecap="round" />
-                    <!-- Tiger Fierce Eyes -->
-                    <path d="M30 33L36 35.5L32 37.5L30 33Z" fill="#FFFFFF" />
-                    <path d="M50 33L44 35.5L48 37.5L50 33Z" fill="#FFFFFF" />
-                    <!-- Tiger Nose & Jaw Accent -->
-                    <path d="M37.5 41H42.5L40 44.5L37.5 41Z" fill="#431407" />
-                    <path d="M34 47.5L40 50.5L46 47.5" stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" />
-
-                    <!-- Laptop Silhouette integrated bottom-right -->
-                    <g transform="translate(47, 47)">
-                        <rect x="2" y="2" width="21" height="14" rx="2" fill="#0F172A" stroke="#FFFFFF" stroke-width="1.5" />
-                        <rect x="5" y="5" width="15" height="8" rx="0.8" fill="#38BDF8" fill-opacity="0.85" />
-                        <path d="M0 17.5H25L27 20.5H-2L0 17.5Z" fill="#E2E8F0" />
-                    </g>
-                </svg>
-
-                <div class="leading-none">
-                    <div class="text-2xl font-extrabold tracking-tight text-hk-green">HK</div>
-                    <div class="text-xs font-extrabold tracking-[0.18em] text-hk-orange mt-0.5">COMPUTER</div>
-                </div>
-            </a>
-
-            <!-- CENTER: SEARCH BAR -->
-            <form id="headerSearchForm" class="flex-1 max-w-2xl hidden md:flex items-center">
-                <div class="relative w-full flex">
-                    <input
-                        type="text"
-                        id="searchInput"
-                        class="w-full h-11 pl-4 pr-14 rounded-l-lg border-2 border-hk-green bg-slate-50 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white transition"
-                        placeholder="Bạn cần tìm Laptop, PC, linh kiện gì...?"
-                    />
-                    <button
-                        type="submit"
-                        class="h-11 px-5 bg-hk-orange hover:bg-hk-orangeDark text-white font-semibold rounded-r-lg transition flex items-center justify-center gap-2 shrink-0"
-                        aria-label="Tìm kiếm sản phẩm"
-                    >
-                        <i class="fa-solid fa-magnifying-glass text-base"></i>
-                        <span class="hidden lg:inline text-sm">Tìm kiếm</span>
-                    </button>
-                </div>
-            </form>
-
-            <!-- RIGHT: ACTIONS -->
-            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
-                <a href="order.html" class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-hk-greenLight hover:text-hk-green transition text-xs font-semibold border border-slate-200">
-                    <i class="fa-solid fa-clipboard-list text-hk-green text-sm"></i>
-                    <span class="hidden lg:inline">Tra cứu đơn hàng</span>
-                </a>
-
-                <a href="cart.html" class="relative flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-orange-50 hover:text-hk-orange transition text-xs font-semibold border border-slate-200">
-                    <i class="fa-solid fa-cart-shopping text-hk-green text-sm"></i>
-                    <span class="hidden lg:inline">Giỏ hàng</span>
-                    <span id="cartBadgeCount" class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full bg-hk-orange text-white font-mono text-[11px] font-bold">0</span>
-                </a>
-
-                <div id="authNavArea" class="flex items-center gap-2"></div>
-            </div>
-        </div>
-
-        <!-- Mobile Search Bar -->
-        <div class="md:hidden px-4 pb-3">
-            <form id="mobileSearchForm" class="flex">
-                <input
-                    type="text"
-                    id="mobileSearchInput"
-                    class="w-full h-10 pl-3 pr-3 rounded-l-lg border-2 border-hk-green bg-slate-50 text-sm focus:outline-none focus:bg-white"
-                    placeholder="Bạn cần tìm Laptop, PC, linh kiện gì...?"
-                />
-                <button type="submit" class="h-10 px-4 bg-hk-orange text-white rounded-r-lg">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </form>
-        </div>
-    </header>
-
-    <!-- ==================== 3. MAIN CONTENT ==================== -->
-    <main class="flex-1 max-w-[1280px] w-full mx-auto px-4 py-5 space-y-6">
-
-        <!-- HERO SECTION (3 COLUMNS: 20% - 55% - 25%) -->
-        <section class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-
-            <!-- LEFT (20% -> ~2.5 cols -> use lg:col-span-3 or custom 20/55/25 grid on lg) -->
-            <div class="lg:col-span-12 grid grid-cols-1 lg:grid-cols-[20%_1fr_25%] gap-4">
-
-                <!-- Cột Trái (20%): Mega Menu Danh Mục Dọc -->
-                <aside class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-visible relative z-30">
-                    <div class="bg-hk-green text-white px-4 py-2.5 rounded-t-lg font-bold text-sm flex items-center gap-2">
-                        <i class="fa-solid fa-bars"></i>
-                        <span>DANH MỤC SẢN PHẨM</span>
-                    </div>
-                    <ul class="divide-y divide-slate-100 text-[13px] font-medium text-slate-700" id="megaMenuList">
-                        <li class="mega-menu-item relative">
-                            <a href="#laptop-section" data-cat-filter="office" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-laptop w-4 text-center text-hk-green"></i>Laptop Văn phòng</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                            <div class="mega-flyout hidden lg:group-hover:block absolute left-full top-0 w-64 bg-white border border-slate-200 rounded-lg shadow-lg p-4 z-40">
-                                <div class="font-bold text-hk-green text-xs uppercase mb-2">Laptop Văn phòng nổi bật</div>
-                                <div class="space-y-1.5 text-xs text-slate-600">
-                                    <a href="#laptop-section" class="block hover:text-hk-orange">Dell Inspiron / Latitude / XPS</a>
-                                    <a href="#laptop-section" class="block hover:text-hk-orange">Lenovo ThinkPad / IdeaPad</a>
-                                    <a href="#laptop-section" class="block hover:text-hk-orange">HP Pavilion / Envy / ProBook</a>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#laptop-section" data-cat-filter="gaming" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-gamepad w-4 text-center text-hk-orange"></i>Laptop Gaming</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#laptop-section" data-cat-filter="macbook" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-brands fa-apple w-4 text-center text-slate-800"></i>MacBook</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#pc-section" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-desktop w-4 text-center text-hk-green"></i>PC Đồ họa - Gaming</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#live-catalog" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-tv w-4 text-center text-hk-green"></i>Màn hình máy tính</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#live-catalog" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-microchip w-4 text-center text-hk-orange"></i>Linh kiện (RAM, SSD, VGA)</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                        <li class="mega-menu-item relative">
-                            <a href="#live-catalog" class="flex items-center justify-between px-3.5 py-2.5 hover:bg-hk-greenLight hover:text-hk-green transition">
-                                <span class="flex items-center gap-2.5"><i class="fa-solid fa-keyboard w-4 text-center text-hk-green"></i>Phụ kiện</span>
-                                <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </aside>
-
-                <!-- Cột Giữa (55%): Banner Slider Lớn -->
-                <div class="relative rounded-lg overflow-hidden shadow-sm bg-slate-900 min-h-[280px] sm:min-h-[340px] flex flex-col justify-between group">
-                    <div id="heroSlides" class="relative w-full h-full min-h-[280px] sm:min-h-[340px]">
-                        <!-- Slide 1 -->
-                        <div class="hero-slide absolute inset-0 transition-opacity duration-500 opacity-100 bg-gradient-to-br from-[#005B2D] via-[#008B45] to-[#0F172A] p-6 sm:p-9 flex flex-col justify-between text-white">
-                            <div class="max-w-lg">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-hk-orange text-white text-xs font-bold uppercase tracking-wider mb-3 shadow">
-                                    <i class="fa-solid fa-bolt"></i> SỰ KIỆN ĐẶC BIỆT 2026
-                                </span>
-                                <h1 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-3 text-white">
-                                    MỪNG KHAI TRƯƠNG <span class="text-amber-300">HK COMPUTER</span><br />KHUYẾN MÃI LỚN LÊN ĐẾN 30%
-                                </h1>
-                                <p class="text-xs sm:text-sm text-emerald-100 mb-5">
-                                    Tặng ngay Balo Gaming + Chuột không dây + Gói bảo hành VIP 1 đổi 1 khi mua Laptop & PC trọn bộ trong tháng khai trương.
-                                </p>
-                                <div class="flex flex-wrap gap-3">
-                                    <a href="#flash-sale" class="px-5 py-2.5 rounded-lg bg-hk-orange hover:bg-hk-orangeDark text-white font-bold text-xs sm:text-sm shadow-md transition">
-                                        SĂN DEAL NGAY <i class="fa-solid fa-arrow-right ml-1"></i>
-                                    </a>
-                                    <a href="warranty.html" class="px-4 py-2.5 rounded-lg bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm backdrop-blur transition">
-                                        Tra cứu bảo hành
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-4 text-[11px] text-emerald-100 pt-3 border-t border-white/15">
-                                <span><i class="fa-solid fa-check-circle text-amber-300 mr-1"></i>Thanh toán VietQR SePay tự động</span>
-                                <span><i class="fa-solid fa-check-circle text-amber-300 mr-1"></i>Bảo hành điện tử 12-36 tháng</span>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2 -->
-                        <div class="hero-slide absolute inset-0 transition-opacity duration-500 opacity-0 pointer-events-none bg-gradient-to-br from-slate-900 via-slate-800 to-[#006B35] p-6 sm:p-9 flex flex-col justify-between text-white">
-                            <div class="max-w-lg">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-200 text-xs font-bold uppercase mb-3">
-                                    <i class="fa-solid fa-microchip"></i> WORKSTATION & GAMING 4K
-                                </span>
-                                <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-3 text-white">
-                                    BUILD PC RTX 4060 / 4070<br />CHIẾN MỌI TỰA GAME AAA
-                                </h2>
-                                <p class="text-xs sm:text-sm text-slate-300 mb-5">
-                                    Linh kiện chính hãng ASUS, MSI, Gigabyte. Cài đặt sẵn Windows bản quyền, kiểm tra nhiệt độ và tối ưu dây nguồn gọn gàng.
-                                </p>
-                                <a href="#pc-section" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-hk-orange hover:bg-hk-orangeDark text-white font-bold text-xs sm:text-sm shadow transition">
-                                    XEM CẤU HÌNH PC <i class="fa-solid fa-arrow-right ml-1.5"></i>
-                                </a>
-                            </div>
-                            <div class="text-[11px] text-slate-300 pt-3 border-t border-white/10">
-                                Hỗ trợ tư vấn cấu hình trực tiếp 24/7 cùng Trợ lý AI Phần cứng HK Computer
-                            </div>
-                        </div>
-
-                        <!-- Slide 3 -->
-                        <div class="hero-slide absolute inset-0 transition-opacity duration-500 opacity-0 pointer-events-none bg-gradient-to-br from-[#D95B10] via-[#F37021] to-[#7C2D12] p-6 sm:p-9 flex flex-col justify-between text-white">
-                            <div class="max-w-lg">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white text-hk-orange text-xs font-bold uppercase mb-3">
-                                    <i class="fa-solid fa-shield-halved"></i> AN TÂM TUYỆT ĐỐI
-                                </span>
-                                <h2 class="text-2xl sm:text-3xl font-extrabold leading-tight mb-3 text-white">
-                                    BẢO HÀNH ĐIỆN TỬ TỰ ĐỘNG<br />ĐỔI MỚI 1-1 TRONG 30 NGÀY
-                                </h2>
-                                <p class="text-xs sm:text-sm text-orange-50 mb-5">
-                                    Mọi đơn hàng hoàn tất tại HK Computer đều được cấp mã Serial bảo hành điện tử theo dõi tiến độ sửa chữa trực tuyến.
-                                </p>
-                                <a href="warranty.html" class="inline-flex items-center px-5 py-2.5 rounded-lg bg-hk-green hover:bg-hk-greenDark text-white font-bold text-xs sm:text-sm shadow transition">
-                                    TRA CỨU BẢO HÀNH NGAY
-                                </a>
-                            </div>
-                            <div class="text-[11px] text-orange-100 pt-3 border-t border-white/15">
-                                Miễn phí vệ sinh laptop & tra keo tản nhiệt định kỳ trọn đời máy
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Slider Arrows -->
-                    <button type="button" id="prevSlide" class="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/60 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100" aria-label="Slide trước">
-                        <i class="fa-solid fa-chevron-left text-xs"></i>
-                    </button>
-                    <button type="button" id="nextSlide" class="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/60 text-white flex items-center justify-center transition opacity-0 group-hover:opacity-100" aria-label="Slide tiếp">
-                        <i class="fa-solid fa-chevron-right text-xs"></i>
-                    </button>
-
-                    <!-- Slider Dots -->
-                    <div class="absolute bottom-3 right-4 flex items-center gap-1.5 z-10" id="sliderDots">
-                        <button type="button" class="slider-dot w-6 h-2 rounded-full bg-white transition-all" data-idx="0"></button>
-                        <button type="button" class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all" data-idx="1"></button>
-                        <button type="button" class="slider-dot w-2 h-2 rounded-full bg-white/50 transition-all" data-idx="2"></button>
-                    </div>
-                </div>
-
-                <!-- Cột Phải (25%): 2 Banner Phụ Xếp Chồng -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-                    <!-- Banner Phụ 1 -->
-                    <a href="support.html" class="bg-white rounded-lg p-5 border border-slate-200 shadow-sm hover:shadow-md hover:border-hk-green transition flex flex-col justify-between relative overflow-hidden">
-                        <div class="relative z-10">
-                            <span class="inline-block px-2.5 py-0.5 rounded bg-hk-greenLight text-hk-green text-[11px] font-bold uppercase mb-2">Ưu đãi nâng cấp</span>
-                            <h3 class="text-base font-extrabold text-slate-900 leading-snug">Thu cũ đổi mới<br /><span class="text-hk-orange">Trợ giá ngay 2 triệu</span></h3>
-                            <p class="text-xs text-slate-500 mt-1.5">Định giá laptop cũ trong 5 phút, lên đời máy mới siêu tiết kiệm.</p>
-                        </div>
-                        <div class="mt-3 text-xs font-bold text-hk-green flex items-center gap-1">
-                            <span>Đăng ký định giá</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </div>
-                        <i class="fa-solid fa-rotate text-6xl text-emerald-500/10 absolute -right-2 -bottom-2"></i>
-                    </a>
-
-                    <!-- Banner Phụ 2 -->
-                    <a href="#laptop-section" class="bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg p-5 border border-orange-200 shadow-sm hover:shadow-md hover:border-hk-orange transition flex flex-col justify-between relative overflow-hidden">
-                        <div class="relative z-10">
-                            <span class="inline-block px-2.5 py-0.5 rounded bg-hk-orange text-white text-[11px] font-bold uppercase mb-2">Tài chính linh hoạt</span>
-                            <h3 class="text-base font-extrabold text-slate-900 leading-snug">Trả góp 0% lãi suất<br /><span class="text-hk-green">Duyệt nhanh 15 phút</span></h3>
-                            <p class="text-xs text-slate-600 mt-1.5">Áp dụng thẻ tín dụng & CCCD, trả trước chỉ từ 0đ.</p>
-                        </div>
-                        <div class="mt-3 text-xs font-bold text-hk-orange flex items-center gap-1">
-                            <span>Xem máy trả góp 0%</span>
-                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
-                        </div>
-                        <i class="fa-solid fa-credit-card text-6xl text-hk-orange/10 absolute -right-2 -bottom-2"></i>
-                    </a>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== 4. THANH CAM KẾT (TRUST BADGES) ==================== -->
-        <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-            <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex items-center gap-3.5 hover:border-hk-green transition">
-                <div class="w-11 h-11 rounded-full bg-hk-greenLight text-hk-green flex items-center justify-center shrink-0 text-lg">
-                    <i class="fa-solid fa-certificate"></i>
-                </div>
-                <div>
-                    <div class="font-bold text-sm text-slate-900">Chính hãng 100%</div>
-                    <div class="text-xs text-slate-500">Full VAT, nguyên seal NSX</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex items-center gap-3.5 hover:border-hk-green transition">
-                <div class="w-11 h-11 rounded-full bg-hk-greenLight text-hk-green flex items-center justify-center shrink-0 text-lg">
-                    <i class="fa-solid fa-shield-halved"></i>
-                </div>
-                <div>
-                    <div class="font-bold text-sm text-slate-900">Bảo hành tận nơi</div>
-                    <div class="text-xs text-slate-500">Lỗi 1 đổi 1 tới 36 tháng</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex items-center gap-3.5 hover:border-hk-orange transition">
-                <div class="w-11 h-11 rounded-full bg-orange-50 text-hk-orange flex items-center justify-center shrink-0 text-lg">
-                    <i class="fa-solid fa-percent"></i>
-                </div>
-                <div>
-                    <div class="font-bold text-sm text-slate-900">Trả góp 0%</div>
-                    <div class="text-xs text-slate-500">Thủ tục online siêu tốc</div>
-                </div>
-            </div>
-            <div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm flex items-center gap-3.5 hover:border-hk-orange transition">
-                <div class="w-11 h-11 rounded-full bg-orange-50 text-hk-orange flex items-center justify-center shrink-0 text-lg">
-                    <i class="fa-solid fa-truck-fast"></i>
-                </div>
-                <div>
-                    <div class="font-bold text-sm text-slate-900">Giao hàng hỏa tốc 2h</div>
-                    <div class="text-xs text-slate-500">Miễn phí nội thành</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== 5. FLASH SALE / GIÁ SỐC HÔM NAY ==================== -->
-        <section id="flash-sale" class="rounded-xl bg-gradient-to-r from-[#FFF3EC] via-[#FFE9E4] to-[#FFF5EB] border-2 border-hk-orange p-4 sm:p-5 shadow-sm">
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-4 pb-3 border-b border-orange-200">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-hk-orange text-white flex items-center justify-center text-lg shadow-sm animate-pulse">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div>
+    <main class="container">
+        <!-- 1. Minimalist Hero -->
+        <section class="hero-minimal">
+            <div class="hero-grid">
+                <div class="hero-card">
                     <div>
-                        <h2 class="text-lg sm:text-xl font-extrabold text-red-600 uppercase tracking-tight flex items-center gap-2">
-                            FLASH SALE — GIÁ SỐC HÔM NAY
-                        </h2>
-                        <p class="text-xs text-slate-600">Số lượng có hạn • Áp dụng thanh toán VietQR SePay & VNPay</p>
+                        <span class="badge badge-success" style="margin-bottom: 12px;">Hệ thống 10 chi nhánh toàn quốc</span>
+                        <h1 style="font-size: var(--text-3xl); margin-bottom: 12px;">
+                            Máy tính chính hãng.<br />Sửa chữa &amp; Bảo hành tận tâm.
+                        </h1>
+                        <p style="font-size: var(--text-sm);">
+                            Mua sắm Laptop, PC Gaming, linh kiện chuẩn hãng với thanh toán VietQR SePay tự động — hoặc đặt lịch sửa chữa, vệ sinh, nâng cấp Laptop lấy ngay tại 10 chi nhánh HK COMPUTER.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="#catalog" class="btn btn-primary">Khám phá sản phẩm</a>
+                        <a href="#repair-center" class="btn btn-accent">Đặt lịch sửa chữa Laptop</a>
+                        <a href="warranty.html" class="btn btn-secondary">Tra cứu bảo hành</a>
                     </div>
                 </div>
 
-                <!-- Countdown Timer -->
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
-                    <span class="uppercase tracking-wide text-red-600">Kết thúc sau:</span>
-                    <div class="flex items-center gap-1 font-mono text-sm">
-                        <span id="fsHours" class="bg-slate-900 text-white px-2.5 py-1 rounded">04</span>
-                        <span class="text-red-600">:</span>
-                        <span id="fsMinutes" class="bg-slate-900 text-white px-2.5 py-1 rounded">38</span>
-                        <span class="text-red-600">:</span>
-                        <span id="fsSeconds" class="bg-hk-orange text-white px-2.5 py-1 rounded">59</span>
+                <div class="hero-metrics">
+                    <div class="mini-stat">
+                        <div class="mini-stat-title">Chính hãng 100%</div>
+                        <div class="mini-stat-desc">Xuất VAT đầy đủ, nguyên seal từ NSX.</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-title">Bảo hành điện tử</div>
+                        <div class="mini-stat-desc">Kích hoạt tự động 12–36 tháng, đổi mới 1-1.</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-title">Sửa lấy ngay 30–60p</div>
+                        <div class="mini-stat-desc">Xem trực tiếp kỹ thuật viên thao tác tại quầy.</div>
+                    </div>
+                    <div class="mini-stat">
+                        <div class="mini-stat-title">VietQR SePay &amp; VNPay</div>
+                        <div class="mini-stat-desc">Xác nhận thanh toán tự động sau 3 giây.</div>
                     </div>
                 </div>
             </div>
-
-            <!-- 5 Products Horizontal Grid -->
-            <div id="flashSaleGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"></div>
         </section>
 
-        <!-- ==================== 6. LIVE SYSTEM CATALOG (SYNCED WITH SPRING BOOT BE) ==================== -->
-        <section id="live-catalog" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 bg-hk-green rounded-full"></span>
-                    <h2 class="text-lg sm:text-xl font-extrabold text-hk-green uppercase">KHO HÀNG TRỰC TUYẾN (HỆ THỐNG)</h2>
-                    <span id="liveCountBadge" class="px-2.5 py-0.5 rounded-full bg-hk-greenLight text-hk-green text-xs font-bold">Đang đồng bộ...</span>
-                </div>
+        <!-- 2. Live Product Catalog -->
+        <section id="catalog">
+            <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+                <h2 style="font-size: var(--text-2xl);">Sản phẩm tại HK COMPUTER</h2>
+                <span id="catalogStatus" style="font-size: var(--text-xs); color: var(--text-secondary);">Đang tải...</span>
+            </div>
 
-                <div class="flex flex-wrap items-center gap-2">
-                    <select id="categoryFilter" class="h-9 px-3 rounded-lg border border-slate-300 text-xs font-medium bg-white focus:outline-none focus:border-hk-green">
+            <div class="catalog-toolbar">
+                <div class="toolbar-group">
+                    <select id="categoryFilter" class="select" style="width: auto; min-width: 170px;">
                         <option value="">Tất cả danh mục</option>
                     </select>
-                    <select id="brandFilter" class="h-9 px-3 rounded-lg border border-slate-300 text-xs font-medium bg-white focus:outline-none focus:border-hk-green">
+                    <select id="brandFilter" class="select" style="width: auto; min-width: 160px;">
                         <option value="">Tất cả thương hiệu</option>
                     </select>
-                    <button type="button" id="btnResetFilter" class="hidden h-9 px-3 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700">
-                        Xóa lọc
-                    </button>
+                    <button type="button" id="btnResetFilter" class="btn btn-secondary btn-sm" style="display: none;">Xóa lọc</button>
+                </div>
+
+                <div class="toolbar-group" style="flex: 1; justify-content: flex-end; min-width: 240px;">
+                    <input type="text" id="searchInput" class="input" style="max-width: 300px;" placeholder="Tìm tên laptop, VGA, linh kiện..." />
+                    <button type="button" id="btnSearch" class="btn btn-primary btn-sm">Tìm</button>
                 </div>
             </div>
 
-            <div id="liveProductsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"></div>
-            <div id="livePagination" class="flex justify-center gap-2 mt-5"></div>
+            <div id="productsGrid" class="products-grid"></div>
+            <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 16px;"></div>
         </section>
 
-        <!-- ==================== 7. BLOCK 1: LAPTOP BÁN CHẠY ==================== -->
-        <section id="laptop-section" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 bg-hk-green rounded-full"></span>
-                    <h2 class="text-lg sm:text-xl font-extrabold text-hk-green uppercase">LAPTOP BÁN CHẠY</h2>
-                </div>
-                <div class="flex flex-wrap items-center gap-1.5" id="laptopFilterTags">
-                    <button type="button" class="laptop-tag active px-3 py-1 rounded-full text-xs font-semibold bg-hk-green text-white transition" data-brand="ALL">Tất cả</button>
-                    <button type="button" class="laptop-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-brand="Dell">Dell</button>
-                    <button type="button" class="laptop-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-brand="Asus">Asus</button>
-                    <button type="button" class="laptop-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-brand="Lenovo">Lenovo</button>
-                    <button type="button" class="laptop-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-brand="HP">HP</button>
-                    <button type="button" class="laptop-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-brand="Acer">Acer</button>
-                    <a href="#live-catalog" class="ml-1 text-xs font-bold text-hk-orange hover:underline flex items-center gap-1">
-                        Xem tất cả <i class="fa-solid fa-angle-right"></i>
-                    </a>
-                </div>
+        <!-- 3. 10 Store Locations & Repair Appointment Booking -->
+        <section id="repair-center" class="repair-section">
+            <div style="margin-bottom: 24px;">
+                <span class="badge badge-info" style="margin-bottom: 8px;">Trung tâm Dịch vụ Kỹ thuật</span>
+                <h2 style="font-size: var(--text-2xl); margin-bottom: 6px;">Hệ thống 10 Cửa hàng &amp; Đặt lịch Sửa chữa Laptop</h2>
+                <p style="font-size: var(--text-sm);">
+                    Chọn chi nhánh gần nhất để mang máy tới kiểm tra miễn phí, vệ sinh tản nhiệt, nâng cấp RAM/SSD hoặc sửa chữa phần cứng lấy ngay.
+                </p>
             </div>
 
-            <div id="laptopGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"></div>
-        </section>
-
-        <!-- ==================== 8. BLOCK 2: PC GAMING - ĐỒ HỌA ==================== -->
-        <section id="pc-section" class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-5">
-            <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 bg-hk-orange rounded-full"></span>
-                    <h2 class="text-lg sm:text-xl font-extrabold text-hk-green uppercase">PC GAMING - ĐỒ HỌA</h2>
+            <div class="repair-grid">
+                <!-- Left: 10 Branches Locator -->
+                <div>
+                    <div id="cityFilterPills" style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;"></div>
+                    <div id="branchList" class="branch-scroll-list"></div>
                 </div>
-                <div class="flex flex-wrap items-center gap-1.5" id="pcFilterTags">
-                    <button type="button" class="pc-tag active px-3 py-1 rounded-full text-xs font-semibold bg-hk-green text-white transition" data-type="ALL">Tất cả</button>
-                    <button type="button" class="pc-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-type="RTX 4060">PC RTX 4060</button>
-                    <button type="button" class="pc-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-type="RTX 4070">PC RTX 4070</button>
-                    <button type="button" class="pc-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-type="Workstation">Workstation</button>
-                    <button type="button" class="pc-tag px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 hover:bg-hk-greenLight text-slate-700 transition" data-type="Văn phòng">PC Văn phòng</button>
-                    <a href="#live-catalog" class="ml-1 text-xs font-bold text-hk-orange hover:underline flex items-center gap-1">
-                        Xem tất cả <i class="fa-solid fa-angle-right"></i>
-                    </a>
+
+                <!-- Right: Repair Booking Form -->
+                <div class="card">
+                    <h3 style="font-size: var(--text-xl); margin-bottom: 4px;">Đặt lịch hẹn sửa chữa</h3>
+                    <p style="font-size: var(--text-xs); margin-bottom: 18px;">Đặt trước để được ưu tiên tiếp nhận ngay khi đến cửa hàng, không phải chờ đợi.</p>
+
+                    <form id="repairBookingForm">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="repairName">Họ và tên *</label>
+                                <input type="text" id="repairName" class="input" placeholder="Nguyễn Văn A" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="repairPhone">Số điện thoại *</label>
+                                <input type="tel" id="repairPhone" class="input tabular-nums" placeholder="09xxxxxxxx" required />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="repairEmail">Email nhận xác nhận (Tùy chọn)</label>
+                            <input type="email" id="repairEmail" class="input" placeholder="email@gmail.com" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="repairBranch">Chi nhánh tiếp nhận *</label>
+                            <select id="repairBranch" class="select" required></select>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="repairDevice">Tên máy / Model *</label>
+                                <input type="text" id="repairDevice" class="input" placeholder="VD: Dell XPS 15 / MacBook Air M2" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="repairService">Dịch vụ yêu cầu *</label>
+                                <select id="repairService" class="select" required>
+                                    <option value="Vệ sinh máy & Tra keo tản nhiệt">Vệ sinh máy &amp; Tra keo tản nhiệt</option>
+                                    <option value="Nâng cấp RAM / Ổ cứng SSD">Nâng cấp RAM / Ổ cứng SSD</option>
+                                    <option value="Sửa chữa phần cứng / Nguồn / Mainboard">Sửa chữa phần cứng / Nguồn / Mainboard</option>
+                                    <option value="Thay Pin / Màn hình / Bàn phím">Thay Pin / Màn hình / Bàn phím</option>
+                                    <option value="Cài đặt Windows / Phần mềm đồ họa">Cài đặt Windows / Phần mềm đồ họa</option>
+                                    <option value="Kiểm tra & Tiếp nhận bảo hành">Kiểm tra &amp; Tiếp nhận bảo hành</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label" for="repairDate">Ngày hẹn *</label>
+                                <input type="date" id="repairDate" class="input tabular-nums" required />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="repairTime">Khung giờ *</label>
+                                <select id="repairTime" class="select" required>
+                                    <option value="08:30 - 10:00">08:30 - 10:00</option>
+                                    <option value="10:00 - 11:30">10:00 - 11:30</option>
+                                    <option value="13:30 - 15:30">13:30 - 15:30</option>
+                                    <option value="15:30 - 17:30">15:30 - 17:30</option>
+                                    <option value="17:30 - 20:00">17:30 - 20:00</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="repairIssue">Mô tả tình trạng máy (Tùy chọn)</label>
+                            <textarea id="repairIssue" class="textarea" rows="3" placeholder="VD: Máy nóng nhanh, quạt kêu to hoặc sạc không vào pin..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmitRepair" class="btn btn-accent btn-lg" style="width: 100%;">
+                            Xác nhận đặt lịch sửa chữa
+                        </button>
+                    </form>
+
+                    <div id="bookingReceipt" class="receipt-box"></div>
                 </div>
-            </div>
-
-            <div id="pcGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4"></div>
-        </section>
-
-        <!-- ==================== 9. TIN TỨC CÔNG NGHỆ & TƯ VẤN CHỌN MUA ==================== -->
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-4 sm:p-5">
-            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-200">
-                <div class="flex items-center gap-2.5">
-                    <span class="w-1.5 h-6 bg-hk-green rounded-full"></span>
-                    <h2 class="text-lg sm:text-xl font-extrabold text-hk-green uppercase">TIN TỨC CÔNG NGHỆ & TƯ VẤN CHỌN MUA</h2>
-                </div>
-                <a href="support.html" class="text-xs font-bold text-hk-orange hover:underline">Hỏi đáp kỹ thuật <i class="fa-solid fa-angle-right"></i></a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <article class="group rounded-lg border border-slate-200 overflow-hidden hover:shadow-md transition bg-white flex flex-col">
-                    <div class="aspect-video overflow-hidden bg-slate-100">
-                        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500&q=80" alt="Chọn laptop văn phòng" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-                    </div>
-                    <div class="p-3.5 flex-1 flex flex-col">
-                        <span class="text-[11px] font-bold text-hk-green uppercase mb-1">Tư vấn chọn mua</span>
-                        <h3 class="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-hk-orange transition mb-1.5">
-                            Top 5 Laptop Văn phòng pin trâu, mỏng nhẹ đáng mua nhất năm 2026
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 mt-auto">So sánh chi tiết Dell XPS, ThinkPad X1 Carbon và MacBook Air M3 cho dân văn phòng & lập trình viên.</p>
-                    </div>
-                </article>
-
-                <article class="group rounded-lg border border-slate-200 overflow-hidden hover:shadow-md transition bg-white flex flex-col">
-                    <div class="aspect-video overflow-hidden bg-slate-100">
-                        <img src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80" alt="Build PC RTX 4060" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-                    </div>
-                    <div class="p-3.5 flex-1 flex flex-col">
-                        <span class="text-[11px] font-bold text-hk-orange uppercase mb-1">Build PC Gaming</span>
-                        <h3 class="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-hk-orange transition mb-1.5">
-                            Cấu hình PC RTX 4060 tối ưu dưới 20 triệu: Chiến mượt mọi game 2K
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 mt-auto">Hướng dẫn phối ghép Core i5-13400F cùng VGA RTX 4060 và nguồn chuẩn 80 Plus Bronze.</p>
-                    </div>
-                </article>
-
-                <article class="group rounded-lg border border-slate-200 overflow-hidden hover:shadow-md transition bg-white flex flex-col">
-                    <div class="aspect-video overflow-hidden bg-slate-100">
-                        <img src="https://images.unsplash.com/photo-1591799264318-7e6ef8ddb7ea?w=500&q=80" alt="Nâng cấp RAM SSD" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-                    </div>
-                    <div class="p-3.5 flex-1 flex flex-col">
-                        <span class="text-[11px] font-bold text-hk-green uppercase mb-1">Thủ thuật phần cứng</span>
-                        <h3 class="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-hk-orange transition mb-1.5">
-                            Khi nào cần nâng cấp RAM 32GB và SSD NVMe Gen 4 cho Laptop?
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 mt-auto">Nhận biết dấu hiệu nghẽn cổ chai phần cứng và cách kiểm tra khe cắm tương thích miễn phí tại HK Computer.</p>
-                    </div>
-                </article>
-
-                <article class="group rounded-lg border border-slate-200 overflow-hidden hover:shadow-md transition bg-white flex flex-col">
-                    <div class="aspect-video overflow-hidden bg-slate-100">
-                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=500&q=80" alt="Bảo hành điện tử HK Computer" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy" />
-                    </div>
-                    <div class="p-3.5 flex-1 flex flex-col">
-                        <span class="text-[11px] font-bold text-hk-orange uppercase mb-1">Chính sách dịch vụ</span>
-                        <h3 class="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-hk-orange transition mb-1.5">
-                            Hướng dẫn tra cứu phiếu Bảo hành điện tử & thanh toán QR SePay tại HK Computer
-                        </h3>
-                        <p class="text-xs text-slate-500 line-clamp-2 mt-auto">Không cần giữ hóa đơn giấy — tra cứu Serial điện tử chỉ trong 3 giây mọi lúc mọi nơi.</p>
-                    </div>
-                </article>
             </div>
         </section>
     </main>
 
-    <!-- ==================== 10. FOOTER 4 CỘT ==================== -->
-    <footer id="footer-showrooms" class="bg-[#0F172A] text-slate-300 pt-10 pb-6 mt-10 border-t-4 border-hk-green">
-        <div class="max-w-[1280px] mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 pb-8 border-b border-slate-800">
-            <!-- Cột 1 -->
-            <div>
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="text-xl font-extrabold text-emerald-400">HK</span>
-                    <span class="text-xl font-extrabold text-hk-orange">COMPUTER</span>
-                </div>
-                <p class="text-xs leading-relaxed text-slate-400 mb-3">
-                    Hệ thống bán lẻ Laptop, PC Gaming, Workstation & Linh kiện máy tính chính hãng hàng đầu Việt Nam.
-                </p>
-                <div class="text-xs space-y-1.5 text-slate-300 mb-4">
-                    <div><i class="fa-solid fa-location-dot text-hk-orange mr-1.5"></i>Showroom 1: 123 Thái Hà, Đống Đa, Hà Nội</div>
-                    <div><i class="fa-solid fa-location-dot text-hk-orange mr-1.5"></i>Showroom 2: 456 CMT8, Quận 10, TP.HCM</div>
-                </div>
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded bg-blue-900/50 border border-blue-500/40 text-blue-200 text-[11px] font-semibold">
-                    <i class="fa-solid fa-circle-check text-blue-400"></i>
-                    <span>ĐÃ THÔNG BÁO BỘ CÔNG THƯƠNG</span>
-                </div>
-            </div>
+    <!-- Shared Minimalist Footer -->
+    <footer id="appFooter"></footer>
 
-            <!-- Cột 2 -->
-            <div>
-                <h4 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Chính sách khách hàng</h4>
-                <ul class="space-y-2 text-xs">
-                    <li><a href="warranty.html" class="hover:text-hk-orange transition">Chính sách bảo hành 1 đổi 1</a></li>
-                    <li><a href="warranty.html" class="hover:text-hk-orange transition">Chính sách đổi trả trong 15 ngày</a></li>
-                    <li><a href="support.html" class="hover:text-hk-orange transition">Chính sách vận chuyển hỏa tốc 2h</a></li>
-                    <li><a href="support.html" class="hover:text-hk-orange transition">Chính sách bảo mật thông tin</a></li>
-                    <li><a href="admin-product.html" class="hover:text-emerald-400 transition">Cổng quản trị hệ thống (Admin)</a></li>
-                </ul>
-            </div>
-
-            <!-- Cột 3 -->
-            <div>
-                <h4 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Tổng đài hỗ trợ miễn phí</h4>
-                <ul class="space-y-2.5 text-xs">
-                    <li class="flex items-center justify-between bg-slate-800/70 px-3 py-2 rounded">
-                        <span>Tư vấn mua hàng:</span>
-                        <a href="tel:18006889" class="font-mono font-bold text-hk-orange">1800 6889</a>
-                    </li>
-                    <li class="flex items-center justify-between bg-slate-800/70 px-3 py-2 rounded">
-                        <span>Hỗ trợ kỹ thuật & BH:</span>
-                        <a href="tel:18006890" class="font-mono font-bold text-emerald-400">1800 6890</a>
-                    </li>
-                    <li class="flex items-center justify-between bg-slate-800/70 px-3 py-2 rounded">
-                        <span>Khiếu nại & Góp ý:</span>
-                        <a href="tel:18006891" class="font-mono font-bold text-amber-300">1800 6891</a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Cột 4 -->
-            <div>
-                <h4 class="text-sm font-bold text-white uppercase tracking-wide mb-3">Kết nối & Thanh toán</h4>
-                <div class="flex items-center gap-3 mb-5">
-                    <a href="#" class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center transition" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
-                    <a href="#" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white flex items-center justify-center transition" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
-                </div>
-                <div class="text-xs font-semibold text-slate-400 mb-2">Phương thức thanh toán hỗ trợ:</div>
-                <div class="flex flex-wrap gap-2 text-[11px] font-semibold">
-                    <span class="px-2.5 py-1 rounded bg-white text-slate-900 flex items-center gap-1"><i class="fa-brands fa-cc-visa text-blue-700"></i> Visa</span>
-                    <span class="px-2.5 py-1 rounded bg-white text-slate-900 flex items-center gap-1"><i class="fa-brands fa-cc-mastercard text-red-600"></i> Mastercard</span>
-                    <span class="px-2.5 py-1 rounded bg-hk-green text-white">VietQR SePay</span>
-                    <span class="px-2.5 py-1 rounded bg-slate-700 text-white">Tiền mặt</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-[1280px] mx-auto px-4 pt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
-            <div>© 2026 <strong class="text-slate-300">HK COMPUTER</strong>. Bảo lưu mọi quyền.</div>
-            <div>Thiết kế tối ưu cho Thương mại điện tử Công nghệ Việt Nam.</div>
-        </div>
-    </footer>
-
-    <!-- ==================== 11. FLOATING UTILITIES (BOTTOM RIGHT) ==================== -->
-    <div id="hk-floating-dock" class="fixed bottom-5 right-4 z-50 flex flex-col items-end gap-2.5">
-        <button type="button" id="btnTriggerAiChat" class="w-12 h-12 rounded-full bg-hk-green hover:bg-hk-greenDark text-white shadow-lg flex items-center justify-center transition transform hover:scale-105" title="Trợ lý AI Tư vấn cấu hình">
-            <i class="fa-solid fa-robot text-lg"></i>
-        </button>
-        <a href="tel:18006889" class="w-12 h-12 rounded-full bg-hk-orange hover:bg-hk-orangeDark text-white shadow-lg flex items-center justify-center transition transform hover:scale-105" title="Gọi Hotline 1800 6889">
-            <i class="fa-solid fa-phone-volume text-lg"></i>
-        </a>
-        <a href="https://zalo.me" target="_blank" rel="noopener" class="w-12 h-12 rounded-full bg-[#0068FF] hover:bg-blue-700 text-white shadow-lg flex items-center justify-center font-extrabold text-xs transition transform hover:scale-105" title="Chat Zalo">
-            Zalo
-        </a>
-        <a href="https://m.me" target="_blank" rel="noopener" class="w-12 h-12 rounded-full bg-[#0084FF] hover:bg-blue-600 text-white shadow-lg flex items-center justify-center transition transform hover:scale-105" title="Chat Messenger">
-            <i class="fa-brands fa-facebook-messenger text-xl"></i>
-        </a>
-        <button type="button" id="btnBackToTop" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-900 text-white shadow-lg flex items-center justify-center transition opacity-0 pointer-events-none" title="Lên đầu trang">
-            <i class="fa-solid fa-arrow-up"></i>
-        </button>
-    </div>
-
-    <!-- ==================== SCRIPTS ==================== -->
-    <script type="module">
-        import { api } from './assets/js/api.js';
-        import { auth } from './assets/js/auth.js';
-        import { cart } from './assets/js/cart.js';
-        import { CONFIG } from './assets/js/config.js';
-        import './assets/js/chat-widget.js?v=2';
-
-        // ---------- 1. MOCK SHOWCASE DATA (VIETNAMESE REALISTIC TECH DATA) ----------
-        const FLASH_SALE_PRODUCTS = [
-            { id: 101, name: 'Laptop ASUS ROG Strix G16 G614JU RTX 4050', specs: 'i7-13650HX | 16GB | 512GB | 165Hz', price: 27990000, oldPrice: 33990000, discount: '-18%', rating: '4.9', sold: 'Đã bán 14/20', image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80' },
-            { id: 102, name: 'Apple MacBook Air 13 inch M3 2024 (8GB/256GB)', specs: 'Apple M3 | 8GB | 256GB | Liquid Retina', price: 24490000, oldPrice: 27990000, discount: '-13%', rating: '5.0', sold: 'Đã bán 18/25', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80' },
-            { id: 103, name: 'PC HK Gaming Sniper RTX 4060 8GB White', specs: 'i5-13400F | 16GB | 500GB | RTX 4060', price: 18490000, oldPrice: 21990000, discount: '-16%', rating: '4.9', sold: 'Đã bán 9/15', image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80' },
-            { id: 104, name: 'Laptop Dell XPS 13 9340 Core Ultra 7 OLED', specs: 'Ultra 7-155H | 16GB | 512GB | 3K OLED', price: 36990000, oldPrice: 43500000, discount: '-15%', rating: '4.8', sold: 'Đã bán 6/10', image: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500&q=80' },
-            { id: 105, name: 'VGA ASUS Dual GeForce RTX 4060 OC 8GB GDDR6', specs: '8GB GDDR6 | 128-bit | PCIe 4.0 | Dual Fan', price: 7890000, oldPrice: 9500000, discount: '-17%', rating: '4.9', sold: 'Đã bán 22/30', image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&q=80' }
-        ];
-
-        const LAPTOP_PRODUCTS = [
-            { id: 201, brand: 'Dell', category: 'office', name: 'Laptop Dell Inspiron 15 3530 Core i5-1335U', specs: 'i5-1335U | 16GB | 512GB | 15.6" FHD 120Hz', price: 14990000, oldPrice: 17590000, discount: '-15%', rating: '4.9', image: 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=500&q=80' },
-            { id: 202, brand: 'Asus', category: 'gaming', name: 'Laptop ASUS TUF Gaming A15 FA507NU RTX 4050', specs: 'R7-7735HS | 16GB | 512GB | RTX 4050', price: 22490000, oldPrice: 25990000, discount: '-13%', rating: '4.9', image: 'https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500&q=80' },
-            { id: 203, brand: 'Lenovo', category: 'office', name: 'Laptop Lenovo ThinkPad X1 Carbon Gen 11', specs: 'i7-1355U | 16GB | 512GB | 14" WUXGA', price: 32990000, oldPrice: 38990000, discount: '-15%', rating: '5.0', image: 'https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=500&q=80' },
-            { id: 204, brand: 'HP', category: 'office', name: 'Laptop HP Pavilion 15 eg3093TU Gold', specs: 'i5-1335U | 16GB | 512GB | 15.6" FHD', price: 15890000, oldPrice: 18490000, discount: '-14%', rating: '4.8', image: 'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=500&q=80' },
-            { id: 205, brand: 'Acer', category: 'gaming', name: 'Laptop Acer Nitro 5 Tiger AN515-58 RTX 3050', specs: 'i5-12500H | 16GB | 512GB | 144Hz', price: 17990000, oldPrice: 21490000, discount: '-16%', rating: '4.8', image: 'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=500&q=80' },
-            { id: 206, brand: 'Dell', category: 'office', name: 'Laptop Dell XPS 15 9530 Creator Studio', specs: 'i7-13700H | 32GB | 1TB | RTX 4060', price: 46990000, oldPrice: 52990000, discount: '-11%', rating: '5.0', image: 'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=500&q=80' },
-            { id: 207, brand: 'Asus', category: 'office', name: 'Laptop ASUS Zenbook 14 OLED UX3405MA', specs: 'Ultra 5-125H | 16GB | 512GB | 3K OLED', price: 24990000, oldPrice: 28990000, discount: '-14%', rating: '4.9', image: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=500&q=80' },
-            { id: 208, brand: 'Lenovo', category: 'gaming', name: 'Laptop Lenovo Legion Slim 5 16APH8', specs: 'R7-7840HS | 16GB | 512GB | RTX 4060', price: 31490000, oldPrice: 36990000, discount: '-15%', rating: '4.9', image: 'https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=500&q=80' },
-            { id: 209, brand: 'HP', category: 'gaming', name: 'Laptop HP Victus 16 r0225TX Gaming', specs: 'i5-13500H | 16GB | 512GB | RTX 4050', price: 21890000, oldPrice: 25490000, discount: '-14%', rating: '4.8', image: 'https://images.unsplash.com/photo-1602080858428-57174f9431cf?w=500&q=80' },
-            { id: 210, brand: 'Apple', category: 'macbook', name: 'MacBook Pro 14 M3 Pro 18GB/512GB Space Black', specs: 'M3 Pro | 18GB | 512GB | 120Hz XDR', price: 46990000, oldPrice: 49990000, discount: '-6%', rating: '5.0', image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500&q=80' }
-        ];
-
-        const PC_PRODUCTS = [
-            { id: 301, type: 'RTX 4060', name: 'PC Gaming HK BattleStar i5-13400F / RTX 4060', specs: 'i5-13400F | 16GB | 500GB NVMe | RTX 4060', price: 18990000, oldPrice: 21990000, discount: '-14%', rating: '4.9', image: 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80' },
-            { id: 302, type: 'RTX 4070', name: 'PC Gaming HK UltraVision i7-14700K / RTX 4070 Super', specs: 'i7-14700K | 32GB DDR5 | 1TB | RTX 4070S', price: 37990000, oldPrice: 42990000, discount: '-12%', rating: '5.0', image: 'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?w=500&q=80' },
-            { id: 303, type: 'Workstation', name: 'PC Workstation HK Render Pro Ryzen 9 7950X', specs: 'R9-7950X | 64GB DDR5 | 2TB | RTX 4070 Ti', price: 54990000, oldPrice: 61500000, discount: '-11%', rating: '4.9', image: 'https://images.unsplash.com/photo-1591488320449-011701bb6704?w=500&q=80' },
-            { id: 304, type: 'RTX 4060', name: 'PC Gaming HK Cyber White R5 7500F / RTX 4060', specs: 'R5-7500F | 16GB DDR5 | 512GB | RTX 4060', price: 19490000, oldPrice: 22490000, discount: '-13%', rating: '4.8', image: 'https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=500&q=80' },
-            { id: 305, type: 'Văn phòng', name: 'PC Văn phòng HK Office Pro Core i3-12100', specs: 'i3-12100 | 16GB | 256GB NVMe | Wifi AC', price: 6990000, oldPrice: 8290000, discount: '-16%', rating: '4.8', image: 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=500&q=80' }
-        ];
-
-        const formatVnd = (n) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n || 0);
-
-        // ---------- 2. PRODUCT CARD RENDERER ----------
-        function renderProductCard(p, showSold = false, isLiveBackend = false) {
-            const name = p.nameProduct || p.name;
-            const price = p.price || 0;
-            const oldPrice = p.oldPrice || Math.round(price * 1.15);
-            const discount = p.discount || '-15%';
-            const rating = p.rating || '4.9';
-            const specs = p.specs || 'Chính hãng | Bảo hành 24 tháng';
-            const img = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80';
-            const detailHref = isLiveBackend ? `detailproductuser.html?id=${p.id}` : '#';
-
-            return `
-                <div class="group bg-white rounded-lg border border-slate-200 p-3 flex flex-col justify-between hover:shadow-md hover:border-hk-green transition relative">
-                    <div>
-                        <!-- Top Badges -->
-                        <div class="flex items-center justify-between gap-1 mb-2">
-                            <span class="px-2 py-0.5 rounded bg-emerald-50 border border-emerald-200 text-hk-green text-[10px] font-bold">Trả góp 0%</span>
-                            <span class="px-2 py-0.5 rounded bg-red-600 text-white text-[10px] font-bold">${discount}</span>
-                        </div>
-
-                        <!-- Image with Hover Zoom -->
-                        <a href="${detailHref}" class="block aspect-[4/3] bg-slate-50 rounded-md overflow-hidden mb-2.5 flex items-center justify-center p-2">
-                            <img src="${img}" alt="${name}" loading="lazy" class="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
-                        </a>
-
-                        <!-- Title (Max 2 lines) -->
-                        <a href="${detailHref}" class="block text-xs sm:text-[13px] font-bold text-slate-900 line-clamp-2 min-h-[36px] group-hover:text-hk-green transition mb-1.5" title="${name}">
-                            ${name}
-                        </a>
-
-                        <!-- Specs Tag Box -->
-                        <div class="bg-slate-100 text-slate-600 rounded px-2 py-1 text-[10px] font-mono truncate mb-2" title="${specs}">
-                            ${specs}
-                        </div>
-                    </div>
-
-                    <div>
-                        <!-- Price -->
-                        <div class="flex items-baseline gap-2 flex-wrap mb-1.5">
-                            <span class="text-sm sm:text-base font-extrabold text-red-600 font-mono">${formatVnd(price)}</span>
-                            <span class="text-[11px] text-slate-400 line-through font-mono">${formatVnd(oldPrice)}</span>
-                        </div>
-
-                        ${showSold ? `
-                            <div class="w-full bg-orange-100 rounded-full h-4 mb-2 relative overflow-hidden">
-                                <div class="bg-hk-orange h-full rounded-full" style="width: 72%"></div>
-                                <span class="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-slate-900">${p.sold || 'Đang bán chạy'}</span>
-                            </div>
-                        ` : ''}
-
-                        <!-- Rating & Buy Now CTA -->
-                        <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                            <span class="text-[11px] font-semibold text-amber-500 flex items-center gap-1">
-                                <i class="fa-solid fa-star"></i>
-                                <span class="text-slate-700">${rating}/5</span>
-                            </span>
-                            <button type="button"
-                                class="btn-buy-now px-2.5 py-1.5 rounded bg-hk-orange hover:bg-hk-orangeDark text-white text-[11px] font-bold transition shadow-sm"
-                                data-id="${p.id}"
-                                data-name="${name.replace(/"/g, '&quot;')}"
-                                data-price="${price}"
-                                data-img="${img}">
-                                MUA NGAY
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function bindBuyButtons(container) {
-            container.querySelectorAll('.btn-buy-now').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    cart.addItem({
-                        id: btn.dataset.id,
-                        name: btn.dataset.name,
-                        price: parseFloat(btn.dataset.price) || 0,
-                        image: btn.dataset.img
-                    }, 1);
-                });
-            });
-        }
-
-        // ---------- 3. HERO SLIDER ----------
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.hero-slide');
-        const dots = document.querySelectorAll('.slider-dot');
-
-        function goToSlide(idx) {
-            currentSlide = (idx + slides.length) % slides.length;
-            slides.forEach((s, i) => {
-                s.classList.toggle('opacity-100', i === currentSlide);
-                s.classList.toggle('opacity-0', i !== currentSlide);
-                s.classList.toggle('pointer-events-none', i !== currentSlide);
-            });
-            dots.forEach((d, i) => {
-                d.classList.toggle('w-6', i === currentSlide);
-                d.classList.toggle('w-2', i !== currentSlide);
-                d.classList.toggle('bg-white', i === currentSlide);
-                d.classList.toggle('bg-white/50', i !== currentSlide);
-            });
-        }
-
-        document.getElementById('prevSlide')?.addEventListener('click', () => goToSlide(currentSlide - 1));
-        document.getElementById('nextSlide')?.addEventListener('click', () => goToSlide(currentSlide + 1));
-        dots.forEach(d => d.addEventListener('click', () => goToSlide(Number(d.dataset.idx))));
-        setInterval(() => goToSlide(currentSlide + 1), 5500);
-
-        // ---------- 4. FLASH SALE COUNTDOWN ----------
-        let remainingSeconds = 4 * 3600 + 38 * 60 + 59;
-        setInterval(() => {
-            if (remainingSeconds <= 0) remainingSeconds = 5 * 3600;
-            remainingSeconds--;
-            const h = String(Math.floor(remainingSeconds / 3600)).padStart(2, '0');
-            const m = String(Math.floor((remainingSeconds % 3600) / 60)).padStart(2, '0');
-            const s = String(remainingSeconds % 60).padStart(2, '0');
-            document.getElementById('fsHours').textContent = h;
-            document.getElementById('fsMinutes').textContent = m;
-            document.getElementById('fsSeconds').textContent = s;
-        }, 1000);
-
-        // ---------- 5. RENDER CURATED SHOWCASE BLOCKS ----------
-        function renderFlashSale() {
-            const el = document.getElementById('flashSaleGrid');
-            el.innerHTML = FLASH_SALE_PRODUCTS.map(p => renderProductCard(p, true, false)).join('');
-            bindBuyButtons(el);
-        }
-
-        function renderLaptops(brandFilter = 'ALL') {
-            const el = document.getElementById('laptopGrid');
-            const list = brandFilter === 'ALL'
-                ? LAPTOP_PRODUCTS
-                : LAPTOP_PRODUCTS.filter(p => p.brand.toLowerCase() === brandFilter.toLowerCase());
-            el.innerHTML = list.map(p => renderProductCard(p, false, false)).join('');
-            bindBuyButtons(el);
-        }
-
-        function renderPCs(typeFilter = 'ALL') {
-            const el = document.getElementById('pcGrid');
-            const list = typeFilter === 'ALL'
-                ? PC_PRODUCTS
-                : PC_PRODUCTS.filter(p => p.type.toLowerCase() === typeFilter.toLowerCase());
-            el.innerHTML = list.map(p => renderProductCard(p, false, false)).join('');
-            bindBuyButtons(el);
-        }
-
-        document.querySelectorAll('.laptop-tag').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.laptop-tag').forEach(b => {
-                    b.classList.remove('bg-hk-green', 'text-white');
-                    b.classList.add('bg-slate-100', 'text-slate-700');
-                });
-                btn.classList.add('bg-hk-green', 'text-white');
-                btn.classList.remove('bg-slate-100', 'text-slate-700');
-                renderLaptops(btn.dataset.brand);
-            });
-        });
-
-        document.querySelectorAll('.pc-tag').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.pc-tag').forEach(b => {
-                    b.classList.remove('bg-hk-green', 'text-white');
-                    b.classList.add('bg-slate-100', 'text-slate-700');
-                });
-                btn.classList.add('bg-hk-green', 'text-white');
-                btn.classList.remove('bg-slate-100', 'text-slate-700');
-                renderPCs(btn.dataset.type);
-            });
-        });
-
-        // ---------- 6. LIVE SPRING BOOT BACKEND SYNC ----------
-        let currentPage = 0;
-        let selectedCategory = '';
-        let selectedBrand = '';
-        let searchQuery = '';
-
-        const liveGrid = document.getElementById('liveProductsGrid');
-        const livePagination = document.getElementById('livePagination');
-        const liveCountBadge = document.getElementById('liveCountBadge');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const brandFilter = document.getElementById('brandFilter');
-        const btnResetFilter = document.getElementById('btnResetFilter');
-
-        async function loadBackendFilters() {
-            try {
-                const [cats, brands] = await Promise.all([
-                    api.get(CONFIG.ENDPOINTS.CATEGORIES.LIST),
-                    api.get(CONFIG.ENDPOINTS.BRANDS.LIST)
-                ]);
-                if (Array.isArray(cats)) {
-                    categoryFilter.innerHTML = '<option value="">Tất cả danh mục</option>' +
-                        cats.map(c => `<option value="${c.id}">${c.nameCategories || c.name}</option>`).join('');
-                }
-                if (Array.isArray(brands)) {
-                    brandFilter.innerHTML = '<option value="">Tất cả thương hiệu</option>' +
-                        brands.map(b => `<option value="${b.id}">${b.nameBrands || b.name}</option>`).join('');
-                }
-            } catch (_) {}
-        }
-
-        async function loadLiveProducts(page = 0) {
-            currentPage = page;
-            try {
-                let endpoint = CONFIG.ENDPOINTS.PRODUCTS.LIST;
-                const params = { page_no: page, page_size: 10, sortBy: 'id', sortDir: 'desc' };
-
-                if (searchQuery) {
-                    endpoint = CONFIG.ENDPOINTS.PRODUCTS.SEARCH;
-                    params.nameProduct = searchQuery;
-                } else if (selectedCategory && selectedBrand) {
-                    endpoint = CONFIG.ENDPOINTS.PRODUCTS.BY_CAT_AND_BRAND(selectedCategory, selectedBrand);
-                } else if (selectedCategory) {
-                    endpoint = CONFIG.ENDPOINTS.PRODUCTS.BY_CATEGORY(selectedCategory);
-                } else if (selectedBrand) {
-                    endpoint = CONFIG.ENDPOINTS.PRODUCTS.BY_BRAND(selectedBrand);
-                }
-
-                const res = await api.get(endpoint, params);
-                const pageObj = res?.products || res;
-                const items = pageObj?.content || (Array.isArray(pageObj) ? pageObj : []);
-                const totalPages = pageObj?.totalPages || 0;
-                const totalElements = pageObj?.totalElements ?? items.length;
-
-                liveCountBadge.textContent = `${totalElements} sản phẩm sẵn hàng`;
-                btnResetFilter.classList.toggle('hidden', !(selectedCategory || selectedBrand || searchQuery));
-
-                if (!items.length) {
-                    liveGrid.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-500">Không tìm thấy sản phẩm phù hợp trên hệ thống.</div>`;
-                    livePagination.innerHTML = '';
-                    return;
-                }
-
-                liveGrid.innerHTML = items.map(p => renderProductCard(p, false, true)).join('');
-                bindBuyButtons(liveGrid);
-
-                livePagination.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
-                    `<button type="button" class="px-3 py-1 rounded text-xs font-bold ${i === page ? 'bg-hk-green text-white' : 'bg-slate-100 text-slate-700'}" data-page="${i}">${i + 1}</button>`
-                ).join('') : '';
-                livePagination.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadLiveProducts(Number(b.dataset.page))));
-            } catch (_) {
-                liveCountBadge.textContent = 'Chế độ trưng bày Offline';
-                liveGrid.innerHTML = `<div class="col-span-full text-center py-6 text-xs text-slate-500">Server Backend (cổng 8080) chưa bật — Bạn vẫn có thể xem toàn bộ danh mục sản phẩm mẫu ở bên dưới.</div>`;
-            }
-        }
-
-        categoryFilter.addEventListener('change', () => { selectedCategory = categoryFilter.value; searchQuery = ''; loadLiveProducts(0); });
-        brandFilter.addEventListener('change', () => { selectedBrand = brandFilter.value; searchQuery = ''; loadLiveProducts(0); });
-        btnResetFilter.addEventListener('click', () => {
-            selectedCategory = ''; selectedBrand = ''; searchQuery = '';
-            categoryFilter.value = ''; brandFilter.value = '';
-            document.getElementById('searchInput').value = '';
-            loadLiveProducts(0);
-        });
-
-        function handleSearchSubmit(q) {
-            searchQuery = q.trim();
-            loadLiveProducts(0);
-            document.getElementById('live-catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        document.getElementById('headerSearchForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            handleSearchSubmit(document.getElementById('searchInput').value);
-        });
-        document.getElementById('mobileSearchForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            handleSearchSubmit(document.getElementById('mobileSearchInput').value);
-        });
-
-        // ---------- 7. FLOATING UTILITIES & INIT ----------
-        document.getElementById('btnTriggerAiChat')?.addEventListener('click', () => {
-            document.getElementById('btnToggleAi')?.click();
-        });
-
-        const btnTop = document.getElementById('btnBackToTop');
-        window.addEventListener('scroll', () => {
-            const show = window.scrollY > 350;
-            btnTop.classList.toggle('opacity-0', !show);
-            btnTop.classList.toggle('pointer-events-none', !show);
-        });
-        btnTop?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-        document.addEventListener('DOMContentLoaded', () => {
-            auth.initHeaderNav();
-            cart.updateHeaderBadge();
-            renderFlashSale();
-            renderLaptops('ALL');
-            renderPCs('ALL');
-            loadBackendFilters();
-            loadLiveProducts(0);
-        });
-    </script>
+    <script type="module" src="./assets/js/home.js"></script>
 </body>
 </html>
