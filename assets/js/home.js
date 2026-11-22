@@ -7,8 +7,8 @@ import { auth } from './auth.js';
 import { cart } from './cart.js';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
-import { initStoreLayout } from './layout.js?v=5';
-import './chat-widget.js?v=5';
+import { initStoreLayout } from './layout.js?v=6';
+import './chat-widget.js?v=6';
 
 let currentPage = 0;
 const pageSize = 10;

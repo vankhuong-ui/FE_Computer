@@ -3,7 +3,7 @@
  * Bento grids, cards, buttons, badges, tables & micro-interactions
  */
 
-@import url('./tokens.css?v=3');
+@import url('./tokens.css?v=6');
 
 /* ==========================================================================
    Header & Navigation
@@ -232,6 +232,15 @@
 }
 
 @media (max-width: 960px) {
+    .nav-links {
+        gap: 14px;
+    }
+    .header-inner {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 760px) {
     .nav-links {
         display: none;
     }

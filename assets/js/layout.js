@@ -6,7 +6,7 @@
  */
 
 import { api } from './api.js';
-import { theme } from './theme.js';
+import { theme } from './theme.js?v=6';
 import { auth } from './auth.js';
 import { cart } from './cart.js';
 import { CONFIG } from './config.js';

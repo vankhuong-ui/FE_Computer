@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trung tâm Bảo hành Điện tử — HK COMPUTER</title>
-    <link rel="stylesheet" href="./assets/css/base.css" />
-    <link rel="stylesheet" href="./assets/css/components.css" />
+    <link rel="stylesheet" href="./assets/css/base.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=6" />
     <style>
         .page-header {
             padding: 36px 0 24px;
@@ -66,29 +66,6 @@
             font-weight: var(--font-semibold);
         }
 
-        .cart-btn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--surface);
-            font-size: var(--text-sm);
-            font-weight: var(--font-medium);
-        }
-
-        .cart-badge {
-            background-color: var(--text-primary);
-            color: var(--text-inverse);
-            font-size: 10px;
-            font-family: var(--font-mono);
-            padding: 2px 6px;
-            border-radius: var(--radius-pill);
-            display: none;
-        }
-
         .modal-backdrop {
             display: none;
             position: fixed;
@@ -113,23 +90,6 @@
             width: 100%;
             padding: 28px;
         }
-
-        .footer {
-            border-top: 1px solid var(--border);
-            padding: 48px 0;
-            background-color: var(--surface);
-            margin-top: auto;
-        }
-
-        .footer-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            font-size: var(--text-xs);
-            color: var(--text-secondary);
-        }
     </style>
 </head>
 <body>
@@ -141,12 +101,12 @@
                 <h1 style="font-size: var(--text-2xl);">Trung tâm Bảo hành Điện tử</h1>
                 <p style="font-size: var(--text-xs);">Tra cứu hạn bảo hành chính hãng theo Mã Serial (BH-MãĐơn-MãSP) và đăng ký sửa chữa / đổi mới 1-1 trực tuyến.</p>
             </div>
-            <a href="order.html" class="btn btn-secondary btn-sm">📦 Xem đơn hàng đã mua</a>
+            <a href="order.html" class="btn btn-secondary btn-sm">Xem đơn hàng đã mua</a>
         </div>
 
         <!-- Public Lookup Box -->
         <section class="lookup-banner">
-            <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">🔍 Tra cứu nhanh thời hạn bảo hành</h3>
+            <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">Tra cứu nhanh thời hạn bảo hành</h3>
             <p style="font-size: var(--text-xs); color: var(--text-secondary);">Nhập mã Serial điện tử (Ví dụ: <code>BH-12-5</code>) hoặc Mã đơn hàng (Ví dụ: <code>12</code> hoặc <code>DH12</code>).</p>
             <form id="lookupForm" class="lookup-form">
                 <input type="text" id="lookupKeyword" class="input tabular-nums" placeholder="Nhập mã BH-12-5 hoặc mã đơn hàng..." required />
@@ -157,8 +117,8 @@
 
         <!-- User's Active Warranty Cards -->
         <section style="margin-bottom: 48px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: var(--text-xl);">🛡️ Thiết bị được bảo hành của tôi</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-xl);">Thiết bị được bảo hành của tôi</h3>
                 <span style="font-size: var(--text-xs); color: var(--text-secondary);">Tự động kích hoạt khi đơn hàng hoàn tất thanh toán</span>
             </div>
             <div id="myCardsContainer" class="warranty-cards-grid">
@@ -170,7 +130,7 @@
 
         <!-- User's Warranty Claims History -->
         <section style="margin-bottom: 64px;">
-            <h3 style="font-size: var(--text-xl); margin-bottom: 16px;">📋 Lịch sử yêu cầu gửi bảo hành & Tiến độ xử lý</h3>
+            <h3 style="font-size: var(--text-xl); margin-bottom: 16px;">Lịch sử yêu cầu gửi bảo hành &amp; Tiến độ xử lý</h3>
             <div class="table-container">
                 <table class="table">
                     <thead>
@@ -248,9 +208,9 @@
         import { auth } from './assets/js/auth.js';
         import { cart } from './assets/js/cart.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initStoreLayout } from './assets/js/layout.js';
+        import { initStoreLayout } from './assets/js/layout.js?v=6';
         import { toast } from './assets/js/toast.js';
-        import './assets/js/chat-widget.js';
+        import './assets/js/chat-widget.js?v=6';
 
         const lookupForm = document.getElementById('lookupForm');
         const lookupKeyword = document.getElementById('lookupKeyword');
@@ -299,7 +259,7 @@
                             data-product-id="${card.productId}"
                             data-product-name="${card.productName}"
                             data-serial="${card.serialCode}">
-                            🛠️ Gửi yêu cầu bảo hành
+                            Gửi yêu cầu bảo hành
                         </button>
                     ` : ''}
                 </div>

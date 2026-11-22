@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hỗ trợ kỹ thuật — HK COMPUTER</title>
-    <link rel="stylesheet" href="./assets/css/base.css" />
-    <link rel="stylesheet" href="./assets/css/components.css" />
+    <link rel="stylesheet" href="./assets/css/base.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=6" />
     <style>
         .page-header {
             padding: 36px 0 24px;
@@ -33,42 +33,6 @@
             margin-bottom: 12px;
             background: var(--surface-subtle);
         }
-        .cart-btn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--surface);
-            font-size: var(--text-sm);
-            font-weight: var(--font-medium);
-        }
-        .cart-badge {
-            background-color: var(--text-primary);
-            color: var(--text-inverse);
-            font-size: 10px;
-            font-family: var(--font-mono);
-            padding: 2px 6px;
-            border-radius: var(--radius-pill);
-            display: none;
-        }
-        .footer {
-            border-top: 1px solid var(--border);
-            padding: 48px 0;
-            background-color: var(--surface);
-            margin-top: auto;
-        }
-        .footer-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            font-size: var(--text-xs);
-            color: var(--text-secondary);
-        }
     </style>
 </head>
 <body>
@@ -80,7 +44,7 @@
                 <h1 style="font-size: var(--text-2xl);">Hỗ trợ kỹ thuật & CSKH</h1>
                 <p style="font-size: var(--text-xs);">Gửi yêu cầu tư vấn lắp ráp, cài đặt phần mềm hoặc phản hồi dịch vụ.</p>
             </div>
-            <a href="warranty.html" class="btn btn-secondary btn-sm">🛡️ Trung tâm Bảo hành</a>
+            <a href="warranty.html" class="btn btn-secondary btn-sm">Trung tâm Bảo hành</a>
         </div>
 
         <div class="support-grid">
@@ -117,9 +81,9 @@
         import { auth } from './assets/js/auth.js';
         import { cart } from './assets/js/cart.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initStoreLayout } from './assets/js/layout.js';
+        import { initStoreLayout } from './assets/js/layout.js?v=6';
         import { toast } from './assets/js/toast.js';
-        import './assets/js/chat-widget.js';
+        import './assets/js/chat-widget.js?v=6';
 
         function getStatusBadge(status) {
             const s = (status || '').toUpperCase();
@@ -158,7 +122,11 @@
 
         document.getElementById('supportForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!auth.requireAuth()) return;
+            if (!auth.isAuthenticated()) {
+                toast.warning('Vui lòng đăng nhập để gửi yêu cầu hỗ trợ.');
+                setTimeout(() => auth.requireAuth(), 900);
+                return;
+            }
             const btn = document.getElementById('btnSubmit');
             btn.disabled = true;
             try {
