@@ -1,5 +1,5 @@
 /**
- * config.js - Central Configuration for FE_Computer
+ * config.js - Central Configuration for HK COMPUTER (FE_Computer)
  * Synchronized 1:1 with BE_Computer Spring Boot API
  */
 
@@ -7,12 +7,26 @@ const isLocalhost = window.location.hostname === 'localhost' || window.location.
 const defaultApiUrl = isLocalhost ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com';
 
 export const CONFIG = {
-    // API Base URL - prioritizes localStorage override, then environment detection
+    BRAND_NAME: 'HK COMPUTER',
+    HOTLINE: '1800 6889',
+    OPEN_HOURS: '8:00 - 21:00 (T2 - CN)',
     API_BASE_URL: localStorage.getItem('CUSTOM_API_BASE_URL') || defaultApiUrl,
 
-    // Spring Boot Endpoints mapping 1:1 with backend controllers
+    // 10 Chi nhánh Cửa hàng & Trung tâm Sửa chữa Laptop/PC
+    BRANCHES: [
+        { id: 1, city: 'Hà Nội', name: 'HK COMPUTER — Thái Hà', address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội', phone: '024 7300 6801', hours: '8:00 - 21:00', services: 'Bán hàng • Sửa Laptop lấy ngay • Bảo hành' },
+        { id: 2, city: 'Hà Nội', name: 'HK COMPUTER — Cầu Giấy', address: '268 Xuân Thủy, P. Dịch Vọng Hậu, Q. Cầu Giấy, Hà Nội', phone: '024 7300 6802', hours: '8:00 - 21:00', services: 'Sửa Laptop • Vệ sinh • Nâng cấp RAM/SSD' },
+        { id: 3, city: 'Hà Nội', name: 'HK COMPUTER — Hai Bà Trưng', address: '89 Lê Thanh Nghị, P. Bách Khoa, Q. Hai Bà Trưng, Hà Nội', phone: '024 7300 6803', hours: '8:00 - 21:00', services: 'Build PC Gaming • Sửa phần cứng chuyên sâu' },
+        { id: 4, city: 'TP.HCM', name: 'HK COMPUTER — Quận 10', address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', hours: '8:00 - 21:00', services: 'Showroom chính • Bảo hành 1 đổi 1' },
+        { id: 5, city: 'TP.HCM', name: 'HK COMPUTER — Bình Thạnh', address: '175 Xô Viết Nghệ Tĩnh, P. 17, Q. Bình Thạnh, TP.HCM', phone: '028 7300 6805', hours: '8:00 - 21:00', services: 'Sửa Laptop lấy ngay • Cài đặt phần mềm' },
+        { id: 6, city: 'TP.HCM', name: 'HK COMPUTER — Thủ Đức', address: '312 Võ Văn Ngân, P. Bình Thọ, TP. Thủ Đức, TP.HCM', phone: '028 7300 6806', hours: '8:00 - 21:00', services: 'Bán Laptop Sinh viên • Nâng cấp linh kiện' },
+        { id: 7, city: 'Đà Nẵng', name: 'HK COMPUTER — Hải Châu', address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng', phone: '0236 730 6807', hours: '8:00 - 20:30', services: 'Bán hàng • Sửa chữa Laptop & PC' },
+        { id: 8, city: 'Hải Phòng', name: 'HK COMPUTER — Ngô Quyền', address: '98 Lạch Tray, Q. Ngô Quyền, Hải Phòng', phone: '0225 730 6808', hours: '8:00 - 20:30', services: 'Sửa Laptop • Vệ sinh • Tiếp nhận Bảo hành' },
+        { id: 9, city: 'Cần Thơ', name: 'HK COMPUTER — Ninh Kiều', address: '215 Đường 3/2, P. Hưng Lợi, Q. Ninh Kiều, Cần Thơ', phone: '0292 730 6809', hours: '8:00 - 20:30', services: 'Showroom Miền Tây • Sửa chữa & Bảo hành' },
+        { id: 10, city: 'Bình Dương', name: 'HK COMPUTER — Thủ Dầu Một', address: '405 Đại lộ Bình Dương, P. Phú Cường, TP. Thủ Dầu Một', phone: '0274 730 6810', hours: '8:00 - 20:30', services: 'Bán Laptop/PC • Sửa chữa lấy ngay' }
+    ],
+
     ENDPOINTS: {
-        // AUTH (AccountController, UseradressController)
         AUTH: {
             LOGIN: '/api/account/login',
             REGISTER: '/api/account/register',
@@ -32,7 +46,6 @@ export const CONFIG = {
             USER_ADDRESS_DELETE: (id) => `/api/useraddresses/${id}/delete`,
             USER_ADDRESS_ADMIN: '/api/useraddresses',
         },
-        // PRODUCT (ProductController, BrandsController, CategoriesController, InventoryController)
         PRODUCTS: {
             LIST: '/api/products',
             SEARCH: '/api/products/search',
@@ -64,7 +77,6 @@ export const CONFIG = {
             SEARCH: '/api/inventory/search',
             USER_DETAIL: (productId) => `/api/inventory/${productId}/user`,
         },
-        // ORDER (CartController, OrderController, PaymentController)
         CART: {
             GET: '/api/cart/my-cart',
             ADD: '/api/cart/add',
@@ -88,7 +100,6 @@ export const CONFIG = {
             HISTORY: '/api/payment/order/history',
             LATEST: (orderId) => `/api/payment/order/${orderId}/latest`,
         },
-        // REVIEW, SUPPORT, WARRANTY & AI CHAT
         REVIEW: {
             LIST_BY_PRODUCT: (productId) => `/api/reviews/product/${productId}`,
             CREATE: '/api/reviews',
@@ -108,15 +119,19 @@ export const CONFIG = {
             ADMIN_ALL: '/api/warranty/admin/all',
             ADMIN_UPDATE_STATUS: (id, status) => `/api/warranty/admin/${id}/status?status=${status}`,
         },
+        REPAIRS: {
+            CREATE: '/api/repairs',
+            MY_BOOKINGS: '/api/repairs/my-bookings',
+            ADMIN_ALL: '/api/repairs/admin/all',
+            ADMIN_UPDATE_STATUS: (id, status) => `/api/repairs/admin/${id}/status?status=${status}`,
+        },
         CHAT_AI: {
             SEND: '/api/chat',
         }
     },
 
-    // App routes
     ROUTES: {
         HOME: 'index.html',
-        LEGACY_HOME: 'trangchu.html',
         LOGIN: 'dang-nhap.html',
         REGISTER: 'dang-ky.html',
         CART: 'cart.html',
@@ -127,6 +142,7 @@ export const CONFIG = {
         SUPPORT: 'support.html',
         ADMIN_DASHBOARD: 'trangchu-admin.html',
         ADMIN_WARRANTY: 'admin-warranty.html',
+        ADMIN_REPAIRS: 'admin-repairs.html',
         ADMIN_LOGIN: 'dang-nhap-admin.html',
         PAYMENT_RESULT: 'payment-result.html',
     }

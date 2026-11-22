@@ -73,8 +73,8 @@
 }
 
 .admin-menu-item a.active {
-    background-color: var(--text-primary);
-    color: var(--text-inverse);
+    background-color: var(--brand-green);
+    color: #FFFFFF;
 }
 
 /* Main Content Area */
