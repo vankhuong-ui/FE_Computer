@@ -3,134 +3,37 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hồ sơ cá nhân — Hoang89 Computer</title>
+    <title>Quản lý Tài khoản — HK COMPUTER</title>
     <link rel="stylesheet" href="./assets/css/base.css" />
     <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        .page-header {
-            padding: 36px 0 24px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
-        }
-        .profile-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.6fr;
-            gap: 24px;
-            margin-bottom: 64px;
-        }
-        @media (max-width: 860px) {
-            .profile-grid { grid-template-columns: 1fr; }
-        }
-        .address-card {
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(2px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+        .page-header { padding: 32px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+        .profile-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; margin-bottom: 40px; }
+        @media (max-width: 860px) { .profile-grid { grid-template-columns: 1fr; } }
+        .address-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; background: var(--surface-subtle); }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-backdrop.active { display: flex; }
-        .modal-box {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            max-width: 460px;
-            width: 100%;
-            padding: 28px;
-        }
-        .cart-btn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 14px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: var(--surface);
-            font-size: var(--text-sm);
-            font-weight: var(--font-medium);
-        }
-        .cart-badge {
-            background-color: var(--text-primary);
-            color: var(--text-inverse);
-            font-size: 10px;
-            font-family: var(--font-mono);
-            padding: 2px 6px;
-            border-radius: var(--radius-pill);
-            display: none;
-        }
-        .footer {
-            border-top: 1px solid var(--border);
-            padding: 48px 0;
-            background-color: var(--surface);
-            margin-top: auto;
-        }
-        .footer-inner {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            font-size: var(--text-xs);
-            color: var(--text-secondary);
-        }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 460px; width: 100%; padding: 28px; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container header-inner">
-            <a href="index.html" class="brand-logo">
-                <span class="brand-dot"></span>
-                <span>HOANG89<span style="font-weight: 300;">COMPUTER</span></span>
-            </a>
+    <header id="appHeader"></header>
 
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="nav-link">Sản phẩm</a></li>
-                    <li><a href="order.html" class="nav-link">Đơn hàng</a></li>
-                    <li><a href="warranty.html" class="nav-link">Bảo hành</a></li>
-                    <li><a href="support.html" class="nav-link">Hỗ trợ kỹ thuật</a></li>
-                </ul>
-            </nav>
-
-            <div class="header-actions">
-                <a href="cart.html" class="cart-btn">
-                    <span>Giỏ hàng</span>
-                    <span class="cart-badge" id="cartBadgeCount">0</span>
-                </a>
-                <div id="authNavArea"></div>
-            </div>
-        </div>
-    </header>
-
-    <main class="container">
+    <main class="container" style="margin-bottom: 64px;">
         <div class="page-header">
-            <h1 style="font-size: var(--text-2xl);">Hồ sơ cá nhân & Sổ địa chỉ</h1>
-            <p style="font-size: var(--text-xs);">Quản lý thông tin tài khoản, bảo mật mật khẩu và địa chỉ giao nhận hàng.</p>
+            <h1 style="font-size: var(--text-2xl);">Quản lý Tài khoản</h1>
+            <p style="font-size: var(--text-xs);">Thông tin cá nhân, bảo mật mật khẩu, sổ địa chỉ giao hàng và lịch hẹn sửa chữa của bạn.</p>
         </div>
 
         <div class="profile-grid">
             <div class="card" style="height: fit-content;">
-                <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Thông tin tài khoản</h3>
+                <h3 style="font-size: var(--text-lg); margin-bottom: 14px;">Thông tin tài khoản</h3>
                 <div id="accountInfoBox" style="font-size: var(--text-sm); margin-bottom: 20px;"></div>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <a href="setpassword.html" class="btn btn-secondary btn-sm">🔑 Đổi / Thiết lập mật khẩu</a>
-                    <a href="order.html" class="btn btn-outline btn-sm">📦 Lịch sử đơn hàng</a>
-                    <a href="warranty.html" class="btn btn-outline btn-sm">🛡️ Phiếu bảo hành điện tử</a>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <a href="setpassword.html" class="btn btn-secondary btn-sm">Đổi / Thiết lập mật khẩu</a>
+                    <a href="order.html" class="btn btn-outline btn-sm">Đơn hàng của tôi</a>
+                    <a href="warranty.html" class="btn btn-outline btn-sm">Bảo hành điện tử</a>
+                    <a href="index.html#repair-center" class="btn btn-accent btn-sm">Đặt lịch sửa chữa mới</a>
                 </div>
             </div>
 
@@ -139,11 +42,37 @@
                     <h3 style="font-size: var(--text-lg);">Sổ địa chỉ nhận hàng</h3>
                     <button type="button" id="btnAddAddress" class="btn btn-primary btn-sm">+ Thêm địa chỉ</button>
                 </div>
-                <div id="addressListContainer">
-                    <p style="font-size: var(--text-xs);">Đang tải danh sách địa chỉ...</p>
-                </div>
+                <div id="addressListContainer"><p style="font-size: var(--text-xs);">Đang tải...</p></div>
             </div>
         </div>
+
+        <!-- User's Repair Bookings -->
+        <section class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <h3 style="font-size: var(--text-lg);">Lịch hẹn sửa chữa Laptop / PC của tôi</h3>
+                    <p style="font-size: var(--text-xs);">Theo dõi trạng thái tiếp nhận và phản hồi của kỹ thuật viên tại chi nhánh.</p>
+                </div>
+                <a href="index.html#repair-center" class="btn btn-secondary btn-sm">+ Đặt lịch mới</a>
+            </div>
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Mã lịch</th>
+                            <th>Thiết bị &amp; Dịch vụ</th>
+                            <th>Chi nhánh</th>
+                            <th>Thời gian hẹn</th>
+                            <th>Trạng thái</th>
+                            <th>Ghi chú KTV</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myRepairsBody">
+                        <tr><td colspan="6" style="text-align: center; padding: 24px;">Đang tải lịch hẹn...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <!-- Address Modal -->
@@ -151,7 +80,7 @@
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3 style="font-size: var(--text-lg);" id="modalTitle">Thêm địa chỉ mới</h3>
-                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-primary);">×</button>
             </div>
             <form id="addressForm">
                 <input type="hidden" id="editAddrId" />
@@ -173,28 +102,20 @@
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" id="btnSaveAddr" class="btn btn-primary">Lưu địa chỉ</button>
+                    <button type="submit" class="btn btn-primary">Lưu địa chỉ</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <footer class="footer">
-        <div class="container footer-inner">
-            <div>© 2026 Hoang89 Computer. Thiết kế tối giản theo tiêu chuẩn công nghệ.</div>
-            <div style="display: flex; gap: 20px;">
-                <a href="warranty.html">Bảo hành điện tử</a>
-                <a href="support.html">Hỗ trợ kỹ thuật</a>
-            </div>
-        </div>
-    </footer>
+    <footer id="appFooter"></footer>
 
     <script type="module">
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
-        import { cart } from './assets/js/cart.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';
+        import { initStoreLayout } from './assets/js/layout.js';
 
         const addressModal = document.getElementById('addressModal');
         const addressForm = document.getElementById('addressForm');
@@ -205,7 +126,7 @@
             if (!user) return;
             document.getElementById('accountInfoBox').innerHTML = `
                 <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Tên hiển thị:</span> <b>${user.accountname || '-'}</b></div>
-                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Gmail:</span> <span class="tabular-nums">${user.gmail || '-'}</span></div>
+                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Email:</span> <span class="tabular-nums">${user.gmail || '-'}</span></div>
                 <div><span style="color: var(--text-secondary);">Vai trò:</span> <span class="badge badge-info">${user.role || 'USER'}</span></div>
             `;
         }
@@ -216,7 +137,7 @@
                 addresses = Array.isArray(res) ? res : [];
                 const container = document.getElementById('addressListContainer');
                 if (!addresses.length) {
-                    container.innerHTML = `<p style="font-size: var(--text-sm);">Bạn chưa có địa chỉ nào. Hãy bấm "+ Thêm địa chỉ".</p>`;
+                    container.innerHTML = `<p style="font-size: var(--text-sm);">Bạn chưa có địa chỉ nào.</p>`;
                     return;
                 }
                 container.innerHTML = addresses.map(a => {
@@ -224,7 +145,7 @@
                     return `
                         <div class="address-card">
                             <div>
-                                <div style="font-weight: var(--font-semibold); font-size: var(--text-sm); margin-bottom: 4px;">
+                                <div style="font-weight: 600; font-size: var(--text-sm); margin-bottom: 4px;">
                                     ${a.username} • <span class="tabular-nums">${a.phone}</span>
                                     ${isDef ? '<span class="badge badge-success" style="margin-left: 6px;">Mặc định</span>' : ''}
                                 </div>
@@ -259,13 +180,47 @@
                             await api.delete(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_DELETE(btn.dataset.id));
                             toast.success('Đã xóa địa chỉ.');
                             loadAddresses();
-                        } catch (err) {
-                            toast.error(err.message);
-                        }
+                        } catch (err) { toast.error(err.message); }
                     });
                 });
             } catch (err) {
                 document.getElementById('addressListContainer').innerHTML = `<p class="text-danger">${err.message}</p>`;
+            }
+        }
+
+        function getRepairBadge(s) {
+            if (s === 'PENDING') return '<span class="badge badge-warning">Chờ xác nhận</span>';
+            if (s === 'CONFIRMED') return '<span class="badge badge-info">Đã xác nhận</span>';
+            if (s === 'IN_PROGRESS') return '<span class="badge badge-info">Đang sửa chữa</span>';
+            if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn tất</span>';
+            if (s === 'CANCELLED') return '<span class="badge badge-danger">Đã hủy</span>';
+            return `<span class="badge">${s}</span>`;
+        }
+
+        async function loadMyRepairs() {
+            const tbody = document.getElementById('myRepairsBody');
+            try {
+                const data = await api.get(CONFIG.ENDPOINTS.REPAIRS.MY_BOOKINGS, { page: 0, size: 10 });
+                const items = data?.content || [];
+                if (!items.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-secondary);">Bạn chưa có lịch hẹn sửa chữa nào.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = items.map(item => `
+                    <tr>
+                        <td class="tabular-nums">#${item.id}</td>
+                        <td>
+                            <div style="font-weight: 600; font-size: var(--text-xs);">${item.deviceModel}</div>
+                            <div style="font-size: 11px; color: var(--text-secondary);">${item.serviceType}</div>
+                        </td>
+                        <td style="font-size: var(--text-xs);">${item.branchName}</td>
+                        <td class="tabular-nums" style="font-size: var(--text-xs);">${item.appointmentTime}<br/>${item.appointmentDate}</td>
+                        <td>${getRepairBadge(item.status)}</td>
+                        <td style="font-size: var(--text-xs); color: var(--text-secondary);">${item.adminNote || '<i>Đang chờ tiếp nhận</i>'}</td>
+                    </tr>
+                `).join('');
+            } catch (_) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px;">Không thể tải lịch hẹn sửa chữa.</td></tr>`;
             }
         }
 
@@ -287,28 +242,21 @@
                 address: document.getElementById('addrDetail').value.trim(),
                 defaultaddress: document.getElementById('addrDefault').checked
             };
-
             try {
-                if (id) {
-                    await api.put(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_UPDATE(id), payload);
-                    toast.success('Cập nhật địa chỉ thành công!');
-                } else {
-                    await api.post(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_CREATE, payload);
-                    toast.success('Thêm địa chỉ mới thành công!');
-                }
+                if (id) await api.put(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_UPDATE(id), payload);
+                else await api.post(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_CREATE, payload);
+                toast.success('Lưu địa chỉ thành công!');
                 addressModal.classList.remove('active');
                 loadAddresses();
-            } catch (err) {
-                toast.error(err.message || 'Không thể lưu địa chỉ.');
-            }
+            } catch (err) { toast.error(err.message); }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!auth.requireAuth()) return;
-            auth.initHeaderNav();
-            cart.updateHeaderBadge();
+            initStoreLayout({ activeNav: '' });
             renderAccountInfo();
             loadAddresses();
+            loadMyRepairs();
         });
     </script>
 </body>

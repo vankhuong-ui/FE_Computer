@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thanh toán đơn hàng — Hoang89 Computer</title>
+    <title>Thanh toán đơn hàng — HK COMPUTER</title>
     <link rel="stylesheet" href="./assets/css/base.css" />
     <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
@@ -163,31 +163,7 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container header-inner">
-            <a href="index.html" class="brand-logo">
-                <span class="brand-dot"></span>
-                <span>HOANG89<span style="font-weight: 300;">COMPUTER</span></span>
-            </a>
-
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html" class="nav-link">Sản phẩm</a></li>
-                    <li><a href="order.html" class="nav-link">Đơn hàng</a></li>
-                    <li><a href="warranty.html" class="nav-link">Bảo hành</a></li>
-                    <li><a href="support.html" class="nav-link">Hỗ trợ kỹ thuật</a></li>
-                </ul>
-            </nav>
-
-            <div class="header-actions">
-                <a href="cart.html" class="cart-btn">
-                    <span>Giỏ hàng</span>
-                    <span class="cart-badge" id="cartBadgeCount">0</span>
-                </a>
-                <div id="authNavArea"></div>
-            </div>
-        </div>
-    </header>
+    <header id="appHeader"></header>
 
     <main class="container">
         <div class="page-header">
@@ -202,21 +178,14 @@
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="container footer-inner">
-            <div>© 2026 Hoang89 Computer. Thiết kế tối giản theo tiêu chuẩn công nghệ.</div>
-            <div style="display: flex; gap: 20px;">
-                <a href="warranty.html">Bảo hành điện tử</a>
-                <a href="support.html">Hỗ trợ kỹ thuật</a>
-            </div>
-        </div>
-    </footer>
+    <footer id="appFooter"></footer>
 
     <script type="module">
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { cart } from './assets/js/cart.js';
         import { CONFIG } from './assets/js/config.js';
+        import { initStoreLayout } from './assets/js/layout.js';
         import { toast } from './assets/js/toast.js';
 
         const checkoutContainer = document.getElementById('checkoutContainer');
@@ -434,7 +403,7 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            auth.initHeaderNav();
+            initStoreLayout({ activeNav: '' });
             cart.updateHeaderBadge();
             loadCheckout();
         });

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Lịch hẹn Sửa chữa — HK COMPUTER Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <style>
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 480px; width: 100%; padding: 28px; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside id="adminSidebar"></aside>
+
+        <div class="admin-main">
+            <header id="adminTopbar"></header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Lịch hẹn Sửa chữa Laptop &amp; PC</h1>
+                        <p style="font-size: var(--text-xs);">Tiếp nhận, xác nhận lịch hẹn theo chi nhánh và cập nhật ghi chú kỹ thuật.</p>
+                    </div>
+                </div>
+
+                <div class="metrics-row">
+                    <div class="metric-card">
+                        <div class="metric-label">Tổng lịch hẹn</div>
+                        <div class="metric-value" id="metricTotal">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Chờ xác nhận</div>
+                        <div class="metric-value" id="metricPending">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Đang sửa chữa</div>
+                        <div class="metric-value" id="metricProgress">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Hoàn tất</div>
+                        <div class="metric-value" id="metricDone">0</div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Khách hàng</th>
+                                <th>Chi nhánh</th>
+                                <th>Thiết bị &amp; Dịch vụ</th>
+                                <th>Thời gian hẹn</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú KTV</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="8" style="text-align: center; padding: 32px;">Đang tải dữ liệu...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;"></div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="statusModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg);">Cập nhật lịch hẹn sửa chữa</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-primary);">×</button>
+            </div>
+            <form id="statusForm">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label class="form-label" for="editStatus">Trạng thái xử lý</label>
+                    <select id="editStatus" class="select">
+                        <option value="PENDING">PENDING — Chờ xác nhận</option>
+                        <option value="CONFIRMED">CONFIRMED — Đã xác nhận lịch hẹn</option>
+                        <option value="IN_PROGRESS">IN_PROGRESS — Đang kiểm tra / Sửa chữa</option>
+                        <option value="COMPLETED">COMPLETED — Đã bàn giao hoàn tất</option>
+                        <option value="CANCELLED">CANCELLED — Đã hủy lịch</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="editNote">Ghi chú kỹ thuật viên</label>
+                    <textarea id="editNote" class="textarea" rows="3" placeholder="VD: Đã vệ sinh, thay keo MX-4, test nhiệt độ ổn định 65°C..."></textarea>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js';
+
+        let currentPage = 0;
+        let currentItems = [];
+
+        function getBadge(s) {
+            if (s === 'PENDING') return '<span class="badge badge-warning">Chờ xác nhận</span>';
+            if (s === 'CONFIRMED') return '<span class="badge badge-info">Đã xác nhận</span>';
+            if (s === 'IN_PROGRESS') return '<span class="badge badge-info">Đang sửa chữa</span>';
+            if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn tất</span>';
+            if (s === 'CANCELLED') return '<span class="badge badge-danger">Đã hủy</span>';
+            return `<span class="badge">${s}</span>`;
+        }
+
+        async function loadBookings(page = 0) {
+            if (!auth.requireAdmin()) return;
+            currentPage = page;
+            try {
+                const data = await api.get(CONFIG.ENDPOINTS.REPAIRS.ADMIN_ALL, { page, size: 10 });
+                const items = data?.content || [];
+                const totalPages = data?.totalPages || 1;
+                currentItems = items;
+
+                document.getElementById('metricTotal').textContent = data?.totalElements ?? items.length;
+                document.getElementById('metricPending').textContent = items.filter(i => i.status === 'PENDING').length;
+                document.getElementById('metricProgress').textContent = items.filter(i => i.status === 'CONFIRMED' || i.status === 'IN_PROGRESS').length;
+                document.getElementById('metricDone').textContent = items.filter(i => i.status === 'COMPLETED').length;
+
+                const tbody = document.getElementById('tableBody');
+                if (!items.length) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-secondary);">Chưa có lịch hẹn sửa chữa nào.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = items.map(item => `
+                    <tr>
+                        <td class="tabular-nums">#${item.id}</td>
+                        <td>
+                            <div style="font-weight:600; font-size:var(--text-xs);">${item.customerName}</div>
+                            <div class="tabular-nums" style="font-size:var(--text-xs); color:var(--text-secondary);">${item.customerPhone}</div>
+                        </td>
+                        <td style="font-size:var(--text-xs); max-width:200px;">${item.branchName}</td>
+                        <td>
+                            <div style="font-weight:600; font-size:var(--text-xs);">${item.deviceModel}</div>
+                            <div style="font-size:11px; color:var(--text-secondary);">${item.serviceType}</div>
+                            ${item.issueDescription ? `<div style="font-size:11px; color:var(--text-muted);">${item.issueDescription}</div>` : ''}
+                        </td>
+                        <td class="tabular-nums" style="font-size:var(--text-xs);">
+                            <div><b>${item.appointmentDate}</b></div>
+                            <div style="color:var(--text-secondary);">${item.appointmentTime}</div>
+                        </td>
+                        <td>${getBadge(item.status)}</td>
+                        <td style="font-size:var(--text-xs); color:var(--text-secondary); max-width:180px;">${item.adminNote || '<i>Chưa có</i>'}</td>
+                        <td>
+                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${item.id}">Xử lý</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = currentItems.find(x => x.id === Number(btn.dataset.id));
+                        if (!item) return;
+                        document.getElementById('editId').value = item.id;
+                        document.getElementById('editStatus').value = item.status || 'PENDING';
+                        document.getElementById('editNote').value = item.adminNote || '';
+                        document.getElementById('statusModal').classList.add('active');
+                    });
+                });
+
+                const pag = document.getElementById('paginationBar');
+                pag.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
+                    `<button class="btn btn-sm ${i === page ? 'btn-primary' : 'btn-secondary'}" data-page="${i}">${i + 1}</button>`
+                ).join('') : '';
+                pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadBookings(Number(b.dataset.page))));
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-danger" style="text-align:center; padding:32px;">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btnCloseModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
+
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const status = document.getElementById('editStatus').value;
+            const adminNote = document.getElementById('editNote').value.trim();
+            try {
+                await api.patch(CONFIG.ENDPOINTS.REPAIRS.ADMIN_UPDATE_STATUS(id, status), { adminNote });
+                toast.success(`Đã cập nhật lịch hẹn #${id}`);
+                document.getElementById('statusModal').classList.remove('active');
+                loadBookings(currentPage);
+            } catch (err) { toast.error(err.message); }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminLayout({ active: 'repairs', title: 'Quản lý Lịch hẹn Sửa chữa' });
+            loadBookings(0);
+        });
+    </script>
+</body>
+</html>

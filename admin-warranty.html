@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý Bảo hành Điện tử — Hoang89 Admin</title>
+    <title>Quản lý Bảo hành Điện tử — HK COMPUTER Admin</title>
     <link rel="stylesheet" href="./assets/css/admin.css" />
     <style>
         .serial-badge {
@@ -52,45 +52,11 @@
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
-        <aside class="admin-sidebar">
-            <a href="trangchu-admin.html" class="admin-brand">
-                <span class="brand-dot"></span>
-                <span>HOANG89 ADMIN</span>
-            </a>
-
-            <ul class="admin-menu">
-                <li class="admin-menu-section-label">Tổng quan</li>
-                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
-
-                <li class="admin-menu-section-label">Danh mục & Kho</li>
-                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
-                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
-                <li class="admin-menu-item"><a href="admin-brand.html">🏷️ Thương hiệu</a></li>
-                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
-
-                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
-                <li class="admin-menu-item"><a href="admin-orders.html">📋 Đơn hàng</a></li>
-                <li class="admin-menu-item"><a href="admin-payment.html">💳 Thanh toán</a></li>
-                <li class="admin-menu-item"><a href="admin-warranty.html" class="active">🛡️ Bảo hành điện tử</a></li>
-                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
-
-                <li class="admin-menu-section-label">Người dùng</li>
-                <li class="admin-menu-item"><a href="admin-account.html">👤 Tài khoản</a></li>
-                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
-            </ul>
-        </aside>
+        <aside id="adminSidebar"></aside>
 
         <!-- Main Content -->
         <div class="admin-main">
-            <header class="admin-topbar">
-                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">
-                    Hệ thống Quản trị Bảo hành Điện tử (RMA)
-                </div>
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
-                    <div id="authNavArea"></div>
-                </div>
-            </header>
+            <header id="adminTopbar"></header>
 
             <main class="admin-content-body">
                 <div class="table-toolbar">
@@ -187,6 +153,7 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js';
         import { toast } from './assets/js/toast.js';
 
         const warrantyTableBody = document.getElementById('warrantyTableBody');
@@ -321,7 +288,7 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            auth.initHeaderNav();
+            initAdminLayout({ active: 'warranty', title: 'Quản lý Bảo hành Điện tử' });
             loadClaims(0);
         });
     </script>
