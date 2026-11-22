@@ -89,14 +89,14 @@
 }
 
 .btn-primary {
-    background-color: var(--text-primary);
+    background-color: var(--brand-green, #008B45);
     color: var(--text-inverse);
-    border-color: var(--text-primary);
+    border-color: var(--brand-green, #008B45);
 }
 
 .btn-primary:hover {
-    background-color: #2F3437;
-    border-color: #2F3437;
+    background-color: var(--brand-green-dark, #006B35);
+    border-color: var(--brand-green-dark, #006B35);
     color: var(--text-inverse);
 }
 

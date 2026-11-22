@@ -30,60 +30,73 @@ class GeminiChatWidget {
                     position: fixed;
                     bottom: 24px;
                     right: 24px;
-                    background: var(--text-primary);
-                    color: var(--text-inverse);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-sm);
-                    padding: 10px 16px;
+                    background: #008B45;
+                    color: #FFFFFF;
+                    border: none;
+                    border-radius: 9999px;
+                    padding: 10px 18px;
                     display: flex;
                     align-items: center;
                     gap: 8px;
-                    font-size: var(--text-xs);
-                    font-weight: var(--font-medium);
+                    font-size: 13px;
+                    font-weight: 600;
                     cursor: pointer;
                     z-index: 1000;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-                    transition: transform var(--transition-fast);
+                    box-shadow: 0 6px 18px rgba(0, 139, 69, 0.28);
+                    transition: transform 150ms ease, background 150ms ease;
+                }
+                .ai-widget-button:hover {
+                    background: #006B35;
                 }
                 .ai-widget-button:active {
                     transform: scale(0.98);
                 }
+                .has-hk-dock .ai-widget-button {
+                    display: none;
+                }
                 .ai-widget-panel {
                     display: none;
                     position: fixed;
-                    bottom: 74px;
+                    bottom: 80px;
                     right: 24px;
                     width: 360px;
+                    max-width: calc(100vw - 32px);
                     height: 480px;
-                    background: var(--surface);
-                    border: 1px solid var(--border);
-                    border-radius: var(--radius-md);
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-                    z-index: 1000;
+                    background: #FFFFFF;
+                    border: 1px solid #E5E7EB;
+                    border-radius: 12px;
+                    box-shadow: 0 12px 32px rgba(0,0,0,0.14);
+                    z-index: 1001;
                     flex-direction: column;
                     overflow: hidden;
                 }
+                .has-hk-dock .ai-widget-panel {
+                    bottom: 24px;
+                    right: 92px;
+                }
                 .ai-panel-header {
                     padding: 12px 16px;
-                    border-bottom: 1px solid var(--border);
+                    border-bottom: 1px solid #007339;
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    background: var(--surface-subtle);
+                    background: #008B45;
+                    color: #FFFFFF;
                 }
                 .ai-panel-title {
-                    font-size: var(--text-sm);
-                    font-weight: var(--font-semibold);
+                    font-size: 14px;
+                    font-weight: 600;
                     display: flex;
                     align-items: center;
-                    gap: 6px;
+                    gap: 8px;
                 }
                 .ai-panel-close {
                     background: none;
                     border: none;
                     cursor: pointer;
-                    font-size: 16px;
-                    color: var(--text-secondary);
+                    font-size: 20px;
+                    color: #FFFFFF;
+                    line-height: 1;
                 }
                 .ai-panel-messages {
                     flex: 1;
@@ -148,6 +161,9 @@ class GeminiChatWidget {
         `;
 
         document.body.appendChild(widget);
+        if (document.getElementById('hk-floating-dock')) {
+            widget.classList.add('has-hk-dock');
+        }
 
         const btnToggle = widget.querySelector('#btnToggleAi');
         const btnClose = widget.querySelector('#btnCloseAi');

@@ -8,11 +8,17 @@
  */
 
 :root {
+    /* Brand Identity: HK COMPUTER */
+    --brand-green: #008B45;
+    --brand-green-dark: #006B35;
+    --brand-orange: #F37021;
+    --brand-orange-dark: #D95B10;
+
     /* Canvas & Surfaces */
-    --canvas: #FBFBFA;
+    --canvas: #F4F6F8;
     --surface: #FFFFFF;
-    --surface-subtle: #F7F6F3;
-    --surface-hover: #F2F1ED;
+    --surface-subtle: #F8FAFC;
+    --surface-hover: #F1F5F9;
 
     /* Structural Borders */
     --border: #EAEAEA;
