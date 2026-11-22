@@ -4,7 +4,7 @@
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
-@import url('./tokens.css');
+@import url('./tokens.css?v=3');
 
 *, *::before, *::after {
     box-sizing: border-box;
