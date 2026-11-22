@@ -156,7 +156,9 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
-            const payload = { nameCategories: document.getElementById('catName').value.trim() };
+            const name = document.getElementById('catName').value.trim();
+            const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            const payload = { nameCategories: name, slug };
             try {
                 if (id) await api.put(CONFIG.ENDPOINTS.CATEGORIES.UPDATE(id), payload);
                 else await api.post(CONFIG.ENDPOINTS.CATEGORIES.CREATE, payload);

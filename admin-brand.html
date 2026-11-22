@@ -161,8 +161,11 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
+            const name = document.getElementById('brandName').value.trim();
+            const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
             const payload = {
-                nameBrands: document.getElementById('brandName').value.trim(),
+                nameBrands: name,
+                slug,
                 logo: document.getElementById('brandLogo').value.trim() || null
             };
             try {
