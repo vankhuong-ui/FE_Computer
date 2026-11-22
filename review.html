@@ -3,370 +3,132 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đánh giá sản phẩm - MyShop</title>
+    <title>Đánh giá sản phẩm — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; color:#2d3436; }
-        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#fff; box-shadow:0 2px 12px rgba(0,0,0,0.06);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
+        .review-container {
+            max-width: 560px;
+            margin: 48px auto;
+            padding: 0 20px;
         }
-        .header .logo { font-size:26px; font-weight:800; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .header .logo span { -webkit-text-fill-color:#764ba2; }
-        .header .nav-links { display:flex; gap:20px; align-items:center; flex:1; margin-left:30px; }
-        .header .nav-links a { color:#555; font-weight:500; font-size:15px; transition:color 0.2s; }
-        .header .nav-links a:hover { color:#667eea; }
-        .header .nav-links .cart-link { position:relative; font-size:20px; margin-left:auto; }
-        .header .nav-links .cart-link .badge {
-            position:absolute; top:-8px; right:-12px; background:#e74c3c; color:#fff;
-            font-size:11px; border-radius:50%; padding:2px 6px; min-width:18px; text-align:center;
+        .star-picker {
+            display: flex;
+            gap: 8px;
+            font-size: 28px;
+            cursor: pointer;
+            margin-top: 4px;
         }
-        .header .user-section { display:flex; align-items:center; gap:12px; margin-left:20px; }
-        .header .user-info { display:flex; align-items:center; gap:8px; font-weight:500; color:#333; }
-        .header .user-info .avatar {
-            width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2);
-            color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase;
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--border-hover);
+            transition: transform var(--transition-fast);
         }
-        .header .user-info .username { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .header .btn-logout { background:#e74c3c; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:#c0392b; }
-        .header .auth-links { display:flex; gap:10px; align-items:center; }
-        .header .auth-links .btn { padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.25s; border:none; text-decoration:none; }
-        .header .auth-links .btn-outline { background:transparent; border:2px solid #667eea; color:#667eea; }
-        .header .auth-links .btn-outline:hover { background:#667eea; color:#fff; }
-        .header .auth-links .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
-        .header .auth-links .btn-primary:hover { transform:scale(1.04); box-shadow:0 8px 24px rgba(102,126,234,0.35); }
-
-        .review-section {
-            background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04);
-            padding:30px; margin:40px 0; border:1px solid #f0f0f0;
-        }
-        .review-section h2 { font-size:28px; font-weight:700; margin-bottom:24px; color:#2d3436; border-bottom:2px solid #f0f0f0; padding-bottom:16px; }
-
-        .form-group { margin-bottom:20px; }
-        .form-group label { display:block; font-weight:600; margin-bottom:6px; color:#555; font-size:14px; }
-        .form-group select, .form-group input, .form-group textarea {
-            width:100%; padding:12px 16px; border:2px solid #e0e0e0; border-radius:10px;
-            font-size:15px; transition:border-color 0.3s, box-shadow 0.3s;
-            background:#fafafa;
-        }
-        .form-group select:focus, .form-group input:focus, .form-group textarea:focus {
-            border-color:#667eea; outline:none; background:#fff;
-            box-shadow:0 0 0 4px rgba(102,126,234,0.12);
-        }
-        .form-group textarea { resize:vertical; min-height:100px; }
-        .form-group select { appearance:auto; cursor:pointer; }
-
-        .rating-group {
-            display:flex; gap:8px; align-items:center; margin-top:4px;
-        }
-        .rating-group .star {
-            font-size:36px; cursor:pointer; color:#ddd; transition:color 0.2s, transform 0.2s;
-            user-select:none;
-        }
-        .rating-group .star.active { color:#f59e0b; }
-        .rating-group .star:hover { transform:scale(1.15); color:#f59e0b; }
-
-        .btn-submit {
-            padding:14px 40px; background:linear-gradient(135deg,#27ae60,#2ecc71);
-            color:#fff; border:none; border-radius:40px; font-weight:700; font-size:18px;
-            cursor:pointer; transition:transform 0.2s, box-shadow 0.2s;
-            margin-top:10px;
-        }
-        .btn-submit:hover { transform:scale(1.02); box-shadow:0 8px 28px rgba(46,204,113,0.4); }
-        .btn-submit:disabled { background:#ccc; cursor:not-allowed; transform:none; box-shadow:none; }
-
-        .btn-back {
-            display:inline-block; padding:10px 24px; background:#667eea; color:#fff;
-            border:none; border-radius:40px; font-weight:600; font-size:16px;
-            cursor:pointer; transition:transform 0.2s; margin-bottom:20px;
-        }
-        .btn-back:hover { transform:scale(1.03); }
-
-        .product-info-box {
-            background:#f8f9fa; border-radius:10px; padding:16px; border:1px solid #eee;
-            margin-bottom:20px;
-        }
-        .product-info-box .name { font-size:18px; font-weight:600; }
-        .product-info-box .price { color:#667eea; font-weight:600; }
-
-        .toast {
-            position:fixed; bottom:30px; right:30px; background:#fff; color:#333; padding:16px 24px;
-            border-radius:14px; font-weight:600; font-size:15px; box-shadow:0 8px 32px rgba(0,0,0,0.15);
-            z-index:9999; opacity:0; transform:translateY(30px); transition:all 0.4s ease;
-            border-left:5px solid #27ae60; max-width:400px; pointer-events:none;
-        }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-
-        .loading { text-align:center; padding:60px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; width:44px; height:44px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:20px 0; border:1px solid #f5c6cb; }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:50px 20px 30px; margin-top:60px; }
-        .footer-content { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px; }
-        .footer-content h4 { color:#fff; font-size:18px; margin-bottom:14px; font-weight:600; }
-        .footer-content p, .footer-content li { font-size:14px; opacity:0.8; list-style:none; margin-bottom:8px; }
-        .footer-bottom { text-align:center; padding-top:24px; border-top:1px solid #2d2d44; margin-top:32px; font-size:14px; opacity:0.7; }
-
-        @media (max-width:768px) {
-            .header .nav-links { gap:12px; flex-wrap:wrap; }
-            .header .user-section { margin-left:10px; }
-            .header .user-info .username { max-width:80px; }
+        .star-btn.active {
+            color: #D97706;
         }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo">My<span>Shop</span></div>
-        <div class="nav-links">
-            <a href="trangchu.html">Trang chủ</a>
-            <a href="trangchu.html">Sản phẩm</a>
-            <a href="cart.html" class="cart-link">
-                🛒 <span class="badge" id="cartCount">0</span>
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-dot"></span>
+                <span>HOANG89<span style="font-weight: 300;">COMPUTER</span></span>
             </a>
-            <div id="userSection" class="user-section"></div>
+            <div class="header-actions">
+                <a href="order.html" class="btn btn-secondary btn-sm">← Quay lại đơn hàng</a>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="review-section">
-            <h2>⭐ Đánh giá sản phẩm</h2>
-            <button class="btn-back" onclick="window.location.href='order.html'">← Quay lại đơn hàng</button>
+    <main class="review-container">
+        <div class="card">
+            <h1 style="font-size: var(--text-xl); margin-bottom: 6px;">Đánh giá sản phẩm</h1>
+            <p style="font-size: var(--text-xs); margin-bottom: 20px;" id="productMeta">Đang tải thông tin sản phẩm...</p>
 
-            <div id="reviewContainer">
-                <div class="loading"><div class="spinner"></div>Đang tải thông tin...</div>
-            </div>
+            <form id="reviewForm">
+                <div class="form-group">
+                    <label class="form-label">Mức độ hài lòng</label>
+                    <div class="star-picker" id="starPicker">
+                        <button type="button" class="star-btn active" data-val="1">★</button>
+                        <button type="button" class="star-btn active" data-val="2">★</button>
+                        <button type="button" class="star-btn active" data-val="3">★</button>
+                        <button type="button" class="star-btn active" data-val="4">★</button>
+                        <button type="button" class="star-btn active" data-val="5">★</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="comment">Nhận xét của bạn</label>
+                    <textarea id="comment" class="textarea" rows="4" placeholder="Chia sẻ trải nghiệm thực tế về hiệu năng, đóng gói..." required></textarea>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="btn btn-primary" style="width: 100%;">
+                    Gửi đánh giá
+                </button>
+            </form>
         </div>
-    </div>
+    </main>
 
-    <footer class="footer">
-        <div class="footer-content">
-            <div><h4>MyShop</h4><p>Mua sắm trực tuyến hàng đầu Việt Nam.</p></div>
-            <div><h4>Liên kết</h4><ul><li><a href="#">Giới thiệu</a></li><li><a href="#">Chính sách</a></li><li><a href="#">Hỗ trợ</a></li></ul></div>
-            <div><h4>Liên hệ</h4><p>Email: support@myshop.vn</p><p>Hotline: 1900 1234</p></div>
-        </div>
-        <div class="footer-bottom">&copy; 2026 MyShop. All rights reserved.</div>
-    </footer>
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
-    <div id="toast" class="toast"></div>
+        const params = new URLSearchParams(window.location.search);
+        const orderId = Number(params.get('orderId'));
+        const productId = Number(params.get('productId'));
+        let rating = 5;
 
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-
-        const reviewContainer = document.getElementById('reviewContainer');
-        const cartCount = document.getElementById('cartCount');
-        const userSection = document.getElementById('userSection');
-        const toast = document.getElementById('toast');
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const orderId = urlParams.get('orderId');
-        const productId = urlParams.get('productId');
-
-        let selectedRating = 0;
-
-        // ========================= TOKEN =========================
-        async function refreshAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
-
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        let toastTimeout = null;
-
-        function renderStars(selected) {
-            const stars = document.querySelectorAll('.star');
-            stars.forEach((star, index) => {
-                if (index < selected) star.classList.add('active');
-                else star.classList.remove('active');
-            });
-        }
-
-        function initRating() {
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(star => {
-                star.addEventListener('click', function() {
-                    selectedRating = parseInt(this.dataset.value);
-                    renderStars(selectedRating);
-                });
-                star.addEventListener('mouseenter', function() {
-                    const val = parseInt(this.dataset.value);
-                    renderStars(val);
-                });
-                star.addEventListener('mouseleave', function() {
-                    renderStars(selectedRating);
+        document.querySelectorAll('.star-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                rating = Number(btn.dataset.val);
+                document.querySelectorAll('.star-btn').forEach(b => {
+                    b.classList.toggle('active', Number(b.dataset.val) <= rating);
                 });
             });
-        }
-
-        async function loadReviewForm() {
-            if (!orderId || !productId) {
-                reviewContainer.innerHTML = `
-                    <div class="error-msg">⚠️ Thiếu thông tin đơn hàng hoặc sản phẩm. Vui lòng quay lại trang đơn hàng.</div>
-                    <button class="btn-back" onclick="window.location.href='order.html'">← Quay lại đơn hàng</button>
-                `;
-                return;
-            }
-
-            try {
-                // Lấy thông tin sản phẩm để hiển thị
-                const productRes = await fetch(`${API_BASE_URL}/api/products/${productId}/detailproduct`);
-                let product = null;
-                if (productRes.ok) {
-                    const data = await productRes.json();
-                    product = data?.result || data;
-                }
-
-                reviewContainer.innerHTML = `
-                    <div class="product-info-box">
-                        <div class="name">${product?.nameProduct || 'Sản phẩm'}</div>
-                        <div class="price">${product?.price ? new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(product.price) : ''}</div>
-                    </div>
-                    <div class="form-group">
-                        <label>⭐ Đánh giá của bạn</label>
-                        <div class="rating-group">
-                            <span class="star" data-value="1">★</span>
-                            <span class="star" data-value="2">★</span>
-                            <span class="star" data-value="3">★</span>
-                            <span class="star" data-value="4">★</span>
-                            <span class="star" data-value="5">★</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="comment">💬 Bình luận (tùy chọn)</label>
-                        <textarea id="comment" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
-                    </div>
-                    <button class="btn-submit" id="submitReviewBtn">Gửi đánh giá</button>
-                `;
-
-                initRating();
-
-                document.getElementById('submitReviewBtn').addEventListener('click', async function() {
-                    if (selectedRating === 0) {
-                        showToast('Vui lòng chọn số sao đánh giá.', true);
-                        return;
-                    }
-                    const comment = document.getElementById('comment').value.trim();
-
-                    this.disabled = true;
-                    this.textContent = 'Đang gửi...';
-
-                    try {
-                        await fetchData(`${API_BASE_URL}/api/reviews`, {
-                            method: 'POST',
-                            body: JSON.stringify({
-                                orderId: parseInt(orderId),
-                                productId: parseInt(productId),
-                                rating: selectedRating,
-                                comment: comment || ''
-                            })
-                        });
-                        showToast('✅ Đánh giá thành công! Cảm ơn bạn.');
-                        setTimeout(() => {
-                            window.location.href = 'order.html';
-                        }, 1500);
-                    } catch (e) {
-                        showToast('❌ ' + e.message, true);
-                        this.disabled = false;
-                        this.textContent = 'Gửi đánh giá';
-                    }
-                });
-
-            } catch (e) {
-                reviewContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-            }
-        }
-
-        // ===== Auth & Header =====
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                userSection.innerHTML = `
-                    <div class="user-info">
-                        <div class="avatar">${initial}</div>
-                        <span class="username">${user.accountname}</span>
-                    </div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', function() {
-                    sessionStorage.removeItem('accountInfo');
-                    sessionStorage.removeItem('accessToken');
-                    localStorage.removeItem('cartCount');
-                    window.location.href = 'dang-nhap.html';
-                });
-            } else {
-                userSection.innerHTML = `
-                    <div class="auth-links">
-                        <a href="dang-nhap.html" class="btn btn-outline">Đăng nhập</a>
-                        <a href="dang-ky.html" class="btn btn-primary">Đăng ký</a>
-                    </div>
-                `;
-                window.location.href = 'dang-nhap.html';
-            }
-        }
-
-        function updateCartCount() {
-            const count = parseInt(localStorage.getItem('cartCount') || '0');
-            cartCount.textContent = count;
-        }
+        });
 
         async function init() {
-            renderHeader();
-            await getAccessToken();
-            updateCartCount();
-            loadReviewForm();
+            if (!auth.requireAuth()) return;
+            if (!orderId || !productId) {
+                toast.error('Thiếu thông tin đơn hàng hoặc sản phẩm.');
+                return;
+            }
+            try {
+                const product = await api.get(CONFIG.ENDPOINTS.PRODUCTS.DETAIL(productId));
+                document.getElementById('productMeta').textContent = `Đơn hàng #${orderId} — ${product.nameProduct}`;
+            } catch (_) {
+                document.getElementById('productMeta').textContent = `Đơn hàng #${orderId} — Sản phẩm #${productId}`;
+            }
         }
+
+        document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.textContent = 'Đang gửi...';
+            try {
+                await api.post(CONFIG.ENDPOINTS.REVIEW.CREATE, {
+                    orderId,
+                    productId,
+                    rating,
+                    comment: document.getElementById('comment').value.trim()
+                });
+                toast.success('Cảm ơn bạn đã gửi đánh giá!');
+                setTimeout(() => { window.location.href = CONFIG.ROUTES.ORDERS; }, 900);
+            } catch (err) {
+                toast.error(err.message || 'Không thể gửi đánh giá.');
+                btn.disabled = false;
+                btn.textContent = 'Gửi đánh giá';
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>

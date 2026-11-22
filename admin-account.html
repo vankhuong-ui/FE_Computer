@@ -3,257 +3,131 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý tài khoản - MyShop Admin</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; color:#2d3436; }
-        .container { max-width:1280px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#1a1a2e; box-shadow:0 2px 12px rgba(0,0,0,0.3);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
-        }
-        .header .logo { font-size:24px; font-weight:800; color:#fff; }
-        .header .logo span { color:#667eea; }
-        .header .nav-links { display:flex; gap:12px; align-items:center; flex:1; margin-left:30px; flex-wrap:wrap; }
-        .header .nav-links a { color:#ccc; font-weight:500; font-size:13px; padding:4px 10px; border-radius:6px; transition:all 0.2s; }
-        .header .nav-links a:hover, .header .nav-links a.active { color:#fff; background:rgba(255,255,255,0.1); }
-        .header .header-actions { display:flex; gap:12px; align-items:center; }
-        .header .user-info { display:flex; align-items:center; gap:8px; color:#ddd; font-weight:500; }
-        .header .user-info .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase; }
-        .header .btn-logout { background:#e74c3c; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:#c0392b; }
-
-        .page-header { display:flex; justify-content:space-between; align-items:center; padding:20px 0 16px; border-bottom:2px solid #eee; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-        .page-header h2 { font-size:24px; font-weight:700; color:#2c3e50; }
-
-        table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
-        th { background:#f8f9fa; padding:12px 16px; text-align:left; font-weight:600; color:#555; border-bottom:2px solid #eee; }
-        td { padding:12px 16px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
-        tr:hover td { background:#fafbfc; }
-
-        .badge { padding:4px 12px; border-radius:20px; font-weight:600; font-size:13px; }
-        .badge.active { background:#d1fae5; color:#065f46; }
-        .badge.inactive { background:#fee2e2; color:#991b1b; }
-        .badge.admin { background:#dbeafe; color:#2563eb; }
-        .badge.user { background:#e5e7eb; color:#4b5563; }
-
-        .btn { padding:6px 16px; border:none; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .btn-primary { background:#667eea; color:#fff; }
-        .btn-primary:hover { background:#5a6fd6; }
-        .btn-success { background:#27ae60; color:#fff; }
-        .btn-success:hover { background:#219a52; }
-        .btn-danger { background:#e74c3c; color:#fff; }
-        .btn-danger:hover { background:#c0392b; }
-        .btn-sm { padding:4px 12px; font-size:13px; }
-
-        .pagination { display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap; }
-        .pagination button { padding:6px 14px; border:2px solid #ddd; background:#fff; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-        .pagination button:hover { border-color:#667eea; color:#667eea; }
-        .pagination button.active { background:#667eea; border-color:#667eea; color:#fff; }
-        .pagination button:disabled { opacity:0.4; cursor:not-allowed; }
-
-        .loading { text-align:center; padding:40px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; width:40px; height:40px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:20px 0; border:1px solid #f5c6cb; }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:30px 20px; margin-top:40px; text-align:center; }
-
-        .toast { position:fixed; bottom:30px; right:30px; background:#fff; color:#333; padding:16px 24px; border-radius:14px; font-weight:600; font-size:15px; box-shadow:0 8px 32px rgba(0,0,0,0.15); z-index:9999; opacity:0; transform:translateY(30px); transition:all 0.4s ease; border-left:5px solid #27ae60; max-width:400px; pointer-events:none; }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-    </style>
+    <title>Quản lý Tài khoản — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
 </head>
 <body>
-    <header class="header">
-        <div class="logo">My<span>Shop</span> Admin</div>
-        <nav class="nav-links">
-            <a href="trangchu-admin.html">🏠 Trang chủ</a>
-            <a href="admin-account.html" class="active">👤 Tài khoản</a>
-            <a href="admin-address.html">📍 Địa chỉ</a>
-            <a href="admin-category.html">📂 Danh mục</a>
-            <a href="admin-brand.html">🏷️ Thương hiệu</a>
-            <a href="admin-product.html">📦 Sản phẩm</a>
-            <a href="admin-inventory.html">📊 Tồn kho</a>
-            <a href="admin-orders.html">📋 Đơn hàng</a>
-            <a href="admin-payment.html">💳 Thanh toán</a>
-            <a href="admin-support.html">🛟 Hỗ trợ</a>
-        </nav>
-        <div class="header-actions" id="headerActions"></div>
-    </header>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="trangchu-admin.html" class="admin-brand"><span class="brand-dot"></span><span>HOANG89 ADMIN</span></a>
+            <ul class="admin-menu">
+                <li class="admin-menu-section-label">Tổng quan</li>
+                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
+                <li class="admin-menu-section-label">Danh mục & Kho</li>
+                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
+                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
+                <li class="admin-menu-item"><a href="admin-brand.html">🏷️ Thương hiệu</a></li>
+                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
+                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
+                <li class="admin-menu-item"><a href="admin-orders.html">📋 Đơn hàng</a></li>
+                <li class="admin-menu-item"><a href="admin-payment.html">💳 Thanh toán</a></li>
+                <li class="admin-menu-item"><a href="admin-warranty.html">🛡️ Bảo hành điện tử</a></li>
+                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
+                <li class="admin-menu-section-label">Người dùng</li>
+                <li class="admin-menu-item"><a href="admin-account.html" class="active">👤 Tài khoản</a></li>
+                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
+            </ul>
+        </aside>
 
-    <div class="container">
-        <div class="page-header"><h2>👤 Quản lý tài khoản</h2></div>
-        <div id="contentContainer"><div class="loading"><div class="spinner"></div>Đang tải dữ liệu...</div></div>
-        <div id="paginationContainer" class="pagination"></div>
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Quản lý Tài khoản</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
+                    <div id="authNavArea"></div>
+                </div>
+            </header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Danh sách Tài khoản</h1>
+                        <p style="font-size: var(--text-xs);">Kiểm soát trạng thái kích hoạt của người dùng trong hệ thống.</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tên tài khoản</th>
+                                <th>Gmail</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;"></div>
+            </main>
+        </div>
     </div>
 
-    <footer class="footer">&copy; 2026 MyShop Admin. All rights reserved.</footer>
-    <div id="toast" class="toast"></div>
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-        const contentContainer = document.getElementById('contentContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const headerActions = document.getElementById('headerActions');
-        const toast = document.getElementById('toast');
+        let currentPage = 0;
 
-        let currentPage = 0, totalPages = 1;
-
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        let toastTimeout = null;
-
-        async function refreshAccessToken() {
+        async function loadAccounts(page = 0) {
+            if (!auth.requireAdmin()) return;
+            currentPage = page;
             try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
+                const data = await api.get(CONFIG.ENDPOINTS.AUTH.ADMIN_LIST, { page_no: page, page_size: 10, sortBy: 'id', sortDir: 'asc' });
+                const items = data?.content || [];
+                const totalPages = data?.totalPages || 1;
+                const tbody = document.getElementById('tableBody');
 
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap-admin.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
+                if (!items.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:32px;">Không có dữ liệu.</td></tr>`;
+                    return;
                 }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
 
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                headerActions.innerHTML = `
-                    <div class="user-info"><div class="avatar">${initial}</div><span>${user.accountname}</span></div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-            } else {
-                window.location.href = 'dang-nhap-admin.html';
-            }
-        }
-        async function handleLogout() {
-            try { await fetch(`${API_BASE_URL}/api/account/logout`, { method:'POST', credentials:'include' }); } catch(e) {}
-            finally { sessionStorage.removeItem('accessToken'); sessionStorage.removeItem('accountInfo'); window.location.replace('dang-nhap-admin.html'); }
-        }
-
-        function renderAccounts(accounts) {
-            if (!accounts || accounts.length === 0) {
-                contentContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">Không có tài khoản nào.</div>';
-                return;
-            }
-            let html = `<table><thead><tr><th>ID</th><th>Tên</th><th>Email</th><th>Vai trò</th><th>Trạng thái</th><th>Hành động</th></tr></thead><tbody>`;
-            accounts.forEach(acc => {
-                const status = acc.enabled ? 'Hoạt động' : 'Khóa';
-                const statusClass = acc.enabled ? 'active' : 'inactive';
-                const roleClass = acc.role === 'ADMIN' ? 'admin' : 'user';
-                html += `
+                tbody.innerHTML = items.map(acc => `
                     <tr>
-                        <td>${acc.id}</td>
-                        <td>${acc.accountname}</td>
+                        <td class="tabular-nums">#${acc.id}</td>
+                        <td style="font-weight: var(--font-medium);">${acc.accountname || '-'}</td>
                         <td>${acc.gmail}</td>
-                        <td><span class="badge ${roleClass}">${acc.role}</span></td>
-                        <td><span class="badge ${statusClass}">${status}</span></td>
+                        <td><span class="badge badge-info">${acc.role || 'USER'}</span></td>
+                        <td>${acc.enabled ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-danger">Đã khóa</span>'}</td>
                         <td>
-                            <button class="btn ${acc.enabled ? 'btn-danger' : 'btn-success'} btn-sm" onclick="toggleAccount(${acc.id}, ${!acc.enabled})">
-                                ${acc.enabled ? 'Khóa' : 'Mở khóa'}
+                            <button type="button" class="btn btn-sm ${acc.enabled ? 'btn-outline text-danger' : 'btn-primary'} btn-toggle" data-id="${acc.id}" data-next="${!acc.enabled}">
+                                ${acc.enabled ? 'Khóa' : 'Kích hoạt'}
                             </button>
                         </td>
                     </tr>
-                `;
-            });
-            html += `</tbody></table>`;
-            contentContainer.innerHTML = html;
-        }
+                `).join('');
 
-        function renderPagination(current, total) {
-            if (total <= 1) { paginationContainer.innerHTML = ''; return; }
-            let html = `<button ${current===0?'disabled':''} onclick="loadPage(${current-1})">‹</button>`;
-            for (let i=0; i<total; i++) {
-                html += `<button class="${i===current?'active':''}" onclick="loadPage(${i})">${i+1}</button>`;
-            }
-            html += `<button ${current>=total-1?'disabled':''} onclick="loadPage(${current+1})">›</button>`;
-            paginationContainer.innerHTML = html;
-        }
-
-        async function loadAccounts(page=0) {
-            try {
-                const data = await fetchData(`${API_BASE_URL}/api/account?page_no=${page}&page_size=10&sortBy=id&sortDir=asc`);
-                const accounts = data?.content || [];
-                totalPages = data?.totalPages || 1;
-                currentPage = data?.number || 0;
-                renderAccounts(accounts);
-                renderPagination(currentPage, totalPages);
-            } catch(e) {
-                contentContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-                console.error(e);
-            }
-        }
-
-        window.loadPage = function(page) {
-            if (page < 0 || page >= totalPages) return;
-            loadAccounts(page);
-        };
-
-        window.toggleAccount = async function(id, enable) {
-            if (!confirm(`Bạn có chắc chắn muốn ${enable ? 'mở khóa' : 'khóa'} tài khoản này?`)) return;
-            try {
-                await fetchData(`${API_BASE_URL}/api/account/${id}/enable`, {
-                    method: 'PUT',
-                    body: JSON.stringify(enable)
+                document.querySelectorAll('.btn-toggle').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        try {
+                            await api.put(CONFIG.ENDPOINTS.AUTH.ADMIN_ENABLE(btn.dataset.id), btn.dataset.next === 'true');
+                            toast.success('Cập nhật trạng thái tài khoản thành công!');
+                            loadAccounts(currentPage);
+                        } catch (err) {
+                            toast.error(err.message);
+                        }
+                    });
                 });
-                showToast(`✅ ${enable ? 'Mở khóa' : 'Khóa'} tài khoản thành công!`);
-                loadAccounts(currentPage);
-            } catch(e) {
-                showToast(`❌ ${e.message}`, true);
-            }
-        };
 
-        async function init() {
-            await getAccessToken();
-            const user = getUserInfo();
-            if (!user) { window.location.href = 'dang-nhap-admin.html'; return; }
-            renderHeader();
-            loadAccounts(0);
-            setInterval(refreshAccessToken, 5 * 60 * 1000);
+                const pag = document.getElementById('paginationBar');
+                pag.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
+                    `<button class="btn btn-sm ${i === page ? 'btn-primary' : 'btn-secondary'}" data-page="${i}">${i + 1}</button>`
+                ).join('') : '';
+                pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadAccounts(Number(b.dataset.page))));
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="text-danger" style="text-align:center; padding:32px;">${err.message}</td></tr>`;
+            }
         }
-        document.addEventListener('DOMContentLoaded', init);
+
+        document.addEventListener('DOMContentLoaded', () => { auth.initHeaderNav(); loadAccounts(0); });
     </script>
 </body>
 </html>

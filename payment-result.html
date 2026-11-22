@@ -3,142 +3,86 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kết quả thanh toán - MyShop</title>
+    <title>Kết quả thanh toán — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; display:flex; justify-content:center; align-items:center; min-height:100vh; }
-        .container { background:#fff; border-radius:20px; padding:40px; max-width:500px; width:100%; box-shadow:0 10px 40px rgba(0,0,0,0.1); text-align:center; }
-        .icon { font-size:64px; margin-bottom:16px; }
-        h2 { font-size:28px; margin-bottom:10px; }
-        .status-success { color:#27ae60; }
-        .status-failed { color:#e74c3c; }
-        .order-id { color:#555; margin:10px 0; }
-        .btn-home { display:inline-block; margin-top:20px; padding:12px 36px; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; border:none; border-radius:40px; font-weight:600; font-size:16px; cursor:pointer; text-decoration:none; transition:transform 0.2s; }
-        .btn-home:hover { transform:scale(1.03); }
-        .btn-orders { background:linear-gradient(135deg,#27ae60,#2ecc71); margin-left:10px; }
-        .loading { display:inline-block; width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; animation:spin 1s linear infinite; margin:20px auto; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { color:#e74c3c; }
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100dvh;
+            padding: 24px;
+            background-color: var(--canvas);
+        }
+        .result-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 460px;
+            width: 100%;
+            padding: 36px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div id="resultContent">
-            <div class="loading"></div>
-            <p>Đang xác thực thanh toán...</p>
-        </div>
+    <div class="result-card" id="resultContent">
+        <p style="font-size: var(--text-sm);">Đang xác thực giao dịch thanh toán...</p>
     </div>
-    <script>
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE_URL = localStorage.getItem('CUSTOM_API_BASE_URL') || (isLocal ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com');
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { CONFIG } from './assets/js/config.js';
 
         const container = document.getElementById('resultContent');
-
-        // Hàm lấy token (giống các file khác)
-        async function getAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-
-        async function fetchData(url, opts={}) {
-            let token = sessionStorage.getItem('accessToken');
-            if (!token) token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await getAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        // Lấy toàn bộ query params từ URL
         const queryParams = new URLSearchParams(window.location.search);
         const params = {};
-        for (const [key, value] of queryParams.entries()) {
-            params[key] = value;
+        for (const [k, v] of queryParams.entries()) {
+            params[k] = v;
         }
 
-        // Hàm xử lý kết quả
         async function handleResult() {
-            // Nếu không có orderId trong params, thử lấy từ responseCode
             const responseCode = params['vnp_ResponseCode'];
             const orderId = params['vnp_TxnRef'];
-            const amount = params['vnp_Amount'];
-            const transactionNo = params['vnp_TransactionNo'];
 
-            // Trường hợp không có đủ tham số → hiển thị lỗi
             if (!responseCode || !orderId) {
-                container.innerHTML = `
-                    <div class="icon">❌</div>
-                    <h2 class="status-failed">Thanh toán thất bại!</h2>
-                    <p>Không tìm thấy thông tin giao dịch.</p>
-                    <div>
-                        <a href="order.html" class="btn-home btn-orders">📦 Xem đơn hàng</a>
-                        <a href="trangchu.html" class="btn-home">🏠 Về trang chủ</a>
-                    </div>
-                `;
+                renderStatus(false, null, 'Không tìm thấy thông tin giao dịch hợp lệ.');
                 return;
             }
 
-            const isSuccess = responseCode === '00';
-
-            // Gửi dữ liệu lên backend để xác thực và lưu
             try {
-                const payload = { params };
-                const response = await fetchData(`${API_BASE_URL}/api/payment/verify`, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                // Hiển thị kết quả từ backend
-                const finalStatus = response?.status?.toUpperCase() === 'SUCCESS';
-                const finalOrderId = response?.orderId || orderId;
-
-                container.innerHTML = `
-                    <div class="icon">${finalStatus ? '✅' : '❌'}</div>
-                    <h2 class="${finalStatus ? 'status-success' : 'status-failed'}">${finalStatus ? 'Thanh toán thành công!' : 'Thanh toán thất bại!'}</h2>
-                    <p style="color:#555; margin:10px 0;">${finalStatus ? 'Cảm ơn bạn đã mua sắm!' : 'Giao dịch không thành công, vui lòng thử lại.'}</p>
-                    <p class="order-id">Mã đơn hàng: #${finalOrderId}</p>
-                    <div>
-                        <a href="order.html" class="btn-home btn-orders">📦 Xem đơn hàng</a>
-                        <a href="trangchu.html" class="btn-home">🏠 Về trang chủ</a>
-                    </div>
-                `;
+                const res = await api.post(CONFIG.ENDPOINTS.PAYMENT.VERIFY, { params });
+                const success = res?.status?.toUpperCase() === 'SUCCESS';
+                renderStatus(success, res?.orderId || orderId, success
+                    ? 'Thanh toán thành công! Phiếu bảo hành điện tử của bạn đã được kích hoạt.'
+                    : 'Giao dịch không thành công hoặc đã bị hủy.');
             } catch (e) {
-                // Nếu gọi API verify thất bại, hiển thị kết quả dựa trên responseCode
-                container.innerHTML = `
-                    <div class="icon">${isSuccess ? '✅' : '❌'}</div>
-                    <h2 class="${isSuccess ? 'status-success' : 'status-failed'}">${isSuccess ? 'Thanh toán thành công!' : 'Thanh toán thất bại!'}</h2>
-                    <p style="color:#555; margin:10px 0;">${isSuccess ? 'Cảm ơn bạn đã mua sắm!' : 'Giao dịch không thành công, vui lòng thử lại.'}</p>
-                    <p class="order-id">Mã đơn hàng: #${orderId}</p>
-                    <p style="color:#999; font-size:14px; margin-top:8px;">(Không thể xác thực với server, vui lòng kiểm tra sau)</p>
-                    <div>
-                        <a href="order.html" class="btn-home btn-orders">📦 Xem đơn hàng</a>
-                        <a href="trangchu.html" class="btn-home">🏠 Về trang chủ</a>
-                    </div>
-                `;
-                console.error('Lỗi verify:', e);
+                const fallbackSuccess = responseCode === '00';
+                renderStatus(fallbackSuccess, orderId, fallbackSuccess
+                    ? 'Thanh toán đã ghi nhận. Vui lòng kiểm tra trạng thái trong mục Đơn hàng.'
+                    : 'Giao dịch không thành công.');
             }
+        }
+
+        function renderStatus(isSuccess, orderId, message) {
+            container.innerHTML = `
+                <div style="margin-bottom: 16px;">
+                    <span class="badge ${isSuccess ? 'badge-success' : 'badge-danger'}" style="font-size: var(--text-sm); padding: 6px 14px;">
+                        ${isSuccess ? '✓ GIAO DỊCH THÀNH CÔNG' : '✕ GIAO DỊCH THẤT BẠI'}
+                    </span>
+                </div>
+                <h1 style="font-size: var(--text-2xl); margin-bottom: 8px;">
+                    ${isSuccess ? 'Cảm ơn bạn đã đặt hàng' : 'Thanh toán chưa hoàn tất'}
+                </h1>
+                ${orderId ? `<p class="tabular-nums" style="font-size: var(--text-sm); margin-bottom: 8px;">Mã đơn hàng: <b>#${orderId}</b></p>` : ''}
+                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 24px;">${message}</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <a href="order.html" class="btn btn-primary btn-sm">Xem đơn hàng</a>
+                    <a href="warranty.html" class="btn btn-secondary btn-sm">Xem bảo hành</a>
+                    <a href="index.html" class="btn btn-outline btn-sm">Trang chủ</a>
+                </div>
+            `;
         }
 
         handleResult();

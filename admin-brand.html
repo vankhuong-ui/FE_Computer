@@ -3,343 +3,178 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý thương hiệu - MyShop Admin</title>
+    <title>Quản lý Thương hiệu — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; color:#2d3436; }
-        .container { max-width:1280px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#1a1a2e; box-shadow:0 2px 12px rgba(0,0,0,0.3);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
-        }
-        .header .logo { font-size:24px; font-weight:800; color:#fff; }
-        .header .logo span { color:#667eea; }
-        .header .nav-links { display:flex; gap:12px; align-items:center; flex:1; margin-left:30px; flex-wrap:wrap; }
-        .header .nav-links a { color:#ccc; font-weight:500; font-size:13px; padding:4px 10px; border-radius:6px; transition:all 0.2s; }
-        .header .nav-links a:hover, .header .nav-links a.active { color:#fff; background:rgba(255,255,255,0.1); }
-        .header .header-actions { display:flex; gap:12px; align-items:center; }
-        .header .user-info { display:flex; align-items:center; gap:8px; color:#ddd; font-weight:500; }
-        .header .user-info .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase; }
-        .header .btn-logout { background:#e74c3c; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:#c0392b; }
-
-        .page-header { display:flex; justify-content:space-between; align-items:center; padding:20px 0 16px; border-bottom:2px solid #eee; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-        .page-header h2 { font-size:24px; font-weight:700; color:#2c3e50; }
-        .page-header .btn { padding:8px 20px; background:#667eea; color:#fff; border:none; border-radius:6px; font-weight:600; font-size:15px; cursor:pointer; transition:background 0.2s; }
-        .page-header .btn:hover { background:#5a6fd6; }
-
-        table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
-        th { background:#f8f9fa; padding:12px 16px; text-align:left; font-weight:600; color:#555; border-bottom:2px solid #eee; }
-        td { padding:12px 16px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
-        tr:hover td { background:#fafbfc; }
-
-        .brand-logo { width:40px; height:40px; object-fit:contain; border-radius:4px; background:#fff; border:1px solid #eee; padding:4px; }
-
-        .btn { padding:6px 16px; border:none; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .btn-edit { background:#f39c12; color:#fff; }
-        .btn-edit:hover { background:#d68910; }
-        .btn-sm { padding:4px 12px; font-size:13px; }
-
-        .loading { text-align:center; padding:40px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; width:40px; height:40px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:20px 0; border:1px solid #f5c6cb; }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:30px 20px; margin-top:40px; text-align:center; }
-
-        .toast { position:fixed; bottom:30px; right:30px; background:#fff; color:#333; padding:16px 24px; border-radius:14px; font-weight:600; font-size:15px; box-shadow:0 8px 32px rgba(0,0,0,0.15); z-index:9999; opacity:0; transform:translateY(30px); transition:all 0.4s ease; border-left:5px solid #27ae60; max-width:400px; pointer-events:none; }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-
-        .modal-overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); z-index:999; justify-content:center; align-items:center; padding:20px; }
-        .modal-overlay.active { display:flex; }
-        .modal { background:#fff; border-radius:16px; padding:30px; max-width:500px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalIn 0.3s ease; }
-        @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .modal h3 { margin-bottom:20px; color:#333; text-align:center; }
-        .modal .form-group { margin-bottom:16px; }
-        .modal .form-group label { display:block; font-weight:600; color:#555; font-size:14px; margin-bottom:4px; }
-        .modal .form-group input[type="file"] { padding:8px; }
-        .modal .form-group .image-preview { display:flex; align-items:center; gap:12px; margin-top:6px; }
-        .modal .form-group .image-preview img { width:60px; height:60px; object-fit:contain; border:1px solid #ddd; border-radius:6px; padding:4px; background:#fafafa; }
-        .modal .form-group .image-preview .remove-img { color:#e74c3c; cursor:pointer; font-weight:600; font-size:13px; }
-        .modal .form-group .image-preview .remove-img:hover { text-decoration:underline; }
-        .modal .btn-submit { width:100%; padding:12px; background:#667eea; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:16px; cursor:pointer; transition:transform 0.2s; }
-        .modal .btn-submit:hover { transform:scale(1.02); }
-        .modal .btn-submit:disabled { background:#ccc; cursor:not-allowed; transform:none; }
-        .modal .close-modal { float:right; background:none; border:none; font-size:24px; cursor:pointer; color:#999; }
-        .modal .close-modal:hover { color:#333; }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 440px; width: 100%; padding: 28px; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo">My<span>Shop</span> Admin</div>
-        <nav class="nav-links">
-            <a href="trangchu-admin.html">🏠 Trang chủ</a>
-            <a href="admin-account.html">👤 Tài khoản</a>
-            <a href="admin-address.html">📍 Địa chỉ</a>
-            <a href="admin-category.html">📂 Danh mục</a>
-            <a href="admin-brand.html" class="active">🏷️ Thương hiệu</a>
-            <a href="admin-product.html">📦 Sản phẩm</a>
-            <a href="admin-inventory.html">📊 Tồn kho</a>
-            <a href="admin-orders.html">📋 Đơn hàng</a>
-            <a href="admin-payment.html">💳 Thanh toán</a>
-            <a href="admin-support.html">🛟 Hỗ trợ</a>
-        </nav>
-        <div class="header-actions" id="headerActions"></div>
-    </header>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="trangchu-admin.html" class="admin-brand"><span class="brand-dot"></span><span>HOANG89 ADMIN</span></a>
+            <ul class="admin-menu">
+                <li class="admin-menu-section-label">Tổng quan</li>
+                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
+                <li class="admin-menu-section-label">Danh mục & Kho</li>
+                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
+                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
+                <li class="admin-menu-item"><a href="admin-brand.html" class="active">🏷️ Thương hiệu</a></li>
+                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
+                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
+                <li class="admin-menu-item"><a href="admin-orders.html">📋 Đơn hàng</a></li>
+                <li class="admin-menu-item"><a href="admin-payment.html">💳 Thanh toán</a></li>
+                <li class="admin-menu-item"><a href="admin-warranty.html">🛡️ Bảo hành điện tử</a></li>
+                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
+                <li class="admin-menu-section-label">Người dùng</li>
+                <li class="admin-menu-item"><a href="admin-account.html">👤 Tài khoản</a></li>
+                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
+            </ul>
+        </aside>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>🏷️ Quản lý thương hiệu</h2>
-            <button class="btn" onclick="openAddModal()">+ Thêm thương hiệu</button>
-        </div>
-        <div id="contentContainer"><div class="loading"><div class="spinner"></div>Đang tải dữ liệu...</div></div>
-    </div>
-
-    <!-- Modal thêm/sửa -->
-    <div class="modal-overlay" id="brandModal">
-        <div class="modal">
-            <button class="close-modal" id="closeModal">&times;</button>
-            <h3 id="modalTitle">Thêm thương hiệu</h3>
-            <div class="form-group">
-                <label for="brandName">Tên thương hiệu</label>
-                <input type="text" id="brandName" placeholder="Nhập tên thương hiệu" />
-            </div>
-            <div class="form-group">
-                <label for="brandLogoFile">Logo</label>
-                <input type="file" id="brandLogoFile" accept="image/*" />
-                <div class="image-preview" id="logoPreviewContainer" style="display:none;">
-                    <img id="logoPreview" src="#" alt="Preview" />
-                    <span class="remove-img" id="removeLogoBtn">Xóa logo</span>
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Quản lý Thương hiệu</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
+                    <div id="authNavArea"></div>
                 </div>
-                <input type="hidden" id="brandLogoBase64" value="" />
-            </div>
-            <button class="btn-submit" id="submitBtn">Lưu</button>
+            </header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Thương hiệu Phần cứng</h1>
+                        <p style="font-size: var(--text-xs);">Thêm, sửa, xóa các hãng sản xuất linh kiện & laptop.</p>
+                    </div>
+                    <button type="button" id="btnAdd" class="btn btn-primary btn-sm">+ Thêm thương hiệu</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr><th>ID</th><th>Tên thương hiệu</th><th>Logo URL</th><th>Thao tác</th></tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="4" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
         </div>
     </div>
 
-    <footer class="footer">&copy; 2026 MyShop Admin. All rights reserved.</footer>
-    <div id="toast" class="toast"></div>
+    <div class="modal-backdrop" id="brandModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg);" id="modalTitle">Thêm thương hiệu</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="brandForm">
+                <input type="hidden" id="editId" />
+                <div class="form-group">
+                    <label class="form-label" for="brandName">Tên thương hiệu</label>
+                    <input type="text" id="brandName" class="input" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="brandLogo">Logo URL (Tùy chọn)</label>
+                    <input type="text" id="brandLogo" class="input" placeholder="https://..." />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-        const contentContainer = document.getElementById('contentContainer');
-        const headerActions = document.getElementById('headerActions');
-        const toast = document.getElementById('toast');
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
+
         const modal = document.getElementById('brandModal');
-        const closeModal = document.getElementById('closeModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const brandName = document.getElementById('brandName');
-        const brandLogoFile = document.getElementById('brandLogoFile');
-        const logoPreviewContainer = document.getElementById('logoPreviewContainer');
-        const logoPreview = document.getElementById('logoPreview');
-        const removeLogoBtn = document.getElementById('removeLogoBtn');
-        const brandLogoBase64 = document.getElementById('brandLogoBase64');
-        const submitBtn = document.getElementById('submitBtn');
-
-        let editingId = null;
-        let currentLogoBase64 = '';
-
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        let toastTimeout = null;
-
-        async function refreshAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
-
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap-admin.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                headerActions.innerHTML = `
-                    <div class="user-info"><div class="avatar">${initial}</div><span>${user.accountname}</span></div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-            } else {
-                window.location.href = 'dang-nhap-admin.html';
-            }
-        }
-        async function handleLogout() {
-            try { await fetch(`${API_BASE_URL}/api/account/logout`, { method:'POST', credentials:'include' }); } catch(e) {}
-            finally { sessionStorage.removeItem('accessToken'); sessionStorage.removeItem('accountInfo'); window.location.replace('dang-nhap-admin.html'); }
-        }
-
-        // ===== Logo handling =====
-        function handleLogoFile(file) {
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64 = e.target.result;
-                currentLogoBase64 = base64;
-                brandLogoBase64.value = base64;
-                logoPreview.src = base64;
-                logoPreviewContainer.style.display = 'flex';
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeLogo() {
-            currentLogoBase64 = '';
-            brandLogoBase64.value = '';
-            brandLogoFile.value = '';
-            logoPreview.src = '#';
-            logoPreviewContainer.style.display = 'none';
-        }
-
-        brandLogoFile.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                handleLogoFile(this.files[0]);
-            }
-        });
-
-        removeLogoBtn.addEventListener('click', removeLogo);
-
-        function renderBrands(brands) {
-            if (!brands || brands.length === 0) {
-                contentContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">Không có thương hiệu nào.</div>';
-                return;
-            }
-            let html = `<table><thead><tr><th>ID</th><th>Logo</th><th>Tên thương hiệu</th><th>Slug</th><th>Hành động</th></tr></thead><tbody>`;
-            brands.forEach(brand => {
-                const logoHtml = brand.logo ? `<img src="${brand.logo}" class="brand-logo" />` : '<span style="color:#ccc;">📷</span>';
-                html += `
-                    <tr>
-                        <td>${brand.id}</td>
-                        <td>${logoHtml}</td>
-                        <td>${brand.nameBrands}</td>
-                        <td>${brand.slug || '-'}</td>
-                        <td>
-                            <button class="btn btn-edit btn-sm" onclick="editBrand(${brand.id}, '${brand.nameBrands}', '${brand.logo || ''}')">Sửa</button>
-                        </td>
-                    </tr>
-                `;
-            });
-            html += `</tbody></table>`;
-            contentContainer.innerHTML = html;
-        }
+        const form = document.getElementById('brandForm');
+        let brands = [];
 
         async function loadBrands() {
+            if (!auth.requireAdmin()) return;
             try {
-                const data = await fetchData(`${API_BASE_URL}/api/brands`);
-                renderBrands(data);
-            } catch(e) {
-                contentContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-                console.error(e);
+                const res = await api.get(CONFIG.ENDPOINTS.BRANDS.LIST);
+                brands = Array.isArray(res) ? res : [];
+                const tbody = document.getElementById('tableBody');
+                if (!brands.length) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:32px;">Chưa có thương hiệu nào.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = brands.map(b => `
+                    <tr>
+                        <td class="tabular-nums">#${b.id}</td>
+                        <td style="font-weight: var(--font-semibold);">${b.nameBrands || b.name}</td>
+                        <td style="font-size: var(--text-xs); color: var(--text-secondary);">${b.logo || '-'}</td>
+                        <td>
+                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${b.id}">Sửa</button>
+                            <button type="button" class="btn btn-outline btn-sm text-danger btn-del" data-id="${b.id}">Xóa</button>
+                        </td>
+                    </tr>
+                `).join('');
+
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const b = brands.find(x => x.id === Number(btn.dataset.id));
+                        if (!b) return;
+                        document.getElementById('modalTitle').textContent = 'Cập nhật thương hiệu';
+                        document.getElementById('editId').value = b.id;
+                        document.getElementById('brandName').value = b.nameBrands || b.name || '';
+                        document.getElementById('brandLogo').value = b.logo || '';
+                        modal.classList.add('active');
+                    });
+                });
+
+                document.querySelectorAll('.btn-del').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Xóa thương hiệu này?')) return;
+                        try {
+                            await api.delete(CONFIG.ENDPOINTS.BRANDS.DELETE(btn.dataset.id));
+                            toast.success('Đã xóa thương hiệu.');
+                            loadBrands();
+                        } catch (err) { toast.error(err.message); }
+                    });
+                });
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
-        window.openAddModal = function() {
-            editingId = null;
-            modalTitle.textContent = 'Thêm thương hiệu';
-            brandName.value = '';
-            removeLogo();
+        document.getElementById('btnAdd').addEventListener('click', () => {
+            document.getElementById('modalTitle').textContent = 'Thêm thương hiệu';
+            form.reset();
+            document.getElementById('editId').value = '';
             modal.classList.add('active');
-            brandName.focus();
-        };
-
-        window.editBrand = function(id, name, logo) {
-            editingId = id;
-            modalTitle.textContent = 'Sửa thương hiệu';
-            brandName.value = name;
-            if (logo) {
-                currentLogoBase64 = logo;
-                brandLogoBase64.value = logo;
-                logoPreview.src = logo;
-                logoPreviewContainer.style.display = 'flex';
-            } else {
-                removeLogo();
-            }
-            modal.classList.add('active');
-            brandName.focus();
-        };
-
-        closeModal.addEventListener('click', () => modal.classList.remove('active'));
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.classList.remove('active');
         });
+        document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => modal.classList.remove('active'));
 
-        submitBtn.addEventListener('click', async function() {
-            const name = brandName.value.trim();
-            const logo = brandLogoBase64.value;
-            if (!name) {
-                showToast('Vui lòng nhập tên thương hiệu.', true);
-                return;
-            }
-            this.disabled = true;
-            this.textContent = 'Đang xử lý...';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const payload = {
+                nameBrands: document.getElementById('brandName').value.trim(),
+                logo: document.getElementById('brandLogo').value.trim() || null
+            };
             try {
-                const url = editingId ? `${API_BASE_URL}/api/brands/${editingId}/update` : `${API_BASE_URL}/api/brands/create`;
-                const method = editingId ? 'PUT' : 'POST';
-                await fetchData(url, { method, body: JSON.stringify({ nameBrands: name, logo: logo || null }) });
-                showToast(editingId ? '✅ Cập nhật thương hiệu thành công!' : '✅ Thêm thương hiệu thành công!');
+                if (id) await api.put(CONFIG.ENDPOINTS.BRANDS.UPDATE(id), payload);
+                else await api.post(CONFIG.ENDPOINTS.BRANDS.CREATE, payload);
+                toast.success('Lưu thương hiệu thành công!');
                 modal.classList.remove('active');
                 loadBrands();
-            } catch(e) {
-                showToast(`❌ ${e.message}`, true);
-            } finally {
-                this.disabled = false;
-                this.textContent = 'Lưu';
-            }
+            } catch (err) { toast.error(err.message); }
         });
 
-        async function init() {
-            await getAccessToken();
-            const user = getUserInfo();
-            if (!user) { window.location.href = 'dang-nhap-admin.html'; return; }
-            renderHeader();
-            loadBrands();
-            setInterval(refreshAccessToken, 5 * 60 * 1000);
-        }
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => { auth.initHeaderNav(); loadBrands(); });
     </script>
 </body>
 </html>

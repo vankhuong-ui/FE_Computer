@@ -3,394 +3,109 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý thanh toán - MyShop Admin</title>
-    <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f1f4f9; color:#2d3436; }
-        .container { max-width:1280px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#1a1a2e; box-shadow:0 2px 12px rgba(0,0,0,0.3);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
-        }
-        .header .logo { font-size:24px; font-weight:800; color:#fff; }
-        .header .logo span { color:#667eea; }
-        .header .nav-links { display:flex; gap:12px; align-items:center; flex:1; margin-left:30px; flex-wrap:wrap; }
-        .header .nav-links a { color:#ccc; font-weight:500; font-size:13px; padding:4px 10px; border-radius:6px; transition:all 0.2s; }
-        .header .nav-links a:hover, .header .nav-links a.active { color:#fff; background:rgba(255,255,255,0.1); }
-        .header .header-actions { display:flex; gap:12px; align-items:center; }
-        .header .user-info { display:flex; align-items:center; gap:8px; color:#ddd; font-weight:500; }
-        .header .user-info .avatar { width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase; }
-        .header .btn-logout { background:#e74c3c; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:#c0392b; }
-
-        .page-header { display:flex; justify-content:space-between; align-items:center; padding:20px 0 16px; border-bottom:2px solid #eee; margin-bottom:20px; flex-wrap:wrap; gap:12px; }
-        .page-header h2 { font-size:26px; font-weight:700; color:#2c3e50; }
-        .page-header h2 span { color:#667eea; }
-
-        .filter-area {
-            display:flex; gap:14px; align-items:center; flex-wrap:wrap;
-            background:#fff; padding:16px 20px; border-radius:12px;
-            box-shadow:0 2px 8px rgba(0,0,0,0.04); margin-bottom:24px;
-            border:1px solid #eef0f4;
-        }
-        .filter-area label { font-weight:600; color:#555; font-size:14px; }
-        .filter-area input[type="date"] {
-            padding:10px 16px; border:2px solid #e0e0e0; border-radius:8px;
-            font-size:14px; background:#fafafa; transition:border-color 0.3s;
-            cursor:pointer;
-        }
-        .filter-area input[type="date"]:focus { border-color:#667eea; outline:none; background:#fff; }
-        .filter-area .btn {
-            padding:10px 28px; background:linear-gradient(135deg,#667eea,#764ba2);
-            color:#fff; border:none; border-radius:8px; font-weight:600; font-size:14px;
-            cursor:pointer; transition:transform 0.2s, box-shadow 0.2s;
-        }
-        .filter-area .btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(102,126,234,0.3); }
-        .filter-area .btn-reset {
-            background:#e0e0e0; color:#555;
-        }
-        .filter-area .btn-reset:hover { background:#d0d0d0; transform:translateY(-2px); }
-
-        .table-wrapper {
-            background:#fff; border-radius:16px; box-shadow:0 2px 12px rgba(0,0,0,0.04);
-            overflow:hidden; border:1px solid #eef0f4;
-        }
-        table { width:100%; border-collapse:collapse; }
-        th {
-            background:#f8fafc; padding:14px 18px; text-align:left;
-            font-weight:600; font-size:14px; color:#555;
-            border-bottom:2px solid #eef0f4;
-        }
-        td { padding:14px 18px; border-bottom:1px solid #f0f2f6; vertical-align:middle; font-size:14px; }
-        tr:hover td { background:#fafbff; }
-        tr:last-child td { border-bottom:none; }
-
-        .badge {
-            padding:4px 14px; border-radius:20px; font-weight:600; font-size:13px;
-            display:inline-block;
-        }
-        .badge-success { background:#d1fae5; color:#065f46; }
-        .badge-failed { background:#fee2e2; color:#991b1b; }
-        .badge-pending { background:#fef3c7; color:#d97706; }
-        .badge-default { background:#e5e7eb; color:#4b5563; }
-
-        .amount { font-weight:700; color:#2c3e50; }
-        .payment-gateway { color:#667eea; font-weight:500; }
-        .txn-id { font-family:monospace; font-size:13px; color:#555; background:#f0f2f6; padding:2px 8px; border-radius:4px; }
-
-        .empty-state {
-            text-align:center; padding:60px 20px; color:#888;
-        }
-        .empty-state .icon { font-size:56px; margin-bottom:12px; opacity:0.5; }
-        .empty-state p { font-size:16px; }
-
-        .loading { text-align:center; padding:60px 20px; color:#888; }
-        .loading .spinner {
-            border:4px solid #f3f3f3; border-top:4px solid #667eea;
-            border-radius:50%; width:44px; height:44px;
-            animation:spin 0.9s linear infinite; margin:0 auto 16px;
-        }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:20px 0; border:1px solid #f5c6cb; }
-
-        .pagination { display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap; }
-        .pagination button {
-            padding:6px 14px; border:2px solid #ddd; background:#fff; border-radius:6px;
-            font-weight:600; cursor:pointer; transition:all 0.2s;
-        }
-        .pagination button:hover { border-color:#667eea; color:#667eea; }
-        .pagination button.active { background:#667eea; border-color:#667eea; color:#fff; }
-        .pagination button:disabled { opacity:0.4; cursor:not-allowed; }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:30px 20px; margin-top:40px; text-align:center; font-size:14px; }
-
-        .toast {
-            position:fixed; bottom:30px; right:30px; background:#fff; color:#333;
-            padding:16px 24px; border-radius:14px; font-weight:600; font-size:15px;
-            box-shadow:0 8px 32px rgba(0,0,0,0.15); z-index:9999;
-            opacity:0; transform:translateY(30px); transition:all 0.4s ease;
-            border-left:5px solid #27ae60; max-width:400px; pointer-events:none;
-        }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-
-        @media (max-width:768px) {
-            .header .nav-links { gap:6px; margin-left:10px; }
-            .header .nav-links a { font-size:12px; padding:3px 6px; }
-            .filter-area { flex-direction:column; align-items:stretch; }
-            .filter-area input[type="date"] { width:100%; }
-            table { font-size:13px; }
-            th, td { padding:10px 12px; }
-            .badge { font-size:11px; padding:2px 10px; }
-        }
-    </style>
+    <title>Quản lý Thanh toán — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
 </head>
 <body>
-    <header class="header">
-        <div class="logo">My<span>Shop</span> Admin</div>
-        <nav class="nav-links">
-            <a href="trangchu-admin.html">🏠 Trang chủ</a>
-            <a href="admin-account.html">👤 Tài khoản</a>
-            <a href="admin-address.html">📍 Địa chỉ</a>
-            <a href="admin-category.html">📂 Danh mục</a>
-            <a href="admin-brand.html">🏷️ Thương hiệu</a>
-            <a href="admin-product.html">📦 Sản phẩm</a>
-            <a href="admin-inventory.html">📊 Tồn kho</a>
-            <a href="admin-orders.html">📋 Đơn hàng</a>
-            <a href="admin-payment.html" class="active">💳 Thanh toán</a>
-            <a href="admin-support.html">🛟 Hỗ trợ</a>
-        </nav>
-        <div class="header-actions" id="headerActions"></div>
-    </header>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="trangchu-admin.html" class="admin-brand"><span class="brand-dot"></span><span>HOANG89 ADMIN</span></a>
+            <ul class="admin-menu">
+                <li class="admin-menu-section-label">Tổng quan</li>
+                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
+                <li class="admin-menu-section-label">Danh mục & Kho</li>
+                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
+                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
+                <li class="admin-menu-item"><a href="admin-brand.html">🏷️ Thương hiệu</a></li>
+                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
+                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
+                <li class="admin-menu-item"><a href="admin-orders.html">📋 Đơn hàng</a></li>
+                <li class="admin-menu-item"><a href="admin-payment.html" class="active">💳 Thanh toán</a></li>
+                <li class="admin-menu-item"><a href="admin-warranty.html">🛡️ Bảo hành điện tử</a></li>
+                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
+                <li class="admin-menu-section-label">Người dùng</li>
+                <li class="admin-menu-item"><a href="admin-account.html">👤 Tài khoản</a></li>
+                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
+            </ul>
+        </aside>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>💳 <span>Quản lý thanh toán</span></h2>
-        </div>
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Lịch sử Giao dịch Thanh toán</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
+                    <div id="authNavArea"></div>
+                </div>
+            </header>
 
-        <div class="filter-area">
-            <label for="fromDate">📅 Từ ngày:</label>
-            <input type="date" id="fromDate" />
-            <label for="toDate">Đến ngày:</label>
-            <input type="date" id="toDate" />
-            <button class="btn" id="filterBtn">🔍 Tìm kiếm</button>
-            <button class="btn btn-reset" id="resetFilterBtn">🔄 Xóa bộ lọc</button>
-        </div>
-
-        <div id="contentContainer">
-            <div class="loading"><div class="spinner"></div><p>Đang tải dữ liệu thanh toán...</p></div>
-        </div>
-        <div id="paginationContainer" class="pagination"></div>
-    </div>
-
-    <footer class="footer">&copy; 2026 MyShop Admin. All rights reserved.</footer>
-    <div id="toast" class="toast"></div>
-
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-        const contentContainer = document.getElementById('contentContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const headerActions = document.getElementById('headerActions');
-        const toast = document.getElementById('toast');
-        const fromDate = document.getElementById('fromDate');
-        const toDate = document.getElementById('toDate');
-        const filterBtn = document.getElementById('filterBtn');
-        const resetFilterBtn = document.getElementById('resetFilterBtn');
-
-        let currentPage = 0;
-        let totalPages = 1;
-        let currentFromDate = '';
-        let currentToDate = '';
-
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        let toastTimeout = null;
-
-        // ========================= TOKEN =========================
-        async function refreshAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
-
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap-admin.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                headerActions.innerHTML = `
-                    <div class="user-info"><div class="avatar">${initial}</div><span>${user.accountname}</span></div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-            } else {
-                window.location.href = 'dang-nhap-admin.html';
-            }
-        }
-        async function handleLogout() {
-            try { await fetch(`${API_BASE_URL}/api/account/logout`, { method:'POST', credentials:'include' }); } catch(e) {}
-            finally { sessionStorage.removeItem('accessToken'); sessionStorage.removeItem('accountInfo'); window.location.replace('dang-nhap-admin.html'); }
-        }
-
-        // ===== Render Payment List =====
-        function renderPayments(payments) {
-            if (!payments || payments.length === 0) {
-                contentContainer.innerHTML = `
-                    <div class="table-wrapper">
-                        <div class="empty-state">
-                            <div class="icon">💳</div>
-                            <p>Không tìm thấy giao dịch thanh toán nào.</p>
-                        </div>
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Đối soát Giao dịch</h1>
+                        <p style="font-size: var(--text-xs);">Theo dõi toàn bộ giao dịch qua cổng VietQR SePay và VNPay.</p>
                     </div>
-                `;
-                return;
-            }
-            let rows = '';
-            payments.forEach(p => {
-                const statusMap = {
-                    'SUCCESS': { class: 'badge-success', text: '✅ Thành công' },
-                    'FAILED': { class: 'badge-failed', text: '❌ Thất bại' },
-                    'PENDING': { class: 'badge-pending', text: '⏳ Đang xử lý' }
-                };
-                const status = statusMap[p.status] || { class: 'badge-default', text: p.status || 'Không xác định' };
-                const date = p.createdAt ? new Date(p.createdAt).toLocaleString('vi-VN', { hour12: false }) : '-';
-                rows += `
-                    <tr>
-                        <td><strong>#${p.id}</strong></td>
-                        <td><span class="payment-gateway">${p.paymentGateway || 'VNPAY'}</span></td>
-                        <td><span class="amount">${new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(p.amount)}</span></td>
-                        <td><span class="txn-id">${p.transactionId || '-'}</span></td>
-                        <td><span class="badge ${status.class}">${status.text}</span></td>
-                        <td style="font-size:13px; color:#777;">${date}</td>
-                    </tr>
-                `;
-            });
-            contentContainer.innerHTML = `
-                <div class="table-wrapper">
-                    <table>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
                         <thead>
-                            <tr>
-                                <th>#ID</th>
-                                <th>Phương thức</th>
-                                <th>Số tiền</th>
-                                <th>Mã giao dịch</th>
-                                <th>Trạng thái</th>
-                                <th>Thời gian</th>
-                            </tr>
+                            <tr><th>ID</th><th>Mã đơn</th><th>Mã GD</th><th>Cổng thanh toán</th><th>Số tiền</th><th>Trạng thái</th><th>Thời gian</th></tr>
                         </thead>
-                        <tbody>
-                            ${rows}
+                        <tbody id="tableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
                         </tbody>
                     </table>
                 </div>
-            `;
+                <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;"></div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+
+        function formatPrice(p) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
         }
 
-        function renderPagination(current, total) {
-            if (total <= 1) { paginationContainer.innerHTML = ''; return; }
-            let html = `<button ${current===0?'disabled':''} onclick="loadPage(${current-1})">‹</button>`;
-            for (let i=0; i<total; i++) {
-                html += `<button class="${i===current?'active':''}" onclick="loadPage(${i})">${i+1}</button>`;
-            }
-            html += `<button ${current>=total-1?'disabled':''} onclick="loadPage(${current+1})">›</button>`;
-            paginationContainer.innerHTML = html;
-        }
-
-        window.loadPage = function(page) {
-            if (page < 0 || page >= totalPages) return;
-            loadPayments(page);
-        };
-
-        // ===== Load Payments =====
-        async function loadPayments(page=0) {
+        async function loadPayments(page = 0) {
+            if (!auth.requireAdmin()) return;
             try {
-                contentContainer.innerHTML = `
-                    <div class="table-wrapper">
-                        <div class="loading"><div class="spinner"></div><p>Đang tải dữ liệu thanh toán...</p></div>
-                    </div>
-                `;
-                paginationContainer.innerHTML = '';
+                const data = await api.get(CONFIG.ENDPOINTS.PAYMENT.HISTORY, { page_no: page, page_size: 10, sortBy: 'id', sortDir: 'desc' });
+                const items = data?.content || [];
+                const totalPages = data?.totalPages || 1;
+                const tbody = document.getElementById('tableBody');
 
-                let url = `${API_BASE_URL}/api/payment/order/history?page_no=${page}&page_size=10&sortBy=createdAt&sortDir=desc`;
-                if (currentFromDate) {
-                    url += `&fromDate=${currentFromDate}`;
-                }
-                if (currentToDate) {
-                    url += `&toDate=${currentToDate}`;
+                if (!items.length) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px;">Chưa có giao dịch nào.</td></tr>`;
+                    return;
                 }
 
-                const data = await fetchData(url);
-                const payments = data?.content || [];
-                totalPages = data?.totalPages || 1;
-                currentPage = data?.number || 0;
-                renderPayments(payments);
-                renderPagination(currentPage, totalPages);
-            } catch(e) {
-                contentContainer.innerHTML = `<div class="table-wrapper"><div class="error-msg">❌ ${e.message}</div></div>`;
-                console.error(e);
+                tbody.innerHTML = items.map(p => `
+                    <tr>
+                        <td class="tabular-nums">#${p.id}</td>
+                        <td class="tabular-nums">#${p.orderId}</td>
+                        <td class="mono-spec" style="font-size: var(--text-xs);">${p.transactionId || '-'}</td>
+                        <td><span class="badge badge-info">${p.paymentGateway}</span></td>
+                        <td class="tabular-nums" style="font-weight: var(--font-semibold);">${formatPrice(p.amount)}</td>
+                        <td>${p.status === 'SUCCESS' ? '<span class="badge badge-success">Thành công</span>' : '<span class="badge badge-danger">Thất bại</span>'}</td>
+                        <td class="tabular-nums" style="font-size: var(--text-xs);">${p.createdAt ? new Date(p.createdAt).toLocaleString('vi-VN') : '-'}</td>
+                    </tr>
+                `).join('');
+
+                const pag = document.getElementById('paginationBar');
+                pag.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
+                    `<button class="btn btn-sm ${i === page ? 'btn-primary' : 'btn-secondary'}" data-page="${i}">${i + 1}</button>`
+                ).join('') : '';
+                pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadPayments(Number(b.dataset.page))));
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
-        // ===== Filter =====
-        function applyFilter() {
-            currentFromDate = fromDate.value || '';
-            currentToDate = toDate.value || '';
-            if (currentFromDate && currentToDate && currentFromDate > currentToDate) {
-                showToast('Ngày bắt đầu không thể lớn hơn ngày kết thúc.', true);
-                return;
-            }
-            loadPayments(0);
-        }
-
-        function resetFilter() {
-            fromDate.value = '';
-            toDate.value = '';
-            currentFromDate = '';
-            currentToDate = '';
-            loadPayments(0);
-        }
-
-        filterBtn.addEventListener('click', applyFilter);
-        resetFilterBtn.addEventListener('click', resetFilter);
-
-        // Enter key support
-        fromDate.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyFilter(); });
-        toDate.addEventListener('keydown', (e) => { if (e.key === 'Enter') applyFilter(); });
-
-        // ===== INIT =====
-        async function init() {
-            await getAccessToken();
-            const user = getUserInfo();
-            if (!user) { window.location.href = 'dang-nhap-admin.html'; return; }
-            renderHeader();
-            await loadPayments(0);
-            setInterval(refreshAccessToken, 5 * 60 * 1000);
-        }
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => { auth.initHeaderNav(); loadPayments(0); });
     </script>
 </body>
 </html>

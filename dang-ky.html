@@ -3,299 +3,147 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng ký tài khoản</title>
+    <title>Đăng Ký Tài Khoản — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            background: #ffffff;
-            padding: 40px 35px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 420px;
-            transition: transform 0.3s;
-        }
-        .container:hover {
-            transform: translateY(-5px);
-        }
-        h2 {
-            margin-bottom: 25px;
-            color: #333;
-            text-align: center;
-            font-weight: 600;
-            font-size: 28px;
-            letter-spacing: 1px;
-        }
-        h2 span {
-            color: #667eea;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #555;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: #f9f9f9;
-        }
-        input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-            background: #fff;
-        }
-        button[type="submit"] {
-            width: 100%;
-            padding: 13px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 17px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-top: 8px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button[type="submit"]:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        }
-        button[type="submit"]:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        .divider {
-            text-align: center;
-            margin: 25px 0;
-            position: relative;
-        }
-        .divider::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #ddd;
-        }
-        .divider span {
-            background: #fff;
-            padding: 0 15px;
-            position: relative;
-            color: #999;
-            font-size: 14px;
-        }
-        .google-btn {
-            width: 100%;
-            padding: 12px;
-            background: #ffffff;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            transition: background 0.3s, border-color 0.3s, transform 0.2s;
+            min-height: 100dvh;
+            padding: 24px;
+            background-color: var(--canvas);
         }
-        .google-btn:hover {
-            background: #f5f5f5;
-            border-color: #bbb;
-            transform: scale(1.02);
+        .auth-container { width: 100%; max-width: 420px; }
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
         }
-        #messageBox {
-            margin-top: 18px;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
+        .auth-header { margin-bottom: 24px; text-align: center; }
+        .auth-brand {
+            font-size: var(--text-sm);
+            font-weight: var(--font-semibold);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .auth-title { font-size: var(--text-2xl); letter-spacing: -0.025em; margin-bottom: 6px; }
+        .auth-subtitle { font-size: var(--text-xs); color: var(--text-secondary); }
+        .auth-divider {
+            display: flex;
+            align-items: center;
             text-align: center;
-            font-weight: 500;
+            margin: 20px 0;
+            color: var(--text-muted);
+            font-size: var(--text-xs);
         }
-        .error {
-            background: #fee;
-            color: #d32f2f;
-            border: 1px solid #f5c6cb;
-        }
-        .success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        .switch-link {
-            display: block;
-            margin-top: 20px;
-            font-size: 15px;
-            color: #555;
-            text-align: center;
-        }
-        .switch-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .switch-link a:hover {
-            color: #764ba2;
-            text-decoration: underline;
-        }
+        .auth-divider::before, .auth-divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+        .auth-divider span { padding: 0 10px; }
+        .auth-links { margin-top: 24px; text-align: center; font-size: var(--text-xs); color: var(--text-secondary); }
+        .auth-links a { color: var(--text-primary); font-weight: var(--font-medium); text-decoration: underline; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Đăng <span>ký</span></h2>
-
-        <form id="registerForm">
-            <div class="form-group">
-                <label for="accountname">👤 Tên tài khoản</label>
-                <input type="text" id="accountname" required placeholder="Nhập tên tài khoản" />
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="auth-brand">Hoang89 Computer</a>
+                <h1 class="auth-title">Tạo tài khoản</h1>
+                <p class="auth-subtitle">Đăng ký để mua sắm, theo dõi đơn hàng và bảo hành điện tử</p>
             </div>
-            <div class="form-group">
-                <label for="gmail">📧 Gmail</label>
-                <input type="email" id="gmail" required placeholder="Nhập địa chỉ Gmail" />
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="accountname">Tên hiển thị</label>
+                    <input type="text" id="accountname" class="input" placeholder="Nguyễn Văn A" required minlength="2" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="gmail">Địa chỉ Gmail</label>
+                    <input type="email" id="gmail" class="input" placeholder="tenban@gmail.com" required autocomplete="email" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Mật khẩu</label>
+                    <input type="password" id="password" class="input" placeholder="Tối thiểu 6 ký tự" required minlength="6" autocomplete="new-password" />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Xác nhận mật khẩu</label>
+                    <input type="password" id="confirmPassword" class="input" placeholder="Nhập lại mật khẩu" required minlength="6" autocomplete="new-password" />
+                </div>
+
+                <button type="submit" id="btnRegister" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                    Đăng ký tài khoản
+                </button>
+            </form>
+
+            <div class="auth-divider"><span>Hoặc đăng ký nhanh</span></div>
+
+            <button type="button" id="btnGoogleLogin" class="btn btn-secondary" style="width: 100%;">
+                <svg width="16" height="16" viewBox="0 0 48 48">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.55 10.78l7.98-6.19z" />
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                </svg>
+                <span>Google Account</span>
+            </button>
+
+            <div class="auth-links">
+                Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập</a>
             </div>
-            <div class="form-group">
-                <label for="password">🔒 Mật khẩu</label>
-                <input type="password" id="password" required placeholder="Ít nhất 8 ký tự" />
-            </div>
-            <div class="form-group">
-                <label for="confirmPassword">✅ Xác nhận mật khẩu</label>
-                <input type="password" id="confirmPassword" required placeholder="Nhập lại mật khẩu" />
-            </div>
-            <button type="submit" id="registerBtn">Đăng ký tài khoản</button>
-        </form>
-
-        <div class="divider">
-            <span>Hoặc</span>
-        </div>
-
-        <button type="button" id="googleLoginBtn" class="google-btn">
-            <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.46-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
-            </svg>
-            Đăng nhập / Đăng ký với Google
-        </button>
-
-        <div id="messageBox"></div>
-
-        <div class="switch-link">
-            Đã có tài khoản? <a href="dang-nhap.html">Đăng nhập ngay</a>
         </div>
     </div>
 
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
         const registerForm = document.getElementById('registerForm');
-        const registerBtn = document.getElementById('registerBtn');
-        const passwordInput = document.getElementById('password');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
-        const googleLoginBtn = document.getElementById('googleLoginBtn');
-        const messageBox = document.getElementById('messageBox');
+        const btnRegister = document.getElementById('btnRegister');
 
-        function showMessage(text, type) {
-            messageBox.textContent = text;
-            messageBox.className = type;
-            messageBox.style.display = 'block';
-        }
-
-        registerForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
-
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
             const accountname = document.getElementById('accountname').value.trim();
             const gmail = document.getElementById('gmail').value.trim();
-            const password = passwordInput.value;
-            const confirmPassword = confirmPasswordInput.value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
 
-            if (!accountname || !gmail || !password) {
-                showMessage('Vui lòng điền đầy đủ thông tin.', 'error');
-                return;
-            }
-            if (password.length < 8) {
-                showMessage('Mật khẩu phải có ít nhất 8 ký tự.', 'error');
-                return;
-            }
             if (password !== confirmPassword) {
-                showMessage('Mật khẩu xác nhận không khớp.', 'error');
+                toast.warning('Mật khẩu xác nhận không khớp.');
                 return;
             }
 
-            registerBtn.disabled = true;
-            registerBtn.textContent = 'Đang tạo tài khoản...';
-            messageBox.style.display = 'none';
+            btnRegister.disabled = true;
+            btnRegister.textContent = 'Đang tạo tài khoản...';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/account/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ accountname, gmail, password })
-                });
+                await api.post(CONFIG.ENDPOINTS.AUTH.REGISTER, { accountname, gmail, password });
+                sessionStorage.setItem('pendingVerifyGmail', gmail);
 
-                let data = {};
-                try {
-                    data = await response.json();
-                } catch (_) {}
+                // Gửi mã OTP kích hoạt tài khoản
+                api.post(`${CONFIG.ENDPOINTS.AUTH.SEND_OTP}?gmail=${encodeURIComponent(gmail)}`).catch(() => {});
 
-                if (!response.ok) {
-                    throw new Error(data?.message || data?.result?.message || 'Đăng ký tài khoản thất bại.');
-                }
-
-                sessionStorage.setItem('registerGmail', gmail);
-
-                fetch(`${API_BASE_URL}/api/account/send-code?gmail=${encodeURIComponent(gmail)}`, {
-                    method: 'POST',
-                    credentials: 'include'
-                }).catch(err => console.warn('Gửi OTP lỗi:', err));
-
-                showMessage('Đăng ký thành công! Đang chuyển sang xác thực OTP...', 'success');
-
+                toast.success('Đăng ký thành công! Vui lòng kiểm tra Gmail để lấy mã OTP.');
                 setTimeout(() => {
-                    window.location.href = 'xac-thuc-otp.html';
-                }, 600);
-
-            } catch (error) {
-                console.error('REGISTER ERROR:', error);
-                showMessage(error.message || 'Không thể kết nối đến máy chủ.', 'error');
-                registerBtn.disabled = false;
-                registerBtn.textContent = 'Đăng ký tài khoản';
+                    window.location.href = `xac-thuc-otp.html?gmail=${encodeURIComponent(gmail)}`;
+                }, 900);
+            } catch (err) {
+                toast.error(err.message || 'Không thể đăng ký tài khoản.');
+                btnRegister.disabled = false;
+                btnRegister.textContent = 'Đăng ký tài khoản';
             }
         });
 
-        googleLoginBtn.addEventListener('click', function () {
-            window.location.href = `${API_BASE_URL}/oauth2/authorization/google`;
+        document.getElementById('btnGoogleLogin').addEventListener('click', () => {
+            window.location.href = `${CONFIG.API_BASE_URL}/oauth2/authorization/google`;
         });
     </script>
 </body>

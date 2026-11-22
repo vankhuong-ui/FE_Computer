@@ -3,412 +3,215 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hỗ trợ - MyShop</title>
+    <title>Hỗ trợ kỹ thuật — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; color:#2d3436; }
-        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#fff; box-shadow:0 2px 12px rgba(0,0,0,0.06);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
+        .page-header {
+            padding: 36px 0 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
         }
-        .header .logo { font-size:26px; font-weight:800; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
-        .header .logo span { -webkit-text-fill-color:#764ba2; }
-        .header .nav-links { display:flex; gap:20px; align-items:center; flex:1; margin-left:30px; }
-        .header .nav-links a { color:#555; font-weight:500; font-size:15px; transition:color 0.2s; }
-        .header .nav-links a:hover { color:#667eea; }
-        .header .nav-links .cart-link { position:relative; font-size:20px; margin-left:auto; }
-        .header .nav-links .cart-link .badge {
-            position:absolute; top:-8px; right:-12px; background:#e74c3c; color:#fff;
-            font-size:11px; border-radius:50%; padding:2px 6px; min-width:18px; text-align:center;
-        }
-        .header .user-section { display:flex; align-items:center; gap:12px; margin-left:20px; }
-        .header .user-info { display:flex; align-items:center; gap:8px; font-weight:500; color:#333; }
-        .header .user-info .avatar {
-            width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2);
-            color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase;
-        }
-        .header .user-info .username { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .header .btn-logout { background:#e74c3c; color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:#c0392b; }
-        .header .auth-links { display:flex; gap:10px; align-items:center; }
-        .header .auth-links .btn { padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.25s; border:none; text-decoration:none; }
-        .header .auth-links .btn-outline { background:transparent; border:2px solid #667eea; color:#667eea; }
-        .header .auth-links .btn-outline:hover { background:#667eea; color:#fff; }
-        .header .auth-links .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
-        .header .auth-links .btn-primary:hover { transform:scale(1.04); box-shadow:0 8px 24px rgba(102,126,234,0.35); }
-
-        .support-section {
-            background:#fff; border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.04);
-            padding:30px; margin:40px 0; border:1px solid #f0f0f0;
-        }
-        .support-section h2 { font-size:28px; font-weight:700; margin-bottom:24px; color:#2d3436; border-bottom:2px solid #f0f0f0; padding-bottom:16px; }
         .support-grid {
-            display:grid;
-            grid-template-columns:1fr 1.5fr;
-            gap:30px;
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 24px;
+            margin-bottom: 64px;
         }
-        @media (max-width:768px) {
-            .support-grid { grid-template-columns:1fr; }
+        @media (max-width: 860px) {
+            .support-grid { grid-template-columns: 1fr; }
         }
-
-        .form-group { margin-bottom:18px; }
-        .form-group label { display:block; font-weight:600; margin-bottom:6px; color:#555; font-size:14px; }
-        .form-group input, .form-group textarea {
-            width:100%; padding:12px 16px; border:2px solid #e0e0e0; border-radius:10px;
-            font-size:15px; transition:border-color 0.3s, box-shadow 0.3s;
-            background:#fafafa;
+        .ticket-item {
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: 12px;
+            background: var(--surface-subtle);
         }
-        .form-group input:focus, .form-group textarea:focus {
-            border-color:#667eea; outline:none; background:#fff;
-            box-shadow:0 0 0 4px rgba(102,126,234,0.12);
+        .cart-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
         }
-        .form-group textarea { resize:vertical; min-height:120px; }
-
-        .btn-submit {
-            padding:14px 40px; background:linear-gradient(135deg,#27ae60,#2ecc71);
-            color:#fff; border:none; border-radius:40px; font-weight:700; font-size:18px;
-            cursor:pointer; transition:transform 0.2s, box-shadow 0.2s;
+        .cart-badge {
+            background-color: var(--text-primary);
+            color: var(--text-inverse);
+            font-size: 10px;
+            font-family: var(--font-mono);
+            padding: 2px 6px;
+            border-radius: var(--radius-pill);
+            display: none;
         }
-        .btn-submit:hover { transform:scale(1.02); box-shadow:0 8px 28px rgba(46,204,113,0.4); }
-        .btn-submit:disabled { background:#ccc; cursor:not-allowed; transform:none; box-shadow:none; }
-
-        .btn-back {
-            display:inline-block; padding:10px 24px; background:#667eea; color:#fff;
-            border:none; border-radius:40px; font-weight:600; font-size:16px;
-            cursor:pointer; transition:transform 0.2s; margin-bottom:20px;
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 48px 0;
+            background-color: var(--surface);
+            margin-top: auto;
         }
-        .btn-back:hover { transform:scale(1.03); }
-
-        .request-list { margin-top:20px; }
-        .request-item {
-            border:1px solid #eee; border-radius:10px; padding:14px 18px;
-            margin-bottom:12px; background:#fafafa;
-            transition:box-shadow 0.2s;
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
         }
-        .request-item:hover { box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-        .request-item .header {
-            display:flex; justify-content:space-between; align-items:center;
-            flex-wrap:wrap; gap:8px;
-            background:transparent; padding:0; box-shadow:none; height:auto;
-            margin-bottom:6px;
-        }
-        .request-item .subject { font-weight:600; font-size:16px; color:#2d3436; }
-        .request-item .status {
-            font-weight:600; padding:2px 12px; border-radius:20px; font-size:13px;
-        }
-        .request-item .status.open { background:#fef3c7; color:#d97706; }
-        .request-item .status.in_progress { background:#dbeafe; color:#2563eb; }
-        .request-item .status.closed { background:#d1fae5; color:#065f46; }
-        .request-item .status.unknown { background:#e5e7eb; color:#4b5563; }
-        .request-item .message { font-size:14px; color:#555; margin:6px 0; }
-        .request-item .time { font-size:13px; color:#888; }
-
-        .empty-requests { text-align:center; padding:40px 0; color:#888; font-size:16px; }
-        .pagination {
-            display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap;
-        }
-        .pagination button {
-            padding:6px 14px; border:2px solid #ddd; background:#fff; border-radius:8px;
-            font-weight:600; cursor:pointer; transition:all 0.2s;
-        }
-        .pagination button:hover { border-color:#667eea; color:#667eea; }
-        .pagination button.active { background:#667eea; border-color:#667eea; color:#fff; }
-        .pagination button:disabled { opacity:0.4; cursor:not-allowed; }
-
-        .toast {
-            position:fixed; bottom:30px; right:30px; background:#fff; color:#333; padding:16px 24px;
-            border-radius:14px; font-weight:600; font-size:15px; box-shadow:0 8px 32px rgba(0,0,0,0.15);
-            z-index:9999; opacity:0; transform:translateY(30px); transition:all 0.4s ease;
-            border-left:5px solid #27ae60; max-width:400px; pointer-events:none;
-        }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-
-        .loading { text-align:center; padding:40px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; width:40px; height:40px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:50px 20px 30px; margin-top:60px; }
-        .footer-content { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px; }
-        .footer-content h4 { color:#fff; font-size:18px; margin-bottom:14px; font-weight:600; }
-        .footer-content p, .footer-content li { font-size:14px; opacity:0.8; list-style:none; margin-bottom:8px; }
-        .footer-bottom { text-align:center; padding-top:24px; border-top:1px solid #2d2d44; margin-top:32px; font-size:14px; opacity:0.7; }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo">My<span>Shop</span></div>
-        <div class="nav-links">
-            <a href="index.html">Trang chủ</a>
-            <a href="order.html">Đơn hàng</a>
-            <a href="warranty.html">Bảo hành</a>
-            <a href="cart.html" class="cart-link">
-                🛒 <span class="badge" id="cartCount">0</span>
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-dot"></span>
+                <span>HOANG89<span style="font-weight: 300;">COMPUTER</span></span>
             </a>
-            <div id="userSection" class="user-section"></div>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Sản phẩm</a></li>
+                    <li><a href="order.html" class="nav-link">Đơn hàng</a></li>
+                    <li><a href="warranty.html" class="nav-link">Bảo hành</a></li>
+                    <li><a href="support.html" class="nav-link active">Hỗ trợ kỹ thuật</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="cart.html" class="cart-btn">
+                    <span>Giỏ hàng</span>
+                    <span class="cart-badge" id="cartBadgeCount">0</span>
+                </a>
+                <div id="authNavArea"></div>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="support-section">
-            <h2>🛟 Hỗ trợ khách hàng</h2>
-            <button class="btn-back" onclick="window.location.href='trangchu.html'">← Quay lại trang chủ</button>
+    <main class="container">
+        <div class="page-header">
+            <div>
+                <h1 style="font-size: var(--text-2xl);">Hỗ trợ kỹ thuật & CSKH</h1>
+                <p style="font-size: var(--text-xs);">Gửi yêu cầu tư vấn lắp ráp, cài đặt phần mềm hoặc phản hồi dịch vụ.</p>
+            </div>
+            <a href="warranty.html" class="btn btn-secondary btn-sm">🛡️ Trung tâm Bảo hành</a>
+        </div>
 
-            <div id="supportContainer">
-                <div class="loading"><div class="spinner"></div>Đang tải...</div>
+        <div class="support-grid">
+            <div class="card" style="height: fit-content;">
+                <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Gửi yêu cầu mới</h3>
+                <form id="supportForm">
+                    <div class="form-group">
+                        <label class="form-label" for="subject">Tiêu đề yêu cầu</label>
+                        <input type="text" id="subject" class="input" placeholder="Ví dụ: Tư vấn nâng cấp RAM cho laptop..." required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="message">Nội dung chi tiết</label>
+                        <textarea id="message" class="textarea" rows="5" placeholder="Mô tả vấn đề hoặc cấu hình bạn đang sử dụng..." required></textarea>
+                    </div>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary" style="width: 100%;">
+                        Gửi yêu cầu hỗ trợ
+                    </button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Lịch sử yêu cầu của bạn</h3>
+                <div id="ticketList">
+                    <p style="font-size: var(--text-xs);">Đang tải danh sách yêu cầu...</p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
     <footer class="footer">
-        <div class="footer-content">
-            <div><h4>MyShop</h4><p>Mua sắm trực tuyến hàng đầu Việt Nam.</p></div>
-            <div><h4>Liên kết</h4><ul><li><a href="#">Giới thiệu</a></li><li><a href="#">Chính sách</a></li><li><a href="#">Hỗ trợ</a></li></ul></div>
-            <div><h4>Liên hệ</h4><p>Email: support@myshop.vn</p><p>Hotline: 1900 1234</p></div>
+        <div class="container footer-inner">
+            <div>© 2026 Hoang89 Computer. Thiết kế tối giản theo tiêu chuẩn công nghệ.</div>
+            <div style="display: flex; gap: 20px;">
+                <a href="warranty.html">Bảo hành điện tử</a>
+                <a href="order.html">Đơn hàng</a>
+            </div>
         </div>
-        <div class="footer-bottom">&copy; 2026 MyShop. All rights reserved.</div>
     </footer>
 
-    <div id="toast" class="toast"></div>
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { cart } from './assets/js/cart.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
+        import './assets/js/chat-widget.js';
 
-    <script>
-        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE_URL = localStorage.getItem('CUSTOM_API_BASE_URL') || (isLocal ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com');
-
-        const supportContainer = document.getElementById('supportContainer');
-        const cartCount = document.getElementById('cartCount');
-        const userSection = document.getElementById('userSection');
-        const toast = document.getElementById('toast');
-
-        let currentPage = 0;
-        let totalPages = 1;
-        const PAGE_SIZE = 5;
-
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-        let toastTimeout = null;
-
-        // ========================= TOKEN =========================
-        async function refreshAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
+        function getStatusBadge(status) {
+            const s = (status || '').toUpperCase();
+            if (s === 'OPEN') return `<span class="badge badge-warning">Đang mở</span>`;
+            if (s === 'IN_PROGRESS') return `<span class="badge badge-info">Đang xử lý</span>`;
+            if (s === 'CLOSED') return `<span class="badge badge-success">Đã hoàn tất</span>`;
+            return `<span class="badge">${status}</span>`;
         }
 
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        // ===== Auth & Header =====
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                userSection.innerHTML = `
-                    <div class="user-info">
-                        <div class="avatar">${initial}</div>
-                        <span class="username">${user.accountname}</span>
-                    </div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', function() {
-                    sessionStorage.removeItem('accountInfo');
-                    sessionStorage.removeItem('accessToken');
-                    localStorage.removeItem('cartCount');
-                    window.location.href = 'dang-nhap.html';
-                });
-            } else {
-                userSection.innerHTML = `
-                    <div class="auth-links">
-                        <a href="dang-nhap.html" class="btn btn-outline">Đăng nhập</a>
-                        <a href="dang-ky.html" class="btn btn-primary">Đăng ký</a>
-                    </div>
-                `;
-                window.location.href = 'dang-nhap.html';
-            }
-        }
-
-        function updateCartCount() {
-            const count = parseInt(localStorage.getItem('cartCount') || '0');
-            cartCount.textContent = count;
-        }
-
-        // ===== Render Support =====
-        function renderSupport(requests, current, total) {
-            let html = `
-                <div class="support-grid">
-                    <div>
-                        <h3 style="margin-bottom:16px;">✉️ Gửi yêu cầu hỗ trợ</h3>
-                        <form id="supportForm">
-                            <div class="form-group">
-                                <label for="subject">Tiêu đề</label>
-                                <input type="text" id="subject" placeholder="Nhập tiêu đề yêu cầu" required />
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Nội dung</label>
-                                <textarea id="message" placeholder="Mô tả chi tiết vấn đề của bạn..." required></textarea>
-                            </div>
-                            <button type="submit" class="btn-submit" id="submitBtn">Gửi yêu cầu</button>
-                        </form>
-                    </div>
-                    <div>
-                        <h3 style="margin-bottom:16px;">📋 Lịch sử yêu cầu</h3>
-                        <div id="requestList" class="request-list">
-                            ${requests && requests.length > 0 ? requests.map(item => `
-                                <div class="request-item">
-                                    <div class="header">
-                                        <span class="subject">${item.subject}</span>
-                                        <span class="status ${getStatusClass(item.status)}">${getStatusText(item.status)}</span>
-                                    </div>
-                                    <div class="message">${item.message.length > 100 ? item.message.substring(0,100) + '...' : item.message}</div>
-                                    <div class="time">${item.createdAt ? new Date(item.createdAt).toLocaleString('vi-VN') : ''}</div>
-                                </div>
-                            `).join('') : `
-                                <div class="empty-requests">Chưa có yêu cầu hỗ trợ nào.</div>
-                            `}
-                        </div>
-                        <div id="pagination" class="pagination">
-                            ${total > 1 ? renderPagination(current, total) : ''}
-                        </div>
-                    </div>
-                </div>
-            `;
-            supportContainer.innerHTML = html;
-
-            // Bind form submit
-            document.getElementById('supportForm').addEventListener('submit', submitSupport);
-
-            // Bind pagination buttons
-            document.querySelectorAll('#pagination button').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const page = parseInt(this.dataset.page);
-                    if (!isNaN(page)) loadRequests(page);
-                });
-            });
-        }
-
-        function getStatusClass(status) {
-            const s = status?.toUpperCase();
-            if (s === 'OPEN') return 'open';
-            if (s === 'IN_PROGRESS') return 'in_progress';
-            if (s === 'CLOSED') return 'closed';
-            return 'unknown';
-        }
-
-        function getStatusText(status) {
-            const s = status?.toUpperCase();
-            if (s === 'OPEN') return 'Đang mở';
-            if (s === 'IN_PROGRESS') return 'Đang xử lý';
-            if (s === 'CLOSED') return 'Đã đóng';
-            return status || 'Không xác định';
-        }
-
-        function renderPagination(current, total) {
-            let html = `<button ${current===0?'disabled':''} data-page="${current-1}">‹</button>`;
-            for (let i=0; i<total; i++) {
-                html += `<button class="${i===current?'active':''}" data-page="${i}">${i+1}</button>`;
-            }
-            html += `<button ${current>=total-1?'disabled':''} data-page="${current+1}">›</button>`;
-            return html;
-        }
-
-        // ===== Submit Support =====
-        async function submitSupport(e) {
-            e.preventDefault();
-            const subject = document.getElementById('subject').value.trim();
-            const message = document.getElementById('message').value.trim();
-
-            if (!subject || !message) {
-                showToast('Vui lòng điền đầy đủ thông tin.', true);
+        async function loadTickets() {
+            if (!auth.isAuthenticated()) {
+                document.getElementById('ticketList').innerHTML = `<p style="font-size: var(--text-sm);">Vui lòng <a href="dang-nhap.html" style="text-decoration:underline;">đăng nhập</a> để gửi và xem lịch sử hỗ trợ.</p>`;
                 return;
             }
-
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.textContent = 'Đang gửi...';
-
             try {
-                await fetchData(`${API_BASE_URL}/api/support`, {
-                    method: 'POST',
-                    body: JSON.stringify({ subject, message })
+                const data = await api.get(CONFIG.ENDPOINTS.SUPPORT.MY_REQUESTS, { page: 0, size: 20 });
+                const items = data?.content || [];
+                if (!items.length) {
+                    document.getElementById('ticketList').innerHTML = `<p style="font-size: var(--text-sm);">Bạn chưa có yêu cầu hỗ trợ nào.</p>`;
+                    return;
+                }
+                document.getElementById('ticketList').innerHTML = items.map(t => `
+                    <div class="ticket-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="font-weight: var(--font-semibold); font-size: var(--text-sm);">${t.subject}</span>
+                            ${getStatusBadge(t.status)}
+                        </div>
+                        <p style="font-size: var(--text-xs); margin-bottom: 6px;">${t.message}</p>
+                        <div style="font-size: 11px; color: var(--text-muted);" class="tabular-nums">${new Date(t.createdAt).toLocaleString('vi-VN')}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('ticketList').innerHTML = `<p class="text-danger">${err.message}</p>`;
+            }
+        }
+
+        document.getElementById('supportForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!auth.requireAuth()) return;
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            try {
+                await api.post(CONFIG.ENDPOINTS.SUPPORT.CREATE, {
+                    subject: document.getElementById('subject').value.trim(),
+                    message: document.getElementById('message').value.trim()
                 });
-                showToast('✅ Gửi yêu cầu hỗ trợ thành công!');
+                toast.success('Đã gửi yêu cầu hỗ trợ thành công!');
                 document.getElementById('supportForm').reset();
-                loadRequests(0); // reload danh sách
-            } catch (e) {
-                showToast(`❌ ${e.message}`, true);
+                loadTickets();
+            } catch (err) {
+                toast.error(err.message || 'Không thể gửi yêu cầu.');
             } finally {
                 btn.disabled = false;
-                btn.textContent = 'Gửi yêu cầu';
             }
-        }
+        });
 
-        // ===== Load Requests =====
-        async function loadRequests(page = 0) {
-            try {
-                const data = await fetchData(`${API_BASE_URL}/api/support/my-requests?page=${page}&size=${PAGE_SIZE}`);
-                const content = data?.content || [];
-                const total = data?.totalPages || 0;
-                const current = data?.number || 0;
-                currentPage = current;
-                totalPages = total;
-                renderSupport(content, current, total);
-            } catch(e) {
-                supportContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-                console.error(e);
-            }
-        }
-
-        // ===== INIT =====
-        async function init() {
-            renderHeader();
-            await getAccessToken();
-            updateCartCount();
-            loadRequests(0);
-        }
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            auth.initHeaderNav();
+            cart.updateHeaderBadge();
+            loadTickets();
+        });
     </script>
 </body>
 </html>

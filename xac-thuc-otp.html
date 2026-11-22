@@ -3,213 +3,127 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Xác thực OTP</title>
+    <title>Xác thực OTP — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
         body {
-            background-color: #f4f6f9;
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            min-height: 100dvh;
+            padding: 24px;
+            background-color: var(--canvas);
         }
-        .container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 400px;
+        .auth-container { width: 100%; max-width: 400px; }
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+        }
+        .otp-input {
             text-align: center;
-        }
-        h2 {
-            margin-bottom: 10px;
-            color: #333;
-        }
-        p {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #555;
-            font-size: 14px;
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 18px;
-            text-align: center;
-            letter-spacing: 4px;
-        }
-        input:focus {
-            border-color: #007bff;
-            outline: none;
-        }
-        button {
-            width: 100%;
-            padding: 11px;
-            background-color: #28a745;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-        #messageBox {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-            display: none;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            font-size: var(--text-2xl);
+            letter-spacing: 0.35em;
+            font-family: var(--font-mono);
+            font-weight: var(--font-semibold);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Xác thực OTP</h2>
-        <p>Mã xác nhận đã được gửi đến email của bạn.</p>
-
-        <form id="otpForm">
-            <div class="form-group">
-                <label for="otpInput">Nhập mã OTP (6 chữ số)</label>
-                <input type="text" id="otpInput" maxlength="6" inputmode="numeric" autocomplete="one-time-code" required placeholder="------" />
+    <div class="auth-container">
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <a href="index.html" style="font-size: var(--text-xs); font-weight: var(--font-semibold); text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary);">Hoang89 Computer</a>
+                <h1 style="font-size: var(--text-2xl); margin: 8px 0 6px;">Xác thực tài khoản</h1>
+                <p style="font-size: var(--text-xs); color: var(--text-secondary);">
+                    Nhập mã OTP gồm 6 chữ số đã gửi tới <b id="targetEmailDisplay" style="color: var(--text-primary);">email của bạn</b>
+                </p>
             </div>
-            <button type="submit" id="verifyBtn">Xác nhận</button>
-        </form>
 
-        <div id="messageBox"></div>
+            <form id="otpForm">
+                <div class="form-group">
+                    <label class="form-label" for="gmailInput">Gmail xác thực</label>
+                    <input type="email" id="gmailInput" class="input" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="otpCode">Mã xác nhận (OTP)</label>
+                    <input type="text" id="otpCode" class="input otp-input" placeholder="000000" maxlength="6" required />
+                </div>
+
+                <button type="submit" id="btnVerify" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                    Xác thực & Kích hoạt
+                </button>
+            </form>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: var(--text-xs);">
+                <button type="button" id="btnResendOtp" class="btn btn-outline btn-sm">Gửi lại mã OTP</button>
+                <a href="dang-nhap.html" style="text-decoration: underline;">Quay lại đăng nhập</a>
+            </div>
+        </div>
     </div>
 
-    <script>
-        // ==============================
-        // CẤU HÌNH
-        // ==============================
-        const API_BASE_URL = "https://hoang89computer-be.onrender.com";
+    <script type="module">
+        import { api, setAccessToken } from './assets/js/api.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
-        // ==============================
-        // DOM ELEMENTS
-        // ==============================
-        const otpForm = document.getElementById("otpForm");
-        const otpInput = document.getElementById("otpInput");
-        const verifyBtn = document.getElementById("verifyBtn");
-        const messageBox = document.getElementById("messageBox");
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialGmail = urlParams.get('gmail') || sessionStorage.getItem('pendingVerifyGmail') || '';
 
-        // ==============================
-        // LẤY GMAIL TỪ SESSION
-        // ==============================
-        const gmail = sessionStorage.getItem("registerGmail");
+        const gmailInput = document.getElementById('gmailInput');
+        const targetEmailDisplay = document.getElementById('targetEmailDisplay');
+        const otpForm = document.getElementById('otpForm');
+        const btnVerify = document.getElementById('btnVerify');
+        const btnResendOtp = document.getElementById('btnResendOtp');
 
-        // Nếu không có gmail thì quay lại trang đăng ký
-        if (!gmail) {
-            window.location.href = "dang-ky.html";
+        if (initialGmail) {
+            gmailInput.value = initialGmail;
+            targetEmailDisplay.textContent = initialGmail;
         }
 
-        // ==============================
-        // HIỂN THỊ THÔNG BÁO
-        // ==============================
-        function showMessage(text, type) {
-            messageBox.textContent = text;
-            messageBox.className = type;
-            messageBox.style.display = "block";
-        }
+        otpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const gmail = gmailInput.value.trim();
+            const code = document.getElementById('otpCode').value.trim();
 
-        // ==============================
-        // XỬ LÝ GỬI OTP
-        // ==============================
-        otpForm.addEventListener("submit", async function (event) {
-            event.preventDefault();
-
-            const otp = otpInput.value.trim();
-
-            // Validate OTP
-            if (!/^\d{6}$/.test(otp)) {
-                showMessage("Vui lòng nhập chính xác mã OTP gồm 6 chữ số.", "error");
-                return;
-            }
-
-            // Disable nút
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = "Đang xác thực...";
-            messageBox.style.display = "none";
+            btnVerify.disabled = true;
+            btnVerify.textContent = 'Đang kiểm tra...';
 
             try {
-                // Gọi API check-code
-                const response = await fetch(
-                    `${API_BASE_URL}/api/account/check-code?gmail=${encodeURIComponent(gmail)}&code=${encodeURIComponent(otp)}`,
-                    {
-                        method: "POST",
-                        credentials: "include"
-                    }
-                );
-
-                let data = {};
-                try {
-                    data = await response.json();
-                } catch (_) {
-                    // ignore
+                const account = await api.post(`${CONFIG.ENDPOINTS.AUTH.CHECK_OTP}?gmail=${encodeURIComponent(gmail)}&code=${encodeURIComponent(code)}`);
+                if (account) {
+                    sessionStorage.setItem('accountInfo', JSON.stringify(account));
+                    sessionStorage.removeItem('pendingVerifyGmail');
                 }
-
-                if (!response.ok) {
-                    throw new Error(data?.message || data?.result?.message || "Mã OTP không chính xác hoặc đã hết hạn.");
-                }
-
-                // Thành công
-                showMessage("Xác thực tài khoản thành công! Đang chuyển hướng...", "success");
-
-                // Xóa gmail khỏi session
-                sessionStorage.removeItem("registerGmail");
-
-                // Chuyển về trang chủ sau 1 giây
+                toast.success('Xác thực tài khoản thành công!');
                 setTimeout(() => {
-                    window.location.href = "trangchu.html";
-                }, 1000);
-
-            } catch (error) {
-                console.error("OTP ERROR:", error);
-                showMessage(error.message || "Lỗi kết nối đến máy chủ.", "error");
-                verifyBtn.disabled = false;
-                verifyBtn.textContent = "Xác nhận";
+                    window.location.href = CONFIG.ROUTES.HOME;
+                }, 800);
+            } catch (err) {
+                toast.error(err.message || 'Mã OTP không chính xác hoặc đã hết hạn.');
+                btnVerify.disabled = false;
+                btnVerify.textContent = 'Xác thực & Kích hoạt';
             }
         });
 
-        // ==============================
-        // CHỈ CHO NHẬP SỐ
-        // ==============================
-        otpInput.addEventListener("input", function () {
-            this.value = this.value.replace(/\D/g, "").slice(0, 6);
+        btnResendOtp.addEventListener('click', async () => {
+            const gmail = gmailInput.value.trim();
+            if (!gmail) {
+                toast.warning('Vui lòng nhập Gmail.');
+                return;
+            }
+            btnResendOtp.disabled = true;
+            try {
+                await api.post(`${CONFIG.ENDPOINTS.AUTH.SEND_OTP}?gmail=${encodeURIComponent(gmail)}`);
+                toast.success('Đã gửi lại mã OTP mới.');
+            } catch (err) {
+                toast.error(err.message || 'Không thể gửi lại mã.');
+            } finally {
+                setTimeout(() => { btnResendOtp.disabled = false; }, 15000);
+            }
         });
     </script>
 </body>

@@ -3,352 +3,176 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý đơn hàng - MyShop Admin</title>
+    <title>Quản lý Đơn hàng — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        body { background:#f4f6f9; color:#2d3436; }
-        .container { max-width:1280px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        .header {
-            background:#1a1a2e; box-shadow:0 2px 12px rgba(0,0,0,0.3);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
-        }
-        .header .logo { font-size:24px; font-weight:800; color:#fff; }
-        .header .logo span { color:#667eea; }
-        .header .nav-links { display:flex; gap:12px; align-items:center; flex:1; margin-left:30px; flex-wrap:wrap; }
-        .header .nav-links a {
-            color:#ccc; font-weight:500; font-size:13px; padding:4px 10px;
-            border-radius:6px; transition:all 0.2s;
-        }
-        .header .nav-links a:hover, .header .nav-links a.active { color:#fff; background:rgba(255,255,255,0.1); }
-        .header .header-actions { display:flex; gap:12px; align-items:center; }
-        .header .user-info { display:flex; align-items:center; gap:8px; color:#ddd; font-weight:500; }
-        .header .user-info .avatar {
-            width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#667eea,#764ba2);
-            color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase;
-        }
-        .header .btn-logout {
-            background:#e74c3c; color:#fff; border:none; padding:6px 16px;
-            border-radius:6px; font-weight:600; font-size:14px; cursor:pointer;
-            transition:background 0.2s;
-        }
-        .header .btn-logout:hover { background:#c0392b; }
-
-        .page-header {
-            display:flex; justify-content:space-between; align-items:center;
-            padding:20px 0 16px; border-bottom:2px solid #eee; margin-bottom:20px;
-            flex-wrap:wrap; gap:12px;
-        }
-        .page-header h2 { font-size:24px; font-weight:700; color:#2c3e50; }
-
-        table { width:100%; border-collapse:collapse; background:#fff; border-radius:12px; overflow:hidden; box-shadow:0 2px 10px rgba(0,0,0,0.04); }
-        th { background:#f8f9fa; padding:12px 16px; text-align:left; font-weight:600; color:#555; border-bottom:2px solid #eee; }
-        td { padding:12px 16px; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
-        tr:hover td { background:#fafbfc; }
-
-        .badge {
-            padding:4px 12px; border-radius:20px; font-weight:600; font-size:13px;
-        }
-        .badge.unpaid { background:#fef3c7; color:#d97706; }
-        .badge.completed { background:#d1fae5; color:#065f46; }
-        .badge.cancelled { background:#fee2e2; color:#991b1b; }
-
-        .btn { padding:6px 16px; border:none; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .btn-primary { background:#667eea; color:#fff; }
-        .btn-primary:hover { background:#5a6fd6; }
-        .btn-danger { background:#e74c3c; color:#fff; }
-        .btn-danger:hover { background:#c0392b; }
-        .btn-sm { padding:4px 12px; font-size:13px; }
-
-        .pagination { display:flex; justify-content:center; gap:8px; margin-top:20px; flex-wrap:wrap; }
-        .pagination button { padding:6px 14px; border:2px solid #ddd; background:#fff; border-radius:6px; font-weight:600; cursor:pointer; transition:all 0.2s; }
-        .pagination button:hover { border-color:#667eea; color:#667eea; }
-        .pagination button.active { background:#667eea; border-color:#667eea; color:#fff; }
-        .pagination button:disabled { opacity:0.4; cursor:not-allowed; }
-
-        .loading { text-align:center; padding:40px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #f3f3f3; border-top:4px solid #667eea; border-radius:50%; width:40px; height:40px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:20px 0; border:1px solid #f5c6cb; }
-
-        .footer { background:#1a1a2e; color:#ccc; padding:30px 20px; margin-top:40px; text-align:center; }
-
-        .modal-overlay {
-            display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-            background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
-            z-index:999; justify-content:center; align-items:center; padding:20px;
-        }
-        .modal-overlay.active { display:flex; }
-        .modal {
-            background:#fff; border-radius:16px; padding:30px; max-width:500px; width:100%;
-            box-shadow:0 20px 60px rgba(0,0,0,0.3); animation:modalIn 0.3s ease;
-        }
-        @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .modal h3 { margin-bottom:20px; color:#333; text-align:center; }
-        .modal .form-group { margin-bottom:16px; }
-        .modal .form-group label { display:block; font-weight:600; color:#555; font-size:14px; margin-bottom:4px; }
-        .modal .form-group input, .modal .form-group select {
-            width:100%; padding:10px 14px; border:2px solid #e0e0e0; border-radius:8px; font-size:15px;
-            background:#fafafa; transition:border-color 0.3s;
-        }
-        .modal .form-group input:focus, .modal .form-group select:focus {
-            border-color:#667eea; outline:none; background:#fff;
-        }
-        .modal .btn-submit { width:100%; padding:12px; background:#667eea; color:#fff; border:none; border-radius:8px; font-weight:600; font-size:16px; cursor:pointer; transition:transform 0.2s; }
-        .modal .btn-submit:hover { transform:scale(1.02); }
-        .modal .btn-submit:disabled { background:#ccc; cursor:not-allowed; transform:none; }
-        .modal .close-modal {
-            float:right; background:none; border:none; font-size:24px; cursor:pointer; color:#999;
-        }
-        .modal .close-modal:hover { color:#333; }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 420px; width: 100%; padding: 28px; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="logo">My<span>Shop</span> Admin</div>
-        <nav class="nav-links">
-            <a href="trangchu-admin.html">🏠 Trang chủ</a>
-            <a href="admin-account.html">👤 Tài khoản</a>
-            <a href="admin-address.html">📍 Địa chỉ</a>
-            <a href="admin-category.html">📂 Danh mục</a>
-            <a href="admin-brand.html">🏷️ Thương hiệu</a>
-            <a href="admin-product.html">📦 Sản phẩm</a>
-            <a href="admin-inventory.html">📊 Tồn kho</a>
-            <a href="admin-orders.html" class="active">📋 Đơn hàng</a>
-            <a href="admin-payment.html">💳 Thanh toán</a>
-            <a href="admin-support.html">🛟 Hỗ trợ</a>
-        </nav>
-        <div class="header-actions" id="headerActions"></div>
-    </header>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="trangchu-admin.html" class="admin-brand"><span class="brand-dot"></span><span>HOANG89 ADMIN</span></a>
+            <ul class="admin-menu">
+                <li class="admin-menu-section-label">Tổng quan</li>
+                <li class="admin-menu-item"><a href="trangchu-admin.html">🏠 Bảng điều khiển</a></li>
+                <li class="admin-menu-section-label">Danh mục & Kho</li>
+                <li class="admin-menu-item"><a href="admin-product.html">📦 Sản phẩm</a></li>
+                <li class="admin-menu-item"><a href="admin-category.html">📂 Danh mục</a></li>
+                <li class="admin-menu-item"><a href="admin-brand.html">🏷️ Thương hiệu</a></li>
+                <li class="admin-menu-item"><a href="admin-inventory.html">📊 Tồn kho</a></li>
+                <li class="admin-menu-section-label">Kinh doanh & Dịch vụ</li>
+                <li class="admin-menu-item"><a href="admin-orders.html" class="active">📋 Đơn hàng</a></li>
+                <li class="admin-menu-item"><a href="admin-payment.html">💳 Thanh toán</a></li>
+                <li class="admin-menu-item"><a href="admin-warranty.html">🛡️ Bảo hành điện tử</a></li>
+                <li class="admin-menu-item"><a href="admin-support.html">🛟 Hỗ trợ khách hàng</a></li>
+                <li class="admin-menu-section-label">Người dùng</li>
+                <li class="admin-menu-item"><a href="admin-account.html">👤 Tài khoản</a></li>
+                <li class="admin-menu-item"><a href="admin-address.html">📍 Sổ địa chỉ</a></li>
+            </ul>
+        </aside>
 
-    <div class="container">
-        <div class="page-header">
-            <h2>📋 Quản lý đơn hàng</h2>
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Quản lý Đơn hàng</div>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <a href="index.html" class="btn btn-outline btn-sm">Xem cửa hàng</a>
+                    <div id="authNavArea"></div>
+                </div>
+            </header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Danh sách Đơn hàng</h1>
+                        <p style="font-size: var(--text-xs);">Theo dõi đơn đặt hàng và cập nhật trạng thái thanh toán.</p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr><th>Mã đơn</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th><th>Thao tác</th></tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="6" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;"></div>
+            </main>
         </div>
-
-        <div id="contentContainer">
-            <div class="loading"><div class="spinner"></div>Đang tải dữ liệu...</div>
-        </div>
-
-        <div id="paginationContainer" class="pagination"></div>
     </div>
 
-    <!-- Modal cập nhật trạng thái đơn hàng -->
-    <div class="modal-overlay" id="statusModal">
-        <div class="modal">
-            <button class="close-modal" id="closeStatusModal">&times;</button>
-            <h3>Cập nhật trạng thái đơn hàng</h3>
-            <div class="form-group">
-                <label for="statusSelect">Trạng thái</label>
-                <select id="statusSelect">
-                    <option value="UNPAID">Chưa thanh toán</option>
-                    <option value="COMPLETED">Hoàn thành</option>
-                    <option value="CANCELLED">Đã hủy</option>
-                </select>
+    <div class="modal-backdrop" id="statusModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg);">Cập nhật trạng thái đơn</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
-            <button class="btn-submit" id="updateStatusBtn">Cập nhật</button>
+            <form id="statusForm">
+                <input type="hidden" id="editOrderId" />
+                <div class="form-group">
+                    <label class="form-label" for="editStatus">Trạng thái</label>
+                    <select id="editStatus" class="select">
+                        <option value="UNPAID">UNPAID — Chưa thanh toán</option>
+                        <option value="COMPLETED">COMPLETED — Đã thanh toán & Hoàn tất</option>
+                        <option value="CANCELLED">CANCELLED — Đã hủy</option>
+                    </select>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <footer class="footer">&copy; 2026 MyShop Admin. All rights reserved.</footer>
-
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-        const contentContainer = document.getElementById('contentContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const headerActions = document.getElementById('headerActions');
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
         let currentPage = 0;
-        let totalPages = 1;
-        let currentOrderId = null;
 
-        // ========================= TOKEN =========================
-        async function refreshAccessToken() {
+        function formatPrice(p) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
+        }
+
+        function getBadge(s) {
+            if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn thành</span>';
+            if (s === 'UNPAID') return '<span class="badge badge-warning">Chưa thanh toán</span>';
+            if (s === 'CANCELLED') return '<span class="badge badge-danger">Đã hủy</span>';
+            return `<span class="badge">${s}</span>`;
+        }
+
+        async function loadOrders(page = 0) {
+            if (!auth.requireAdmin()) return;
+            currentPage = page;
             try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
+                const data = await api.get(CONFIG.ENDPOINTS.ORDERS.LIST, { page_no: page, page_size: 10, sortBy: 'createdAt', sortDir: 'desc' });
+                const items = data?.content || [];
+                const totalPages = data?.totalPages || 1;
+                const tbody = document.getElementById('tableBody');
 
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap-admin.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
+                if (!items.length) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:32px;">Chưa có đơn hàng nào.</td></tr>`;
+                    return;
                 }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
 
-        // ===== Auth & Header =====
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                headerActions.innerHTML = `
-                    <div class="user-info">
-                        <div class="avatar">${initial}</div>
-                        <span>${user.accountname}</span>
-                    </div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', handleLogout);
-            } else {
-                window.location.href = 'dang-nhap-admin.html';
-            }
-        }
-        async function handleLogout() {
-            try { await fetch(`${API_BASE_URL}/api/account/logout`, { method:'POST', credentials:'include' }); } catch(e) {}
-            finally {
-                sessionStorage.removeItem('accessToken');
-                sessionStorage.removeItem('accountInfo');
-                window.location.replace('dang-nhap-admin.html');
-            }
-        }
-
-        // ===== Render Orders =====
-        function renderOrders(orders) {
-            if (!orders || orders.length === 0) {
-                contentContainer.innerHTML = '<div style="text-align:center; padding:40px; color:#888;">Không có đơn hàng nào.</div>';
-                return;
-            }
-            let html = `
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Ngày đặt</th>
-                            <th>Tổng tiền</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            orders.forEach(order => {
-                const statusClass = order.status?.toLowerCase();
-                const statusText = order.status === 'UNPAID' ? 'Chưa thanh toán' :
-                                   order.status === 'COMPLETED' ? 'Hoàn thành' :
-                                   order.status === 'CANCELLED' ? 'Đã hủy' : order.status;
-                const total = order.totalAmount || 0;
-                const date = order.createdAt ? new Date(order.createdAt).toLocaleString('vi-VN') : '';
-                html += `
+                tbody.innerHTML = items.map(o => `
                     <tr>
-                        <td>#${order.id}</td>
-                        <td>${date}</td>
-                        <td>${new Intl.NumberFormat('vi-VN', { style:'currency', currency:'VND' }).format(total)}</td>
-                        <td><span class="badge ${statusClass}">${statusText}</span></td>
+                        <td class="tabular-nums">#${o.id}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="openStatusModal(${order.id})">Đổi trạng thái</button>
+                            <div style="font-weight: var(--font-medium);">${o.useraddress?.username || 'Khách hàng'}</div>
+                            <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">${o.useraddress?.phone || ''}</div>
+                        </td>
+                        <td class="tabular-nums" style="font-weight: var(--font-semibold);">${formatPrice(o.totalAmount)}</td>
+                        <td>${getBadge(o.status)}</td>
+                        <td class="tabular-nums" style="font-size: var(--text-xs);">${o.createdAt ? new Date(o.createdAt).toLocaleString('vi-VN') : '-'}</td>
+                        <td>
+                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${o.id}" data-status="${o.status}">Cập nhật</button>
                         </td>
                     </tr>
-                `;
-            });
-            html += `</tbody></table>`;
-            contentContainer.innerHTML = html;
-        }
+                `).join('');
 
-        function renderPagination(current, total) {
-            if (total <= 1) { paginationContainer.innerHTML = ''; return; }
-            let html = `<button ${current===0?'disabled':''} onclick="loadPage(${current-1})">‹</button>`;
-            for (let i=0; i<total; i++) {
-                html += `<button class="${i===current?'active':''}" onclick="loadPage(${i})">${i+1}</button>`;
-            }
-            html += `<button ${current>=total-1?'disabled':''} onclick="loadPage(${current+1})">›</button>`;
-            paginationContainer.innerHTML = html;
-        }
+                document.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.getElementById('editOrderId').value = btn.dataset.id;
+                        document.getElementById('editStatus').value = btn.dataset.status;
+                        document.getElementById('statusModal').classList.add('active');
+                    });
+                });
 
-        // ===== Load Orders =====
-        async function loadOrders(page=0) {
-            try {
-                const data = await fetchData(`${API_BASE_URL}/api/orders?page_no=${page}&page_size=10&sortBy=createdAt&sortDir=desc`);
-                const orders = data?.content || [];
-                totalPages = data?.totalPages || 1;
-                currentPage = data?.number || 0;
-                renderOrders(orders);
-                renderPagination(currentPage, totalPages);
-            } catch(e) {
-                contentContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-                console.error(e);
+                const pag = document.getElementById('paginationBar');
+                pag.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
+                    `<button class="btn btn-sm ${i === page ? 'btn-primary' : 'btn-secondary'}" data-page="${i}">${i + 1}</button>`
+                ).join('') : '';
+                pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadOrders(Number(b.dataset.page))));
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="6" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
-        window.loadPage = function(page) {
-            if (page < 0 || page >= totalPages) return;
-            loadOrders(page);
-        };
+        document.getElementById('btnCloseModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
 
-        // ===== Status Modal =====
-        const statusModal = document.getElementById('statusModal');
-        const closeStatusModal = document.getElementById('closeStatusModal');
-        const updateStatusBtn = document.getElementById('updateStatusBtn');
-        const statusSelect = document.getElementById('statusSelect');
-
-        window.openStatusModal = function(orderId) {
-            currentOrderId = orderId;
-            statusModal.classList.add('active');
-        };
-
-        closeStatusModal.addEventListener('click', () => statusModal.classList.remove('active'));
-        statusModal.addEventListener('click', (e) => {
-            if (e.target === statusModal) statusModal.classList.remove('active');
-        });
-
-        updateStatusBtn.addEventListener('click', async function() {
-            const status = statusSelect.value;
-            if (!currentOrderId) return;
-            this.disabled = true;
-            this.textContent = 'Đang cập nhật...';
+        document.getElementById('statusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editOrderId').value;
+            const status = document.getElementById('editStatus').value;
             try {
-                await fetchData(`${API_BASE_URL}/api/orders/${currentOrderId}/update-status?status=${status}`, { method: 'PUT' });
-                statusModal.classList.remove('active');
+                await api.put(CONFIG.ENDPOINTS.ORDERS.ADMIN_UPDATE_STATUS(id, status));
+                toast.success('Cập nhật trạng thái đơn hàng thành công!');
+                document.getElementById('statusModal').classList.remove('active');
                 loadOrders(currentPage);
-            } catch(e) {
-                alert('Lỗi: ' + e.message);
-            } finally {
-                this.disabled = false;
-                this.textContent = 'Cập nhật';
-            }
+            } catch (err) { toast.error(err.message); }
         });
 
-        // ===== INIT =====
-        async function init() {
-            await getAccessToken();
-            const user = getUserInfo();
-            if (!user) { window.location.href = 'dang-nhap-admin.html'; return; }
-            renderHeader();
-            loadOrders(0);
-            setInterval(refreshAccessToken, 5 * 60 * 1000);
-        }
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => { auth.initHeaderNav(); loadOrders(0); });
     </script>
 </body>
 </html>

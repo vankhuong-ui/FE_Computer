@@ -3,216 +3,92 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng nhập Admin - MyShop</title>
+    <title>Đăng nhập Quản trị — Hoang89 Admin</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
         body {
-            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
             display: flex;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            justify-content: center;
+            min-height: 100dvh;
+            padding: 24px;
+            background-color: var(--canvas);
         }
-        .container {
-            background: #ffffff;
-            padding: 40px 35px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 420px;
-        }
-        .logo {
-            text-align: center;
-            font-size: 32px;
-            font-weight: 800;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-        .logo span { color: #667eea; }
-        .subtitle {
-            text-align: center;
-            color: #888;
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: #555;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 15px;
-            transition: border-color 0.3s, box-shadow 0.3s;
-            background: #f9f9f9;
-        }
-        input:focus {
-            border-color: #667eea;
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
-            background: #fff;
-        }
-        button[type="submit"] {
-            width: 100%;
-            padding: 13px;
-            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 17px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        button[type="submit"]:hover {
-            transform: scale(1.02);
-            box-shadow: 0 8px 25px rgba(44, 62, 80, 0.4);
-        }
-        button[type="submit"]:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-        #messageBox {
-            margin-top: 18px;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: none;
-            text-align: center;
-            font-weight: 500;
-        }
-        .error {
-            background: #fee;
-            color: #d32f2f;
-            border: 1px solid #f5c6cb;
-        }
-        .success {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-        }
-        .switch-link {
-            display: block;
-            margin-top: 20px;
-            font-size: 15px;
-            color: #555;
-            text-align: center;
-        }
-        .switch-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-        .switch-link a:hover {
-            color: #764ba2;
-            text-decoration: underline;
+        .auth-container { width: 100%; max-width: 400px; }
+        .auth-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">My<span>Shop</span></div>
-        <div class="subtitle">🔐 Khu vực quản trị</div>
-
-        <form id="loginForm">
-            <div class="form-group">
-                <label for="gmail">📧 Gmail</label>
-                <input type="email" id="gmail" required placeholder="Nhập địa chỉ Gmail admin" />
+    <div class="auth-container">
+        <div class="auth-card">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span class="badge badge-info" style="margin-bottom: 10px;">ADMIN PORTAL</span>
+                <h1 style="font-size: var(--text-2xl); margin-bottom: 6px;">Đăng nhập Quản trị</h1>
+                <p style="font-size: var(--text-xs); color: var(--text-secondary);">Hệ thống quản lý cửa hàng & bảo hành Hoang89 Computer</p>
             </div>
-            <div class="form-group">
-                <label for="password">🔒 Mật khẩu</label>
-                <input type="password" id="password" required placeholder="Nhập mật khẩu" />
+
+            <form id="adminLoginForm">
+                <div class="form-group">
+                    <label class="form-label" for="gmail">Email Quản trị viên</label>
+                    <input type="email" id="gmail" class="input" placeholder="admin@hoang89.vn" required />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">Mật khẩu</label>
+                    <input type="password" id="password" class="input" placeholder="••••••••" required />
+                </div>
+
+                <button type="submit" id="btnAdminLogin" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+                    Truy cập Dashboard
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px; font-size: var(--text-xs);">
+                <a href="index.html" style="text-decoration: underline;">← Quay lại trang cửa hàng</a>
             </div>
-            <button type="submit" id="loginBtn">Đăng nhập Admin</button>
-        </form>
-
-        <div id="messageBox"></div>
-
-        <div class="switch-link">
-            <a href="dang-nhap.html">← Đăng nhập với tư cách người dùng</a>
         </div>
     </div>
 
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn = document.getElementById('loginBtn');
-        const messageBox = document.getElementById('messageBox');
+    <script type="module">
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
-        function showMessage(text, type) {
-            messageBox.textContent = text;
-            messageBox.className = type;
-            messageBox.style.display = 'block';
+        if (auth.isAuthenticated() && auth.isAdmin()) {
+            window.location.href = CONFIG.ROUTES.ADMIN_DASHBOARD;
         }
 
-        loginForm.addEventListener('submit', async function(event) {
-            event.preventDefault();
-
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
             const gmail = document.getElementById('gmail').value.trim();
-            const password = document.getElementById('password').value.trim();
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('btnAdminLogin');
 
-            if (!gmail || !password) {
-                showMessage('Vui lòng điền đầy đủ thông tin.', 'error');
-                return;
-            }
-
-            loginBtn.disabled = true;
-            loginBtn.textContent = 'Đang đăng nhập...';
-            messageBox.style.display = 'none';
+            btn.disabled = true;
+            btn.textContent = 'Đang xác thực...';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/api/account/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ gmail, password })
-                });
-
-                let data = {};
-                try {
-                    data = await response.json();
-                } catch (_) {}
-
-                if (!response.ok) {
-                    throw new Error(data?.message || data?.result?.message || 'Đăng nhập thất bại.');
+                await auth.login(gmail, password);
+                if (!auth.isAdmin()) {
+                    toast.error('Tài khoản này không có quyền Quản trị viên (ADMIN).');
+                    btn.disabled = false;
+                    btn.textContent = 'Truy cập Dashboard';
+                    return;
                 }
-
-                const account = data?.result || data;
-                // Kiểm tra role ADMIN
-                if (account.role !== 'ADMIN') {
-                    throw new Error('Tài khoản không có quyền quản trị viên.');
-                }
-
-                sessionStorage.setItem('accountInfo', JSON.stringify(account));
-
-                showMessage('Đăng nhập thành công! Đang chuyển hướng...', 'success');
-
+                toast.success('Đăng nhập quản trị thành công!');
                 setTimeout(() => {
-                    window.location.href = 'trangchu-admin.html';
-                }, 800);
-
-            } catch (error) {
-                console.error('LOGIN ERROR:', error);
-                showMessage(error.message || 'Không thể kết nối đến máy chủ.', 'error');
-                loginBtn.disabled = false;
-                loginBtn.textContent = 'Đăng nhập Admin';
+                    window.location.href = CONFIG.ROUTES.ADMIN_DASHBOARD;
+                }, 600);
+            } catch (err) {
+                toast.error(err.message || 'Thông tin đăng nhập không chính xác.');
+                btn.disabled = false;
+                btn.textContent = 'Truy cập Dashboard';
             }
         });
     </script>

@@ -3,535 +3,313 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hồ sơ của tôi - MyShop</title>
+    <title>Hồ sơ cá nhân — Hoang89 Computer</title>
+    <link rel="stylesheet" href="./assets/css/base.css" />
+    <link rel="stylesheet" href="./assets/css/components.css" />
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',system-ui,sans-serif; }
-        
-        /* ===== NỀN TỐI ĐỒNG BỘ VỚI TRANG CHỦ ===== */
-        body {
-            background-image:
-                linear-gradient(
-                    rgba(0, 0, 0, 0.7),
-                    rgba(0, 0, 0, 0.7)
-                ),
-                url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDDBvYB3gSYmtditkezzHxvCUpZb88PMWz15Y6a3IeVA&s=10");
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            color: #fff; /* Chữ trắng */
+        .page-header {
+            padding: 36px 0 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
         }
-        .container { max-width:1200px; margin:0 auto; padding:0 20px; }
-        a { text-decoration:none; color:inherit; }
-
-        /* ===== HEADER TỐI ===== */
-        .header {
-            background: rgba(20, 20, 20, 0.95);
-            backdrop-filter: blur(6px);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-            padding:0 20px; height:72px; display:flex; align-items:center;
-            justify-content:space-between; position:sticky; top:0; z-index:1000;
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr;
+            gap: 24px;
+            margin-bottom: 64px;
         }
-        .header .logo { 
-            font-size:26px; font-weight:800; 
-            background:linear-gradient(135deg,#4da3ff,#007bff); 
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; 
+        @media (max-width: 860px) {
+            .profile-grid { grid-template-columns: 1fr; }
         }
-        .header .logo span { -webkit-text-fill-color:#007bff; }
-        .header .nav-links { display:flex; gap:20px; align-items:center; flex:1; margin-left:30px; }
-        .header .nav-links a { color:#ccc; font-weight:500; font-size:15px; transition:color 0.2s; }
-        .header .nav-links a:hover { color:#4da3ff; }
-        .header .nav-links .cart-link { position:relative; font-size:20px; margin-left:auto; }
-        .header .nav-links .cart-link .badge {
-            position:absolute; top:-8px; right:-12px; background:#e74c3c; color:#fff;
-            font-size:11px; border-radius:50%; padding:2px 6px; min-width:18px; text-align:center;
+        .address-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            flex-wrap: wrap;
         }
-        .header .user-section { display:flex; align-items:center; gap:12px; margin-left:20px; }
-        .header .user-info { display:flex; align-items:center; gap:8px; font-weight:500; color:#fff; }
-        .header .user-info .avatar {
-            width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,#4da3ff,#007bff);
-            color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px; text-transform:uppercase;
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(2px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .header .user-info .username { max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .header .btn-logout { background:linear-gradient(135deg,#ff4d4d,#e74c3c); color:#fff; border:none; padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:background 0.2s; }
-        .header .btn-logout:hover { background:linear-gradient(135deg,#ff3333,#c0392b); }
-        .header .auth-links { display:flex; gap:10px; align-items:center; }
-        .header .auth-links .btn { padding:6px 16px; border-radius:6px; font-weight:600; font-size:14px; cursor:pointer; transition:all 0.25s; border:none; text-decoration:none; }
-        .header .auth-links .btn-outline { background:transparent; border:2px solid #4da3ff; color:#4da3ff; }
-        .header .auth-links .btn-outline:hover { background:#4da3ff; color:#fff; }
-        .header .auth-links .btn-primary { background:linear-gradient(135deg,#4da3ff,#007bff); color:#fff; }
-        .header .auth-links .btn-primary:hover { transform:scale(1.04); box-shadow:0 8px 24px rgba(77,163,255,0.35); }
-
-        /* ===== PROFILE (NỀN TỐI) ===== */
-        .profile-section {
-            background: #1e1e1e;
-            border-radius:20px; box-shadow:0 4px 20px rgba(0,0,0,0.4);
-            padding:30px; margin:40px 0; border:1px solid #333;
+        .modal-backdrop.active { display: flex; }
+        .modal-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            max-width: 460px;
+            width: 100%;
+            padding: 28px;
         }
-        .profile-section h2 { font-size:28px; font-weight:700; margin-bottom:24px; color:#fff; border-bottom:2px solid #333; padding-bottom:16px; }
-        .profile-grid { display:grid; grid-template-columns:1fr 2fr; gap:30px; }
-        @media (max-width:768px) { .profile-grid { grid-template-columns:1fr; } }
-
-        .profile-info { background:#2a2a2a; padding:20px; border-radius:12px; border:1px solid #444; }
-        .profile-info .info-item { margin-bottom:12px; }
-        .profile-info .info-item label { font-weight:600; color:#aaa; display:block; font-size:14px; }
-        .profile-info .info-item .value { font-size:16px; color:#fff; font-weight:500; }
-
-        /* ===== ADDRESS (NỀN TỐI) ===== */
-        .address-list { margin-top:20px; }
-        .address-item {
-            background:#2a2a2a; border:1px solid #444; border-radius:10px;
-            padding:16px; margin-bottom:12px;
-            display:flex; justify-content:space-between; align-items:center;
-            transition:border-color 0.2s;
+        .cart-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--surface);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
         }
-        .address-item:hover { border-color:#4da3ff; }
-        .address-item .info { flex:1; }
-        .address-item .info .name { font-weight:600; font-size:16px; color:#fff; }
-        .address-item .info .detail { font-size:14px; color:#aaa; margin-top:4px; }
-        .address-item .info .default-badge {
-            display:inline-block; background:#4da3ff; color:#fff;
-            font-size:12px; padding:2px 10px; border-radius:20px; margin-left:8px;
+        .cart-badge {
+            background-color: var(--text-primary);
+            color: var(--text-inverse);
+            font-size: 10px;
+            font-family: var(--font-mono);
+            padding: 2px 6px;
+            border-radius: var(--radius-pill);
+            display: none;
         }
-        .address-item .actions { display:flex; gap:8px; }
-        .address-item .actions button {
-            padding:4px 14px; border:none; border-radius:6px; font-weight:600;
-            cursor:pointer; transition:background 0.2s;
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 48px 0;
+            background-color: var(--surface);
+            margin-top: auto;
         }
-        .address-item .actions .edit-btn { background:#4da3ff; color:#fff; }
-        .address-item .actions .edit-btn:hover { background:#007bff; }
-        .address-item .actions .delete-btn { background:#e74c3c; color:#fff; }
-        .address-item .actions .delete-btn:hover { background:#c0392b; }
-
-        .btn-add-address {
-            padding:12px 24px; background:linear-gradient(135deg,#4da3ff,#007bff);
-            color:#fff; border:none; border-radius:40px; font-weight:600;
-            font-size:16px; cursor:pointer; transition:transform 0.2s;
-            margin-top:10px;
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
         }
-        .btn-add-address:hover { transform:scale(1.03); box-shadow:0 4px 12px rgba(77,163,255,0.4); }
-
-        .btn-orders {
-            padding:12px 24px; background:linear-gradient(135deg,#27ae60,#2ecc71);
-            color:#fff; border:none; border-radius:40px; font-weight:600;
-            font-size:16px; cursor:pointer; transition:transform 0.2s;
-            margin-top:10px; margin-left:10px;
-        }
-        .btn-orders:hover { transform:scale(1.03); box-shadow:0 4px 12px rgba(46,204,113,0.4); }
-
-        /* ===== MODAL (NỀN TỐI) ===== */
-        .modal-overlay {
-            display:none; position:fixed; top:0; left:0; right:0; bottom:0;
-            background:rgba(0,0,0,0.6); backdrop-filter:blur(4px);
-            z-index:999; justify-content:center; align-items:center; padding:20px;
-        }
-        .modal-overlay.active { display:flex; }
-        .modal {
-            background: #1e1e1e;
-            border-radius:16px; padding:30px; max-width:480px;
-            width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.5);
-            animation:modalIn 0.3s ease;
-        }
-        @keyframes modalIn { from { opacity:0; transform:scale(0.9) translateY(20px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .modal h3 { margin-bottom:20px; color:#fff; font-weight:600; font-size:22px; text-align:center; }
-        .modal .form-group { margin-bottom:16px; }
-        .modal .form-group label { display:block; font-weight:600; color:#aaa; font-size:14px; margin-bottom:4px; }
-        .modal .form-group input, .modal .form-group textarea {
-            width:100%; padding:10px 14px; border:2px solid #444;
-            border-radius:8px; font-size:15px; background:#2a2a2a; color:#fff;
-            transition:border-color 0.3s;
-        }
-        .modal .form-group input:focus, .modal .form-group textarea:focus {
-            border-color:#4da3ff; outline:none; background:#333;
-        }
-        .modal .form-group textarea { resize:vertical; min-height:60px; }
-        .modal .form-group .checkbox-group { display:flex; align-items:center; gap:10px; }
-        .modal .form-group .checkbox-group input { width:auto; }
-        .modal .btn-submit {
-            width:100%; padding:12px; background:linear-gradient(135deg,#4da3ff,#007bff);
-            color:#fff; border:none; border-radius:8px; font-weight:600; font-size:16px;
-            cursor:pointer; transition:transform 0.2s;
-        }
-        .modal .btn-submit:hover { transform:scale(1.02); }
-        .modal .btn-submit:disabled { background:#555; cursor:not-allowed; transform:none; }
-        .modal .close-modal {
-            float:right; background:none; border:none; font-size:24px;
-            cursor:pointer; color:#888; transition:color 0.2s;
-        }
-        .modal .close-modal:hover { color:#fff; }
-        .modal .modal-message { margin-top:12px; padding:10px; border-radius:6px; font-size:14px; display:none; }
-        .modal .modal-message.error { background:#fee; color:#d32f2f; border:1px solid #f5c6cb; display:block; }
-        .modal .modal-message.success { background:#e8f5e9; color:#2e7d32; border:1px solid #c8e6c9; display:block; }
-
-        /* ===== TOAST ===== */
-        .toast {
-            position:fixed; bottom:30px; right:30px; background:#2a2a2a; color:#fff; padding:16px 24px;
-            border-radius:14px; font-weight:600; font-size:15px; box-shadow:0 8px 32px rgba(0,0,0,0.5);
-            z-index:9999; opacity:0; transform:translateY(30px); transition:all 0.4s ease;
-            border-left:5px solid #27ae60; max-width:400px; pointer-events:none;
-        }
-        .toast.show { opacity:1; transform:translateY(0); }
-        .toast.error { border-left-color:#e74c3c; }
-
-        /* ===== FOOTER (NỀN TỐI) ===== */
-        .footer { background:#0d0d0d; color:#ccc; padding:50px 20px 30px; margin-top:60px; }
-        .footer-content { max-width:1200px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:40px; }
-        .footer-content h4 { color:#fff; font-size:18px; margin-bottom:14px; font-weight:600; }
-        .footer-content p, .footer-content li { font-size:14px; opacity:0.8; list-style:none; margin-bottom:8px; }
-        .footer-content li a:hover { color:#4da3ff; }
-        .footer-bottom { text-align:center; padding-top:24px; border-top:1px solid #333; margin-top:32px; font-size:14px; opacity:0.7; }
-        
-        .loading { text-align:center; padding:60px 20px; color:#888; font-size:18px; }
-        .loading .spinner { border:4px solid #333; border-top:4px solid #4da3ff; border-radius:50%; width:44px; height:44px; animation:spin 0.9s linear infinite; margin:0 auto 16px; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .error-msg { background:#fee; color:#d32f2f; padding:16px; border-radius:10px; text-align:center; margin:40px 0; border:1px solid #f5c6cb; }
     </style>
 </head>
 <body>
     <header class="header">
-        <div class="logo">My<span>Shop</span></div>
-        <div class="nav-links">
-            <a href="trangchu.html">Trang chủ</a>
-            <a href="trangchu.html">Sản phẩm</a>
-            <a href="cart.html" class="cart-link">
-                🛒 <span class="badge" id="cartCount">0</span>
+        <div class="container header-inner">
+            <a href="index.html" class="brand-logo">
+                <span class="brand-dot"></span>
+                <span>HOANG89<span style="font-weight: 300;">COMPUTER</span></span>
             </a>
-            <div id="userSection" class="user-section"></div>
+
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Sản phẩm</a></li>
+                    <li><a href="order.html" class="nav-link">Đơn hàng</a></li>
+                    <li><a href="warranty.html" class="nav-link">Bảo hành</a></li>
+                    <li><a href="support.html" class="nav-link">Hỗ trợ kỹ thuật</a></li>
+                </ul>
+            </nav>
+
+            <div class="header-actions">
+                <a href="cart.html" class="cart-btn">
+                    <span>Giỏ hàng</span>
+                    <span class="cart-badge" id="cartBadgeCount">0</span>
+                </a>
+                <div id="authNavArea"></div>
+            </div>
         </div>
     </header>
 
-    <div class="container">
-        <div class="profile-section">
-            <h2>👤 Hồ sơ của tôi</h2>
-            <div id="profileContainer">
-                <div class="loading"><div class="spinner"></div>Đang tải thông tin...</div>
+    <main class="container">
+        <div class="page-header">
+            <h1 style="font-size: var(--text-2xl);">Hồ sơ cá nhân & Sổ địa chỉ</h1>
+            <p style="font-size: var(--text-xs);">Quản lý thông tin tài khoản, bảo mật mật khẩu và địa chỉ giao nhận hàng.</p>
+        </div>
+
+        <div class="profile-grid">
+            <div class="card" style="height: fit-content;">
+                <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Thông tin tài khoản</h3>
+                <div id="accountInfoBox" style="font-size: var(--text-sm); margin-bottom: 20px;"></div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="setpassword.html" class="btn btn-secondary btn-sm">🔑 Đổi / Thiết lập mật khẩu</a>
+                    <a href="order.html" class="btn btn-outline btn-sm">📦 Lịch sử đơn hàng</a>
+                    <a href="warranty.html" class="btn btn-outline btn-sm">🛡️ Phiếu bảo hành điện tử</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: var(--text-lg);">Sổ địa chỉ nhận hàng</h3>
+                    <button type="button" id="btnAddAddress" class="btn btn-primary btn-sm">+ Thêm địa chỉ</button>
+                </div>
+                <div id="addressListContainer">
+                    <p style="font-size: var(--text-xs);">Đang tải danh sách địa chỉ...</p>
+                </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Modal thêm/sửa địa chỉ -->
-    <div class="modal-overlay" id="addressModal">
-        <div class="modal">
-            <button class="close-modal" id="closeModal">&times;</button>
-            <h3 id="modalTitle">Thêm địa chỉ mới</h3>
-            <div class="form-group">
-                <label for="modalFullName">Họ và tên</label>
-                <input type="text" id="modalFullName" placeholder="Nhập họ tên" />
+    <!-- Address Modal -->
+    <div class="modal-backdrop" id="addressModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg);" id="modalTitle">Thêm địa chỉ mới</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
-            <div class="form-group">
-                <label for="modalPhone">Số điện thoại</label>
-                <input type="tel" id="modalPhone" placeholder="Nhập số điện thoại" />
-            </div>
-            <div class="form-group">
-                <label for="modalAddress">Địa chỉ</label>
-                <textarea id="modalAddress" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
-            </div>
-            <div class="form-group checkbox-group">
-                <input type="checkbox" id="modalDefault" />
-                <label for="modalDefault">Đặt làm địa chỉ mặc định</label>
-            </div>
-            <button class="btn-submit" id="modalSubmitBtn">Lưu</button>
-            <div id="modalMessage" class="modal-message"></div>
+            <form id="addressForm">
+                <input type="hidden" id="editAddrId" />
+                <div class="form-group">
+                    <label class="form-label" for="addrUsername">Họ tên người nhận</label>
+                    <input type="text" id="addrUsername" class="input" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="addrPhone">Số điện thoại</label>
+                    <input type="text" id="addrPhone" class="input tabular-nums" required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="addrDetail">Địa chỉ chi tiết</label>
+                    <textarea id="addrDetail" class="textarea" rows="3" required></textarea>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                    <input type="checkbox" id="addrDefault" />
+                    <label for="addrDefault" style="font-size: var(--text-sm); cursor: pointer;">Đặt làm địa chỉ mặc định</label>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" id="btnSaveAddr" class="btn btn-primary">Lưu địa chỉ</button>
+                </div>
+            </form>
         </div>
     </div>
 
     <footer class="footer">
-        <div class="footer-content">
-            <div><h4>MyShop</h4><p>Mua sắm trực tuyến hàng đầu Việt Nam.</p></div>
-            <div><h4>Liên kết</h4><ul><li><a href="#">Giới thiệu</a></li><li><a href="#">Chính sách</a></li><li><a href="#">Hỗ trợ</a></li></ul></div>
-            <div><h4>Liên hệ</h4><p>Email: support@myshop.vn</p><p>Hotline: 1900 1234</p></div>
+        <div class="container footer-inner">
+            <div>© 2026 Hoang89 Computer. Thiết kế tối giản theo tiêu chuẩn công nghệ.</div>
+            <div style="display: flex; gap: 20px;">
+                <a href="warranty.html">Bảo hành điện tử</a>
+                <a href="support.html">Hỗ trợ kỹ thuật</a>
+            </div>
         </div>
-        <div class="footer-bottom">&copy; 2026 MyShop. All rights reserved.</div>
     </footer>
 
-    <div id="toast" class="toast"></div>
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { cart } from './assets/js/cart.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { toast } from './assets/js/toast.js';
 
-    <!-- GIỮ NGUYÊN TOÀN BỘ LOGIC JAVASCRIPT -->
-    <script>
-        const API_BASE_URL = 'https://hoang89computer-be.onrender.com';
-
-        const profileContainer = document.getElementById('profileContainer');
-        const cartCount = document.getElementById('cartCount');
-        const userSection = document.getElementById('userSection');
-        const toast = document.getElementById('toast');
         const addressModal = document.getElementById('addressModal');
-        const closeModal = document.getElementById('closeModal');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalFullName = document.getElementById('modalFullName');
-        const modalPhone = document.getElementById('modalPhone');
-        const modalAddress = document.getElementById('modalAddress');
-        const modalDefault = document.getElementById('modalDefault');
-        const modalSubmitBtn = document.getElementById('modalSubmitBtn');
-        const modalMessage = document.getElementById('modalMessage');
-
-        let toastTimeout = null;
-        let editingAddressId = null;
+        const addressForm = document.getElementById('addressForm');
         let addresses = [];
 
-        function showToast(msg, isError=false) {
-            toast.innerHTML = msg;
-            toast.className = 'toast' + (isError ? ' error' : '');
-            toast.classList.add('show');
-            clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => toast.classList.remove('show'), 4000);
-        }
-
-        // ========================= TOKEN =========================
-        async function refreshAccessToken() {
-            try {
-                const res = await fetch(`${API_BASE_URL}/api/account/refresh-token`, { method:'POST', credentials:'include' });
-                if (!res.ok) throw new Error('Refresh failed');
-                const data = await res.json();
-                const token = data?.result?.accessToken || data?.accessToken;
-                if (token) sessionStorage.setItem('accessToken', token);
-                return token;
-            } catch(e) { console.error(e); return null; }
-        }
-        async function getAccessToken() {
-            let t = sessionStorage.getItem('accessToken');
-            if (!t) t = await refreshAccessToken();
-            return t;
-        }
-
-        async function fetchData(url, opts={}) {
-            let token = await getAccessToken();
-            if (!token) throw new Error('Không thể lấy access token. Vui lòng đăng nhập lại.');
-            const headers = { 'Content-Type':'application/json', 'Authorization':`Bearer ${token}`, ...(opts.headers||{}) };
-            let res = await fetch(url, { ...opts, credentials:'include', headers });
-            if (res.status===401 || res.status===403) {
-                const newToken = await refreshAccessToken();
-                if (newToken) {
-                    headers['Authorization'] = `Bearer ${newToken}`;
-                    res = await fetch(url, { ...opts, credentials:'include', headers });
-                    if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-                    const data = await res.json();
-                    return data?.result || data;
-                } else {
-                    sessionStorage.removeItem('accessToken');
-                    window.location.href = 'dang-nhap.html';
-                    throw new Error('Phiên đăng nhập hết hạn.');
-                }
-            }
-            if (!res.ok) { const e = await res.json().catch(()=>({})); throw new Error(e?.message || e?.result?.message || `HTTP ${res.status}`); }
-            const data = await res.json();
-            return data?.result || data;
-        }
-
-        // ===== Auth & Header =====
-        function getUserInfo() {
-            try { return JSON.parse(sessionStorage.getItem('accountInfo')); } catch { return null; }
-        }
-        function renderHeader() {
-            const user = getUserInfo();
-            if (user?.accountname) {
-                const initial = user.accountname.charAt(0).toUpperCase();
-                userSection.innerHTML = `
-                    <div class="user-info">
-                        <div class="avatar">${initial}</div>
-                        <span class="username">${user.accountname}</span>
-                    </div>
-                    <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
-                `;
-                document.getElementById('logoutBtn')?.addEventListener('click', function() {
-                    sessionStorage.removeItem('accountInfo');
-                    sessionStorage.removeItem('accessToken');
-                    localStorage.removeItem('cartCount');
-                    window.location.href = 'dang-nhap.html';
-                });
-            } else {
-                userSection.innerHTML = `
-                    <div class="auth-links">
-                        <a href="dang-nhap.html" class="btn btn-outline">Đăng nhập</a>
-                        <a href="dang-ky.html" class="btn btn-primary">Đăng ký</a>
-                    </div>
-                `;
-                window.location.href = 'dang-nhap.html';
-            }
-        }
-
-        function updateCartCount() {
-            const count = parseInt(localStorage.getItem('cartCount') || '0');
-            cartCount.textContent = count;
-        }
-
-        // ===== Render Profile =====
-        function renderProfile(user, addresses) {
-            let addressHtml = addresses.map(addr => `
-                <div class="address-item" data-id="${addr.id}">
-                    <div class="info">
-                        <div class="name">
-                            ${addr.username}
-                            ${addr.defaultaddress === 'true' || addr.defaultaddress === true ? '<span class="default-badge">Mặc định</span>' : ''}
-                        </div>
-                        <div class="detail">${addr.phone} - ${addr.address}</div>
-                    </div>
-                    <div class="actions">
-                        <button class="edit-btn" onclick="editAddress(${addr.id})">Sửa</button>
-                        <button class="delete-btn" onclick="deleteAddress(${addr.id})">Xóa</button>
-                    </div>
-                </div>
-            `).join('');
-
-            if (!addresses.length) {
-                addressHtml = '<p style="color:#888; margin:10px 0;">Chưa có địa chỉ nào. Thêm địa chỉ mới.</p>';
-            }
-
-            const html = `
-                <div class="profile-grid">
-                    <div>
-                        <h3 style="margin-bottom:16px; color:#fff;">Thông tin cá nhân</h3>
-                        <div class="profile-info">
-                            <div class="info-item">
-                                <label>Họ và tên</label>
-                                <div class="value">${user?.accountname || 'Chưa cập nhật'}</div>
-                            </div>
-                            <div class="info-item">
-                                <label>Email</label>
-                                <div class="value">${user?.gmail || 'Chưa cập nhật'}</div>
-                            </div>
-                            <div class="info-item">
-                                <label>Vai trò</label>
-                                <div class="value">${user?.role || 'USER'}</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-                            <h3 style="margin:0; color:#fff;">Sổ địa chỉ</h3>
-                            <div>
-                                <button class="btn-orders" onclick="window.location.href='order.html'">📦 Xem đơn hàng</button>
-                                <button class="btn-orders" style="background:linear-gradient(135deg,#f39c12,#e67e22); margin-left:10px;" onclick="window.location.href='setpassword.html'">🔑 Đổi mật khẩu</button>
-                            </div>
-                        </div>
-                        <div class="address-list">${addressHtml}</div>
-                        <button class="btn-add-address" onclick="openAddAddressModal()">+ Thêm địa chỉ mới</button>
-                    </div>
-                </div>
+        function renderAccountInfo() {
+            const user = auth.getUser();
+            if (!user) return;
+            document.getElementById('accountInfoBox').innerHTML = `
+                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Tên hiển thị:</span> <b>${user.accountname || '-'}</b></div>
+                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Gmail:</span> <span class="tabular-nums">${user.gmail || '-'}</span></div>
+                <div><span style="color: var(--text-secondary);">Vai trò:</span> <span class="badge badge-info">${user.role || 'USER'}</span></div>
             `;
-            profileContainer.innerHTML = html;
         }
 
-        // ===== Load Profile =====
-        async function loadProfile() {
+        async function loadAddresses() {
             try {
-                const user = getUserInfo();
-                const addrData = await fetchData(`${API_BASE_URL}/api/useraddresses/user`);
-                addresses = addrData || [];
-                renderProfile(user, addresses);
-            } catch(e) {
-                profileContainer.innerHTML = `<div class="error-msg">❌ ${e.message}</div>`;
-                console.error(e);
+                const res = await api.get(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_MY);
+                addresses = Array.isArray(res) ? res : [];
+                const container = document.getElementById('addressListContainer');
+                if (!addresses.length) {
+                    container.innerHTML = `<p style="font-size: var(--text-sm);">Bạn chưa có địa chỉ nào. Hãy bấm "+ Thêm địa chỉ".</p>`;
+                    return;
+                }
+                container.innerHTML = addresses.map(a => {
+                    const isDef = a.defaultaddress === true || a.defaultaddress === 'true';
+                    return `
+                        <div class="address-card">
+                            <div>
+                                <div style="font-weight: var(--font-semibold); font-size: var(--text-sm); margin-bottom: 4px;">
+                                    ${a.username} • <span class="tabular-nums">${a.phone}</span>
+                                    ${isDef ? '<span class="badge badge-success" style="margin-left: 6px;">Mặc định</span>' : ''}
+                                </div>
+                                <div style="font-size: var(--text-xs); color: var(--text-secondary);">${a.address}</div>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <button type="button" class="btn btn-secondary btn-sm btn-edit-addr" data-id="${a.id}">Sửa</button>
+                                <button type="button" class="btn btn-outline btn-sm text-danger btn-del-addr" data-id="${a.id}">Xóa</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                document.querySelectorAll('.btn-edit-addr').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const a = addresses.find(x => x.id === Number(btn.dataset.id));
+                        if (!a) return;
+                        document.getElementById('modalTitle').textContent = 'Cập nhật địa chỉ';
+                        document.getElementById('editAddrId').value = a.id;
+                        document.getElementById('addrUsername').value = a.username;
+                        document.getElementById('addrPhone').value = a.phone;
+                        document.getElementById('addrDetail').value = a.address;
+                        document.getElementById('addrDefault').checked = (a.defaultaddress === true || a.defaultaddress === 'true');
+                        addressModal.classList.add('active');
+                    });
+                });
+
+                document.querySelectorAll('.btn-del-addr').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Xóa địa chỉ này?')) return;
+                        try {
+                            await api.delete(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_DELETE(btn.dataset.id));
+                            toast.success('Đã xóa địa chỉ.');
+                            loadAddresses();
+                        } catch (err) {
+                            toast.error(err.message);
+                        }
+                    });
+                });
+            } catch (err) {
+                document.getElementById('addressListContainer').innerHTML = `<p class="text-danger">${err.message}</p>`;
             }
         }
 
-        // ===== Modal Functions =====
-        function openModal(title, address = null) {
-            modalTitle.textContent = title;
-            if (address) {
-                editingAddressId = address.id;
-                modalFullName.value = address.username || '';
-                modalPhone.value = address.phone || '';
-                modalAddress.value = address.address || '';
-                modalDefault.checked = address.defaultaddress === 'true' || address.defaultaddress === true;
-                modalSubmitBtn.textContent = 'Cập nhật';
-            } else {
-                editingAddressId = null;
-                modalFullName.value = '';
-                modalPhone.value = '';
-                modalAddress.value = '';
-                modalDefault.checked = false;
-                modalSubmitBtn.textContent = 'Thêm mới';
-            }
-            modalMessage.className = 'modal-message';
-            modalMessage.style.display = 'none';
+        document.getElementById('btnAddAddress').addEventListener('click', () => {
+            document.getElementById('modalTitle').textContent = 'Thêm địa chỉ mới';
+            addressForm.reset();
+            document.getElementById('editAddrId').value = '';
             addressModal.classList.add('active');
-        }
-
-        window.openAddAddressModal = function() {
-            openModal('Thêm địa chỉ mới');
-        };
-
-        window.editAddress = function(id) {
-            const addr = addresses.find(a => a.id === id);
-            if (addr) openModal('Sửa địa chỉ', addr);
-        };
-
-        closeModal.addEventListener('click', () => {
-            addressModal.classList.remove('active');
         });
-        addressModal.addEventListener('click', (e) => {
-            if (e.target === addressModal) addressModal.classList.remove('active');
-        });
+        document.getElementById('btnCloseModal').addEventListener('click', () => addressModal.classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => addressModal.classList.remove('active'));
 
-        function showModalMessage(text, type) {
-            modalMessage.textContent = text;
-            modalMessage.className = 'modal-message ' + type;
-            modalMessage.style.display = 'block';
-        }
-
-        // ===== Submit Address =====
-        modalSubmitBtn.addEventListener('click', async function() {
-            const username = modalFullName.value.trim();
-            const phone = modalPhone.value.trim();
-            const address = modalAddress.value.trim();
-            const defaultaddress = modalDefault.checked ? 'true' : 'false';
-
-            if (!username || !phone || !address) {
-                showModalMessage('Vui lòng điền đầy đủ thông tin.', 'error');
-                return;
-            }
-
+        addressForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editAddrId').value;
             const payload = {
-                username,
-                phone,
-                address,
-                defaultaddress
+                username: document.getElementById('addrUsername').value.trim(),
+                phone: document.getElementById('addrPhone').value.trim(),
+                address: document.getElementById('addrDetail').value.trim(),
+                defaultaddress: document.getElementById('addrDefault').checked
             };
 
-            this.disabled = true;
-            this.textContent = 'Đang xử lý...';
-            modalMessage.style.display = 'none';
-
             try {
-                let url = `${API_BASE_URL}/api/useraddresses/create`;
-                let method = 'POST';
-                if (editingAddressId) {
-                    url = `${API_BASE_URL}/api/useraddresses/${editingAddressId}/update`;
-                    method = 'PUT';
+                if (id) {
+                    await api.put(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_UPDATE(id), payload);
+                    toast.success('Cập nhật địa chỉ thành công!');
+                } else {
+                    await api.post(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_CREATE, payload);
+                    toast.success('Thêm địa chỉ mới thành công!');
                 }
-                await fetchData(url, { method, body: JSON.stringify(payload) });
-                showModalMessage('✅ Lưu địa chỉ thành công!', 'success');
-                setTimeout(() => {
-                    addressModal.classList.remove('active');
-                    loadProfile();
-                }, 1000);
-            } catch (e) {
-                showModalMessage(`❌ ${e.message}`, 'error');
-                this.disabled = false;
-                this.textContent = editingAddressId ? 'Cập nhật' : 'Thêm mới';
+                addressModal.classList.remove('active');
+                loadAddresses();
+            } catch (err) {
+                toast.error(err.message || 'Không thể lưu địa chỉ.');
             }
         });
 
-        // ===== Delete Address =====
-        window.deleteAddress = async function(id) {
-            if (!confirm('Bạn có chắc chắn muốn xóa địa chỉ này?')) return;
-            try {
-                await fetchData(`${API_BASE_URL}/api/useraddresses/${id}/delete`, { method: 'DELETE' });
-                showToast('✅ Đã xóa địa chỉ thành công.');
-                loadProfile();
-            } catch (e) {
-                showToast(`❌ ${e.message}`, true);
-            }
-        };
-
-        // ===== INIT =====
-        async function init() {
-            renderHeader();
-            await getAccessToken();
-            updateCartCount();
-            loadProfile();
-        }
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!auth.requireAuth()) return;
+            auth.initHeaderNav();
+            cart.updateHeaderBadge();
+            renderAccountInfo();
+            loadAddresses();
+        });
     </script>
 </body>
 </html>
