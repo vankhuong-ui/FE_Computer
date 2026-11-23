@@ -530,25 +530,6 @@
             </div>
         </div>
 
-        <div class="order-summary">
-            <div class="summary-cell">
-                <div class="summary-label">Tổng đơn hàng</div>
-                <div class="summary-value" id="sumTotal">-</div>
-            </div>
-            <div class="summary-cell">
-                <div class="summary-label">Chờ thanh toán</div>
-                <div class="summary-value" id="sumUnpaid" style="color: var(--brand-orange);">-</div>
-            </div>
-            <div class="summary-cell">
-                <div class="summary-label">Đã thanh toán</div>
-                <div class="summary-value" id="sumPaid" style="color: var(--brand-green);">-</div>
-            </div>
-            <div class="summary-cell">
-                <div class="summary-label">Tổng chi tiêu</div>
-                <div class="summary-value" id="sumSpent">-</div>
-            </div>
-        </div>
-
         <div class="status-tabs" id="statusTabs" role="tablist"></div>
 
         <div class="order-toolbar">
@@ -677,38 +658,10 @@
             return `<span class="badge badge-info">${escapeHtml(status || 'Không xác định')}</span>`;
         }
 
-        function renderStepper(status) {
-            const s = normStatus(status);
-            const steps = [
-                { label: 'Đặt hàng', state: 'done' },
-                { label: 'Thanh toán', state: 'pending' },
-                { label: 'Kích hoạt bảo hành', state: 'pending' }
-            ];
-            if (s === 'UNPAID') {
-                steps[1].state = 'current';
-            } else if (s === 'COMPLETED') {
-                steps[1].state = 'done';
-                steps[2].state = 'done';
-            } else if (s === 'CANCELLED') {
-                steps[1] = { label: 'Đã hủy', state: 'cancelled' };
-            }
-            return `
-                <div class="order-stepper">
-                    ${steps.map((st, i) => `
-                        <div class="step ${st.state}">
-                            <span class="step-dot">${st.state === 'done' ? '✓' : st.state === 'cancelled' ? '×' : i + 1}</span>
-                            <span class="step-label">${st.label}</span>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-        }
-
         function renderSkeleton() {
             ordersContainer.innerHTML = Array(3).fill(0).map(() => `
                 <div class="order-card" style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px;">
                     <div class="skeleton" style="height: 16px; width: 40%;"></div>
-                    <div class="skeleton" style="height: 26px; width: 100%;"></div>
                     <div style="display: grid; grid-template-columns: 64px 1fr; gap: 14px;">
                         <div class="skeleton" style="height: 64px; border-radius: var(--radius-sm);"></div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -719,16 +672,6 @@
                 </div>
             `).join('');
             paginationBar.innerHTML = '';
-        }
-
-        function renderSummary() {
-            const unpaid = allOrders.filter(o => normStatus(o.status) === 'UNPAID').length;
-            const paidList = allOrders.filter(o => normStatus(o.status) === 'COMPLETED');
-            const spent = paidList.reduce((sum, o) => sum + Number(o.totalAmount || 0), 0);
-            document.getElementById('sumTotal').textContent = allOrders.length;
-            document.getElementById('sumUnpaid').textContent = unpaid;
-            document.getElementById('sumPaid').textContent = paidList.length;
-            document.getElementById('sumSpent').textContent = formatPrice(spent);
         }
 
         function renderTabs() {
@@ -867,7 +810,6 @@
                 await Promise.all(checkPromises);
                 reviewStatusMap = nextReviewMap;
 
-                renderSummary();
                 renderView();
 
                 // Auto trigger payment if redirected from checkout.html
@@ -986,8 +928,6 @@
                             </div>
                             ${getStatusBadge(order.status)}
                         </div>
-
-                        ${renderStepper(order.status)}
 
                         <div class="order-items-list">
                             ${itemsHtml || '<div class="order-meta" style="padding: 12px 0;">Không có chi tiết sản phẩm</div>'}
