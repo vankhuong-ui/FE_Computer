@@ -267,7 +267,16 @@
 
             <div class="status-listening" id="sepayListeningBox">
                 <span class="pulse-dot"></span>
-                <span>Đang chờ xác nhận thanh toán tự động (WebSocket / SePay)...</span>
+                <span>Đang chờ xác nhận thanh toán tự động...</span>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button type="button" id="btnCheckSepayNow" class="btn btn-primary btn-sm" style="flex: 1;">
+                    Tôi đã chuyển khoản
+                </button>
+                <button type="button" id="btnCloseSepayFooter" class="btn btn-secondary btn-sm">
+                    Đóng
+                </button>
             </div>
         </div>
     </div>
@@ -487,6 +496,25 @@
             });
         }
 
+        let currentListeningOrderId = null;
+        let bgRefreshInterval = null;
+        let bgRefreshTicks = 0;
+
+        async function checkOrderPaid(orderId) {
+            try {
+                const order = await api.get(CONFIG.ENDPOINTS.ORDERS.DETAIL(orderId), { _t: Date.now() });
+                const st = (order?.status || '').toUpperCase();
+                if (st === 'COMPLETED' || st === 'PAID') return true;
+            } catch (_) {}
+
+            try {
+                const latest = await api.get(CONFIG.ENDPOINTS.PAYMENT.LATEST(orderId), { _t: Date.now() });
+                if ((latest?.status || '').toUpperCase() === 'SUCCESS') return true;
+            } catch (_) {}
+
+            return false;
+        }
+
         async function openSePayModal(orderId) {
             try {
                 const info = await api.get(CONFIG.ENDPOINTS.PAYMENT.SEPAY_CREATE(orderId));
@@ -497,6 +525,7 @@
                 document.getElementById('sepayAmount').textContent = formatPrice(info.amount);
                 document.getElementById('sepayContent').textContent = info.transferContent;
 
+                currentListeningOrderId = orderId;
                 sepayModal.classList.add('active');
                 startListeningPayment(orderId);
             } catch (err) {
@@ -506,6 +535,7 @@
 
         function startListeningPayment(orderId) {
             stopListeningPayment();
+            currentListeningOrderId = orderId;
 
             // 1. WebSocket real-time subscription
             try {
@@ -517,7 +547,7 @@
                         activeSubscription = stompClient.subscribe(`/topic/payment/${orderId}`, (msg) => {
                             try {
                                 const payment = JSON.parse(msg.body);
-                                if (payment && payment.status === 'SUCCESS') {
+                                if (payment && (payment.status || '').toUpperCase() === 'SUCCESS') {
                                     onPaymentConfirmed(orderId);
                                 }
                             } catch (_) {}
@@ -526,21 +556,45 @@
                 }
             } catch (_) {}
 
-            // 2. Fallback polling every 4 seconds
+            // 2. Active polling every 2.5 seconds (with cache-busting)
             pollInterval = setInterval(async () => {
-                try {
-                    const order = await api.get(CONFIG.ENDPOINTS.ORDERS.DETAIL(orderId));
-                    if (order && (order.status || '').toUpperCase() === 'COMPLETED') {
-                        onPaymentConfirmed(orderId);
-                    }
-                } catch (_) {}
-            }, 4000);
+                if (document.visibilityState === 'hidden') return;
+                if (await checkOrderPaid(orderId)) {
+                    onPaymentConfirmed(orderId);
+                }
+            }, 2500);
+        }
+
+        function startBackgroundOrderWatch(orderId) {
+            if (bgRefreshInterval) clearInterval(bgRefreshInterval);
+            bgRefreshTicks = 0;
+            bgRefreshInterval = setInterval(async () => {
+                bgRefreshTicks++;
+                if (bgRefreshTicks > 24) { // Stop after ~2 minutes
+                    clearInterval(bgRefreshInterval);
+                    bgRefreshInterval = null;
+                    return;
+                }
+                if (document.visibilityState === 'hidden') return;
+                if (await checkOrderPaid(orderId)) {
+                    clearInterval(bgRefreshInterval);
+                    bgRefreshInterval = null;
+                    onPaymentConfirmed(orderId);
+                }
+            }, 5000);
         }
 
         function onPaymentConfirmed(orderId) {
+            if (!orderId) return;
+            const confirmedId = orderId;
+            currentListeningOrderId = null;
             stopListeningPayment();
+            if (bgRefreshInterval) {
+                clearInterval(bgRefreshInterval);
+                bgRefreshInterval = null;
+            }
             sepayModal.classList.remove('active');
-            toast.success(`Thanh toán đơn hàng #${orderId} thành công! Đã kích hoạt phiếu bảo hành điện tử.`);
+            toast.success(`Thanh toán đơn hàng #${confirmedId} thành công. Đã kích hoạt phiếu bảo hành điện tử.`);
             loadOrders();
         }
 
@@ -559,9 +613,45 @@
             }
         }
 
-        btnCloseSepay.addEventListener('click', () => {
+        function closeSepayModal() {
+            const pendingOrderId = currentListeningOrderId;
             sepayModal.classList.remove('active');
             stopListeningPayment();
+            loadOrders();
+            if (pendingOrderId) {
+                startBackgroundOrderWatch(pendingOrderId);
+            }
+        }
+
+        btnCloseSepay.addEventListener('click', closeSepayModal);
+        document.getElementById('btnCloseSepayFooter')?.addEventListener('click', closeSepayModal);
+
+        document.getElementById('btnCheckSepayNow')?.addEventListener('click', async () => {
+            const btn = document.getElementById('btnCheckSepayNow');
+            const oid = currentListeningOrderId;
+            if (!oid || !btn) return;
+            btn.disabled = true;
+            btn.textContent = 'Đang kiểm tra...';
+            const paid = await checkOrderPaid(oid);
+            if (paid) {
+                onPaymentConfirmed(oid);
+            } else {
+                toast.info('Chưa nhận được xác nhận từ ngân hàng, hệ thống vẫn đang tự động theo dõi.');
+            }
+            btn.disabled = false;
+            btn.textContent = 'Tôi đã chuyển khoản';
+        });
+
+        // Auto re-check when returning from banking app/tab
+        document.addEventListener('visibilitychange', async () => {
+            if (document.visibilityState !== 'visible') return;
+            if (currentListeningOrderId) {
+                if (await checkOrderPaid(currentListeningOrderId)) {
+                    onPaymentConfirmed(currentListeningOrderId);
+                }
+            } else if (bgRefreshInterval) {
+                loadOrders();
+            }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
