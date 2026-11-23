@@ -104,17 +104,24 @@ async function loadProducts(page = 0) {
             return;
         }
 
-        productsGrid.innerHTML = items.map(p => {
+        // Fetch live inventory for each visible product in parallel
+        const invList = await Promise.all(
+            items.map(p => api.get(CONFIG.ENDPOINTS.INVENTORY.USER_DETAIL(p.id)).catch(() => null))
+        );
+
+        productsGrid.innerHTML = items.map((p, idx) => {
             const name = p.nameProduct || p.name || 'Sản phẩm';
             const safeName = name.replace(/"/g, '&quot;');
             const img = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80';
             const specs = p.specs || 'Bảo hành điện tử chính hãng';
+            const stock = invList[idx]?.soluong ?? 0;
+            const inStock = stock > 0;
             return `
                 <article class="card product-card">
                     <a href="detailproductuser.html?id=${p.id}" class="product-image-box">
                         <span class="product-stock-pill">
-                            <span class="stock-dot"></span>
-                            Sẵn hàng
+                            <span class="stock-dot ${inStock ? '' : 'out'}"></span>
+                            ${inStock ? 'Sẵn hàng' : 'Hết hàng'}
                         </span>
                         <img src="${img}" alt="${safeName}" loading="lazy" />
                     </a>
@@ -126,24 +133,30 @@ async function loadProducts(page = 0) {
                         <span class="product-price tabular-nums">${formatVnd(p.price)}</span>
                         <span class="product-vat-tag">VAT</span>
                     </div>
-                    <div class="product-card-actions">
-                        <button type="button" class="btn btn-cart-soft btn-add-cart"
-                            data-id="${p.id}"
-                            data-name="${safeName}"
-                            data-price="${p.price || 0}"
-                            data-img="${img}"
-                            title="Thêm vào giỏ hàng">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                            <span>Thêm giỏ</span>
-                        </button>
-                        <button type="button" class="btn btn-primary btn-buy-now"
-                            data-id="${p.id}"
-                            data-name="${safeName}"
-                            data-price="${p.price || 0}"
-                            data-img="${img}">
-                            Mua ngay
-                        </button>
-                    </div>
+                    ${inStock ? `
+                        <div class="product-card-actions">
+                            <button type="button" class="btn btn-cart-soft btn-add-cart"
+                                data-id="${p.id}"
+                                data-name="${safeName}"
+                                data-price="${p.price || 0}"
+                                data-img="${img}"
+                                title="Thêm vào giỏ hàng">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                <span>Thêm giỏ</span>
+                            </button>
+                            <button type="button" class="btn btn-primary btn-buy-now"
+                                data-id="${p.id}"
+                                data-name="${safeName}"
+                                data-price="${p.price || 0}"
+                                data-img="${img}">
+                                Mua ngay
+                            </button>
+                        </div>
+                    ` : `
+                        <a href="detailproductuser.html?id=${p.id}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 600;">
+                            Xem thông số
+                        </a>
+                    `}
                 </article>
             `;
         }).join('');

@@ -322,6 +322,16 @@
             border-color: var(--brand-orange);
         }
 
+        .out-of-stock-notice {
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
         /* Reviews */
         .review-card {
             background: var(--surface);
@@ -458,9 +468,9 @@
                 ]);
 
                 currentProduct = product;
-                currentStock = inv?.soluong ?? null;
+                currentStock = inv?.soluong ?? 0;
                 const img = product.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&q=80';
-                const inStock = currentStock === null || currentStock > 0;
+                const inStock = currentStock > 0;
                 const safeTitle = (product.nameProduct || 'Sản phẩm').replace(/"/g, '&quot;');
 
                 document.title = `${product.nameProduct || 'Chi tiết sản phẩm'} — HK COMPUTER`;
@@ -501,7 +511,7 @@
                             <div class="detail-meta-row">
                                 <span class="badge badge-info">SKU #${product.id}</span>
                                 <span id="stockBadge" class="badge ${inStock ? 'badge-success' : 'badge-danger'}">
-                                    ${currentStock === null ? 'Sẵn sàng đặt hàng' : (currentStock > 0 ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng')}
+                                    ${inStock ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng'}
                                 </span>
                             </div>
 
@@ -522,26 +532,32 @@
                             ` : ''}
 
                             <div class="buy-actions-section">
-                                <div class="qty-row">
-                                    <span class="qty-label">Số lượng</span>
-                                    <div class="qty-control">
-                                        <button type="button" id="btnQtyDec" aria-label="Giảm số lượng">−</button>
-                                        <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
-                                        <button type="button" id="btnQtyInc" aria-label="Tăng số lượng">+</button>
+                                <div id="buyControlsWrap" style="display: ${inStock ? 'flex' : 'none'}; flex-direction: column; gap: 14px;">
+                                    <div class="qty-row">
+                                        <span class="qty-label">Số lượng</span>
+                                        <div class="qty-control">
+                                            <button type="button" id="btnQtyDec" aria-label="Giảm số lượng">−</button>
+                                            <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
+                                            <button type="button" id="btnQtyInc" aria-label="Tăng số lượng">+</button>
+                                        </div>
+                                        <span id="stockHint" style="font-size: var(--text-xs); color: var(--text-muted);" class="tabular-nums">
+                                            ${inStock ? `${currentStock} sản phẩm có sẵn` : ''}
+                                        </span>
                                     </div>
-                                    <span id="stockHint" style="font-size: var(--text-xs); color: var(--text-muted);" class="tabular-nums">
-                                        ${currentStock !== null && currentStock > 0 ? `${currentStock} sản phẩm có sẵn` : ''}
-                                    </span>
+
+                                    <div class="cta-btn-row">
+                                        <button type="button" id="btnAddToCart" class="btn btn-cart-outline btn-lg">
+                                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                            <span>Thêm vào giỏ</span>
+                                        </button>
+                                        <button type="button" id="btnBuyNow" class="btn btn-primary btn-lg">
+                                            <span>Mua ngay</span>
+                                        </button>
+                                    </div>
                                 </div>
 
-                                <div class="cta-btn-row">
-                                    <button type="button" id="btnAddToCart" class="btn btn-cart-outline btn-lg" ${!inStock ? 'disabled' : ''}>
-                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                                        <span>${inStock ? 'Thêm vào giỏ' : 'Hết hàng'}</span>
-                                    </button>
-                                    <button type="button" id="btnBuyNow" class="btn btn-primary btn-lg" ${!inStock ? 'disabled' : ''}>
-                                        <span>${inStock ? 'Mua ngay' : 'Tạm hết hàng'}</span>
-                                    </button>
+                                <div id="outOfStockNotice" class="out-of-stock-notice" style="display: ${inStock ? 'none' : 'block'};">
+                                    Sản phẩm hiện tạm hết hàng. Bạn vẫn có thể xem đầy đủ thông số kỹ thuật bên trên hoặc liên hệ cửa hàng để được tư vấn mẫu tương đương.
                                 </div>
                             </div>
                         </div>
@@ -612,25 +628,25 @@
                                 const inStock = currentStock > 0;
                                 const badge = document.getElementById('stockBadge');
                                 const stockHint = document.getElementById('stockHint');
-                                const btnBuy = document.getElementById('btnBuyNow');
-                                const btnCart = document.getElementById('btnAddToCart');
+                                const buyControlsWrap = document.getElementById('buyControlsWrap');
+                                const outOfStockNotice = document.getElementById('outOfStockNotice');
+                                const qtyInput = document.getElementById('qtyInput');
 
                                 if (badge) {
                                     badge.className = `badge ${inStock ? 'badge-success' : 'badge-danger'}`;
                                     badge.textContent = inStock ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng';
                                 }
                                 if (stockHint) {
-                                    stockHint.textContent = inStock ? `${currentStock} sản phẩm có sẵn` : 'Hết hàng';
+                                    stockHint.textContent = inStock ? `${currentStock} sản phẩm có sẵn` : '';
                                 }
-                                if (btnBuy) {
-                                    btnBuy.disabled = !inStock;
-                                    const span = btnBuy.querySelector('span');
-                                    if (span) span.textContent = inStock ? 'Mua ngay' : 'Tạm hết hàng';
+                                if (qtyInput && inStock) {
+                                    qtyInput.max = currentStock;
                                 }
-                                if (btnCart) {
-                                    btnCart.disabled = !inStock;
-                                    const span = btnCart.querySelector('span');
-                                    if (span) span.textContent = inStock ? 'Thêm vào giỏ' : 'Hết hàng';
+                                if (buyControlsWrap) {
+                                    buyControlsWrap.style.display = inStock ? 'flex' : 'none';
+                                }
+                                if (outOfStockNotice) {
+                                    outOfStockNotice.style.display = inStock ? 'none' : 'block';
                                 }
                                 toast.info(`Cập nhật tồn kho mới nhất: còn ${currentStock} sản phẩm.`);
                             }
