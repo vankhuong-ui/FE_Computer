@@ -545,19 +545,19 @@
         <div id="paginationBar" class="pagination-bar"></div>
     </main>
 
-    <!-- SePay VietQR Payment Modal -->
+    <!-- VietQR Payment Modal -->
     <div class="modal-backdrop" id="sepayModal">
         <div class="sepay-modal">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                <h3 style="font-size: var(--text-lg);">Thanh toán VietQR (SePay)</h3>
+                <h3 style="font-size: var(--text-lg);">Chuyển khoản ngân hàng qua mã VietQR</h3>
                 <button type="button" id="btnCloseSepay" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
             <p style="font-size: var(--text-xs); color: var(--text-secondary);">
-                Mở ứng dụng Ngân hàng bất kỳ để quét mã VietQR. Hệ thống tự động xác nhận ngay khi nhận được chuyển khoản.
+                Mở ứng dụng ngân hàng bất kỳ để quét mã VietQR. Hệ thống tự động xác nhận ngay khi nhận được chuyển khoản.
             </p>
 
             <div class="qr-frame">
-                <img id="sepayQrImg" src="" alt="VietQR SePay" />
+                <img id="sepayQrImg" src="" alt="Mã thanh toán VietQR" />
             </div>
 
             <table class="bank-info-table">
@@ -567,7 +567,10 @@
                 </tr>
                 <tr>
                     <td style="color: var(--text-secondary);">Số tài khoản</td>
-                    <td id="sepayAccNo">-</td>
+                    <td>
+                        <span id="sepayAccNo">-</span>
+                        <button type="button" id="btnCopyAccNo" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px; margin-left: 6px;">Sao chép</button>
+                    </td>
                 </tr>
                 <tr>
                     <td style="color: var(--text-secondary);">Chủ tài khoản</td>
@@ -578,8 +581,11 @@
                     <td id="sepayAmount" style="color: var(--pastel-green-text);">-</td>
                 </tr>
                 <tr>
-                    <td style="color: var(--text-secondary);">Nội dung chuyển khoản (Bắt buộc)</td>
-                    <td><span class="badge badge-warning" id="sepayContent" style="font-family: var(--font-mono); font-size: var(--text-sm);">-</span></td>
+                    <td style="color: var(--text-secondary);">Nội dung chuyển khoản</td>
+                    <td>
+                        <span class="badge badge-warning" id="sepayContent" style="font-family: var(--font-mono); font-size: var(--text-sm);">-</span>
+                        <button type="button" id="btnCopyContent" class="btn btn-outline btn-sm" style="padding: 2px 7px; font-size: 11px; margin-left: 6px;">Sao chép</button>
+                    </td>
                 </tr>
             </table>
 
@@ -907,7 +913,7 @@
                 if (isUnpaid) {
                     footerActions = `
                         <button type="button" class="btn btn-outline btn-sm text-danger btn-cancel-order" data-id="${order.id}">Hủy đơn</button>
-                        <button type="button" class="btn btn-secondary btn-sm btn-pay-vnpay" data-id="${order.id}">Thanh toán VNPay</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-pay-vnpay" data-id="${order.id}">Thẻ ATM / VNPay</button>
                         <button type="button" class="btn btn-primary btn-sm btn-pay-sepay" data-id="${order.id}">Quét mã VietQR</button>
                     `;
                 } else {
@@ -1137,6 +1143,22 @@
 
         btnCloseSepay.addEventListener('click', closeSepayModal);
         document.getElementById('btnCloseSepayFooter')?.addEventListener('click', closeSepayModal);
+
+        document.getElementById('btnCopyAccNo')?.addEventListener('click', () => {
+            const val = document.getElementById('sepayAccNo')?.textContent?.trim();
+            if (val && val !== '-') {
+                navigator.clipboard?.writeText(val);
+                toast.info('Đã sao chép số tài khoản ngân hàng.');
+            }
+        });
+
+        document.getElementById('btnCopyContent')?.addEventListener('click', () => {
+            const val = document.getElementById('sepayContent')?.textContent?.trim();
+            if (val && val !== '-') {
+                navigator.clipboard?.writeText(val);
+                toast.info('Đã sao chép nội dung chuyển khoản.');
+            }
+        });
 
         document.getElementById('btnCheckSepayNow')?.addEventListener('click', async () => {
             const btn = document.getElementById('btnCheckSepayNow');

@@ -52,9 +52,9 @@
                 <div class="form-group">
                     <label class="form-label" for="editStatus">Trạng thái</label>
                     <select id="editStatus" class="select">
-                        <option value="OPEN">OPEN — Đang mở</option>
-                        <option value="IN_PROGRESS">IN_PROGRESS — Đang xử lý</option>
-                        <option value="CLOSED">CLOSED — Đã đóng</option>
+                        <option value="OPEN">Chờ phản hồi</option>
+                        <option value="IN_PROGRESS">Đang xử lý</option>
+                        <option value="CLOSED">Đã giải quyết</option>
                     </select>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
@@ -75,9 +75,9 @@
         let currentPage = 0;
 
         function getBadge(s) {
-            if (s === 'OPEN') return '<span class="badge badge-warning">Đang mở</span>';
+            if (s === 'OPEN') return '<span class="badge badge-warning">Chờ phản hồi</span>';
             if (s === 'IN_PROGRESS') return '<span class="badge badge-info">Đang xử lý</span>';
-            if (s === 'CLOSED') return '<span class="badge badge-success">Đã đóng</span>';
+            if (s === 'CLOSED') return '<span class="badge badge-success">Đã giải quyết</span>';
             return `<span class="badge">${s}</span>`;
         }
 

@@ -187,10 +187,10 @@
         }
 
         .specs-box {
-            background: var(--surface-subtle);
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 16px 18px;
+            overflow: hidden;
         }
 
         .specs-header {
@@ -200,26 +200,77 @@
             font-size: var(--text-xs);
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+            letter-spacing: 0.05em;
+            color: var(--text-primary);
+            padding: 12px 16px;
+            background: var(--surface-subtle);
+            border-bottom: 1px solid var(--border);
         }
 
-        .specs-chips {
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: var(--text-xs);
+        }
+
+        .spec-table tr:nth-child(even) {
+            background: var(--surface-subtle);
+        }
+
+        .spec-table td {
+            padding: 9px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            line-height: 1.45;
+        }
+
+        .spec-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .spec-table td.spec-key {
+            width: 34%;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .spec-table td.spec-val {
+            font-family: var(--font-mono);
+        }
+
+        .perks-box {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+        }
+
+        .perks-box-title {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .perks-list {
+            list-style: none;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 6px;
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+        }
+
+        .perks-list li {
+            display: flex;
+            align-items: flex-start;
             gap: 8px;
         }
 
-        .spec-chip {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 6px 10px;
-            font-family: var(--font-mono);
-            font-size: 12px;
-            color: var(--text-primary);
-            line-height: 1.4;
+        .perks-check {
+            color: var(--brand-green);
+            font-weight: 700;
+            flex-shrink: 0;
         }
 
         .detail-description {
@@ -435,22 +486,30 @@
 
         function renderSpecsHtml(rawSpecs) {
             if (!rawSpecs) return '';
-            const parts = rawSpecs
-                .split(/[|;\n]+/)
+            const parts = String(rawSpecs)
+                .split(/[|,;\n]+/)
                 .map(s => s.trim())
                 .filter(Boolean);
 
-            const content = parts.length > 1
-                ? `<div class="specs-chips">${parts.map(p => `<span class="spec-chip">${p}</span>`).join('')}</div>`
-                : `<div class="mono-spec" style="font-size: var(--text-xs); color: var(--text-primary); line-height: 1.6;">${rawSpecs}</div>`;
+            const defaultLabels = ['Vi xử lý (CPU)', 'Bộ nhớ RAM', 'Ổ cứng lưu trữ', 'Card đồ họa (VGA)', 'Màn hình', 'Pin & Nguồn', 'Kết nối & Khác'];
+            const rowsHtml = parts.map((part, idx) => {
+                const colonIdx = part.indexOf(':');
+                if (colonIdx > 0 && colonIdx < 28) {
+                    const k = part.slice(0, colonIdx).trim();
+                    const v = part.slice(colonIdx + 1).trim();
+                    return `<tr><td class="spec-key">${k}</td><td class="spec-val">${v}</td></tr>`;
+                }
+                const label = parts.length > 1 ? (defaultLabels[idx] || `Thông số #${idx + 1}`) : 'Cấu hình tiêu chuẩn';
+                return `<tr><td class="spec-key">${label}</td><td class="spec-val">${part}</td></tr>`;
+            }).join('');
 
             return `
                 <div class="specs-box">
                     <div class="specs-header">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-                        <span>Thông số kỹ thuật</span>
+                        <span>Bảng thông số kỹ thuật</span>
                     </div>
-                    ${content}
+                    <table class="spec-table"><tbody>${rowsHtml}</tbody></table>
                 </div>
             `;
         }
@@ -495,7 +554,7 @@
                                     <span class="media-highlight-icon">
                                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
                                     </span>
-                                    <span>Thanh toán VietQR &amp; VNPay</span>
+                                    <span>Chuyển khoản VietQR &amp; thẻ ATM</span>
                                 </div>
                                 <div class="media-highlight-item">
                                     <span class="media-highlight-icon">
@@ -530,6 +589,15 @@
                             ${product.description ? `
                                 <p class="detail-description">${product.description}</p>
                             ` : ''}
+
+                            <div class="perks-box">
+                                <div class="perks-box-title">Quyền lợi &amp; Dịch vụ đi kèm tại HK COMPUTER</div>
+                                <ul class="perks-list">
+                                    <li><span class="perks-check">✓</span><span>Kích hoạt bảo hành điện tử chính hãng 12–36 tháng theo mã đơn hàng</span></li>
+                                    <li><span class="perks-check">✓</span><span>Miễn phí công lắp đặt khi nâng cấp thêm RAM hoặc ổ cứng SSD tại 10 chi nhánh</span></li>
+                                    <li><span class="perks-check">✓</span><span>Giảm 20.000đ dịch vụ vệ sinh, tra keo tản nhiệt khi đặt lịch hẹn trước</span></li>
+                                </ul>
+                            </div>
 
                             <div class="buy-actions-section">
                                 <div id="buyControlsWrap" style="display: ${inStock ? 'flex' : 'none'}; flex-direction: column; gap: 14px;">

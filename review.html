@@ -33,21 +33,11 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <div class="container header-inner">
-            <a href="index.html" class="brand-logo">
-                
-                <span><span class="brand-hk">HK</span> <span class="brand-computer">COMPUTER</span></span>
-            </a>
-            <div class="header-actions">
-                <a href="order.html" class="btn btn-secondary btn-sm">← Quay lại đơn hàng</a>
-            </div>
-        </div>
-    </header>
+    <header id="appHeader"></header>
 
     <main class="review-container">
         <div class="card">
-            <h1 style="font-size: var(--text-xl); margin-bottom: 6px;">Đánh giá sản phẩm</h1>
+            <h1 style="font-size: var(--text-xl); margin-bottom: 6px;">Đánh giá sản phẩm đã mua</h1>
             <p style="font-size: var(--text-xs); margin-bottom: 20px;" id="productMeta">Đang tải thông tin sản phẩm...</p>
 
             <form id="reviewForm">
@@ -63,23 +53,28 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="comment">Nhận xét của bạn</label>
-                    <textarea id="comment" class="textarea" rows="4" placeholder="Chia sẻ trải nghiệm thực tế về hiệu năng, đóng gói..." required></textarea>
+                    <label class="form-label" for="comment">Nhận xét thực tế của bạn</label>
+                    <textarea id="comment" class="textarea" rows="4" required></textarea>
                 </div>
 
-                <button type="submit" id="btnSubmit" class="btn btn-primary" style="width: 100%;">
-                    Gửi đánh giá
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <a href="order.html" class="btn btn-secondary" style="flex: 1;">Quay lại đơn hàng</a>
+                    <button type="submit" id="btnSubmit" class="btn btn-primary" style="flex: 1.4;">
+                        Gửi đánh giá
+                    </button>
+                </div>
             </form>
         </div>
     </main>
 
+    <footer id="appFooter"></footer>
+
     <script type="module">
-        import './assets/js/theme.js';
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';
+        import { initStoreLayout } from './assets/js/layout.js?v=7';
 
         const params = new URLSearchParams(window.location.search);
         const orderId = Number(params.get('orderId'));
@@ -130,7 +125,10 @@
             }
         });
 
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => {
+            initStoreLayout({ activeNav: '' });
+            init();
+        });
     </script>
 </body>
 </html>

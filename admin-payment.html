@@ -17,7 +17,7 @@
                 <div class="table-toolbar">
                     <div>
                         <h1 style="font-size: var(--text-2xl);">Đối soát Giao dịch</h1>
-                        <p style="font-size: var(--text-xs);">Theo dõi toàn bộ giao dịch qua cổng VietQR SePay và VNPay.</p>
+                        <p style="font-size: var(--text-xs);">Theo dõi toàn bộ giao dịch chuyển khoản ngân hàng qua mã VietQR và thẻ ATM / VNPay.</p>
                     </div>
                 </div>
 
@@ -59,12 +59,19 @@
                     return;
                 }
 
+                const formatGateway = (gw) => {
+                    const g = (gw || '').toUpperCase();
+                    if (g === 'SEPAY') return 'Chuyển khoản VietQR';
+                    if (g === 'VNPAY') return 'Thẻ ATM / VNPay';
+                    return gw || '-';
+                };
+
                 tbody.innerHTML = items.map(p => `
                     <tr>
                         <td class="tabular-nums">#${p.id}</td>
                         <td class="tabular-nums">#${p.orderId}</td>
                         <td class="mono-spec" style="font-size: var(--text-xs);">${p.transactionId || '-'}</td>
-                        <td><span class="badge badge-info">${p.paymentGateway}</span></td>
+                        <td><span class="badge badge-info">${formatGateway(p.paymentGateway)}</span></td>
                         <td class="tabular-nums" style="font-weight: var(--font-semibold);">${formatPrice(p.amount)}</td>
                         <td>${p.status === 'SUCCESS' ? '<span class="badge badge-success">Thành công</span>' : '<span class="badge badge-danger">Thất bại</span>'}</td>
                         <td class="tabular-nums" style="font-size: var(--text-xs);">${p.createdAt ? new Date(p.createdAt).toLocaleString('vi-VN') : '-'}</td>

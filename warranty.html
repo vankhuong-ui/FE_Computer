@@ -99,7 +99,7 @@
         <div class="page-header">
             <div>
                 <h1 style="font-size: var(--text-2xl);">Trung tâm Bảo hành Điện tử</h1>
-                <p style="font-size: var(--text-xs);">Tra cứu hạn bảo hành chính hãng theo Mã Serial (BH-MãĐơn-MãSP) và đăng ký sửa chữa / đổi mới 1-1 trực tuyến.</p>
+                <p style="font-size: var(--text-xs);">Tra cứu thời hạn bảo hành chính hãng theo mã bảo hành hoặc mã đơn hàng và gửi yêu cầu hỗ trợ bảo hành trực tuyến.</p>
             </div>
             <a href="order.html" class="btn btn-secondary btn-sm">Xem đơn hàng đã mua</a>
         </div>
@@ -107,9 +107,9 @@
         <!-- Public Lookup Box -->
         <section class="lookup-banner">
             <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">Tra cứu nhanh thời hạn bảo hành</h3>
-            <p style="font-size: var(--text-xs); color: var(--text-secondary);">Nhập mã Serial điện tử (Ví dụ: <code>BH-12-5</code>) hoặc Mã đơn hàng (Ví dụ: <code>12</code> hoặc <code>DH12</code>).</p>
+            <p style="font-size: var(--text-xs); color: var(--text-secondary);">Nhập mã bảo hành điện tử (ví dụ: <code>BH-12-5</code>) hoặc mã đơn hàng (ví dụ: <code>12</code>).</p>
             <form id="lookupForm" class="lookup-form">
-                <input type="text" id="lookupKeyword" class="input tabular-nums" placeholder="Nhập mã BH-12-5 hoặc mã đơn hàng..." required />
+                <input type="text" id="lookupKeyword" class="input tabular-nums" placeholder="Nhập mã bảo hành hoặc mã đơn hàng..." required />
                 <button type="submit" class="btn btn-primary">Tra cứu ngay</button>
             </form>
             <div id="lookupResultBox" style="margin-top: 20px;"></div>
@@ -177,7 +177,7 @@
                     <select id="claimIssueType" class="select">
                         <option value="Lỗi phần cứng / Không lên nguồn">Lỗi phần cứng / Không lên nguồn</option>
                         <option value="Quá nhiệt / Quạt kêu to / Sập nguồn">Quá nhiệt / Quạt kêu to / Sập nguồn</option>
-                        <option value="Lỗi hiển thị / Màn hình xanh (BSOD)">Lỗi hiển thị / Màn hình xanh (BSOD)</option>
+                        <option value="Lỗi hiển thị / Màn hình xanh">Lỗi hiển thị / Màn hình</option>
                         <option value="Lỗi cổng kết nối / Ngoại vi">Lỗi cổng kết nối / Ngoại vi</option>
                         <option value="Khác (Mô tả chi tiết bên dưới)">Khác (Mô tả chi tiết bên dưới)</option>
                     </select>
@@ -185,12 +185,12 @@
 
                 <div class="form-group">
                     <label class="form-label" for="claimPhone">Số điện thoại liên hệ nhận máy</label>
-                    <input type="text" id="claimPhone" class="input tabular-nums" placeholder="09xxxxxxxx" required />
+                    <input type="text" id="claimPhone" class="input tabular-nums" required />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="claimDescription">Mô tả chi tiết tình trạng lỗi</label>
-                    <textarea id="claimDescription" class="textarea" rows="4" placeholder="Mô tả thời điểm phát sinh lỗi, biểu hiện trên máy..." required></textarea>
+                    <textarea id="claimDescription" class="textarea" rows="4" required></textarea>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">

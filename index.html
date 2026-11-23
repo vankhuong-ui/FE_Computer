@@ -3,58 +3,114 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HK COMPUTER — Máy tính Chính hãng &amp; Trung tâm Sửa chữa</title>
+    <title>HK COMPUTER — Hệ thống Bán lẻ Laptop, PC &amp; Trung tâm Kỹ thuật</title>
     <link rel="stylesheet" href="./assets/css/base.css?v=6" />
     <link rel="stylesheet" href="./assets/css/components.css?v=6" />
     <style>
-        /* Editorial Banner (Authentic Tech Store, no SaaS 4-box clutter) */
+        /* 1. Retail Hero Grid (2/3 Main Spotlight + 1/3 Stacked Service Cards) */
+        .hero-retail-grid {
+            display: grid;
+            grid-template-columns: 1.75fr 1fr;
+            gap: 16px;
+            margin: 20px 0 18px;
+        }
+
+        @media (max-width: 920px) {
+            .hero-retail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .editorial-banner {
-            margin: 24px 0 20px;
             border-radius: var(--radius-lg);
             overflow: hidden;
             position: relative;
-            min-height: 230px;
+            min-height: 248px;
             background:
-                linear-gradient(90deg, rgba(9, 15, 28, 0.92) 0%, rgba(9, 15, 28, 0.72) 55%, rgba(9, 15, 28, 0.25) 100%),
+                linear-gradient(90deg, rgba(9, 15, 28, 0.92) 0%, rgba(9, 15, 28, 0.74) 58%, rgba(9, 15, 28, 0.25) 100%),
                 url('https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=1400&q=80') center/cover no-repeat;
             border: 1px solid var(--border);
             display: flex;
             align-items: center;
-            padding: 36px 40px;
+            padding: 34px 36px;
         }
 
         @media (max-width: 640px) {
-            .editorial-banner { padding: 24px 20px; min-height: 200px; }
+            .editorial-banner { padding: 24px 20px; min-height: 210px; }
         }
 
         .editorial-content {
-            max-width: 560px;
+            max-width: 520px;
             color: #FFFFFF;
-        }
-
-        .editorial-kicker {
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #34D399;
-            margin-bottom: 10px;
         }
 
         .editorial-content h1 {
             color: #FFFFFF;
-            font-size: clamp(1.5rem, 2.8vw, 2.15rem);
-            line-height: 1.22;
+            font-size: clamp(1.45rem, 2.5vw, 2.05rem);
+            line-height: 1.24;
             margin-bottom: 10px;
         }
 
         .editorial-content p {
-            color: rgba(248, 250, 252, 0.82);
+            color: rgba(248, 250, 252, 0.84);
             font-size: var(--text-sm);
             margin-bottom: 20px;
         }
 
-        /* Subtle Single-Line Trust Strip */
+        .hero-side-stack {
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .hero-promo-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+        }
+
+        .hero-promo-card:hover {
+            border-color: var(--brand-green);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        .hero-promo-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .hero-promo-title {
+            font-size: var(--text-base);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.3;
+        }
+
+        .hero-promo-desc {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .hero-promo-link {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            color: var(--brand-green);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 2. Subtle Single-Line Trust Strip */
         .trust-strip {
             display: flex;
             align-items: center;
@@ -67,7 +123,7 @@
             border-radius: var(--radius-md);
             font-size: var(--text-xs);
             color: var(--text-secondary);
-            margin-bottom: 32px;
+            margin-bottom: 28px;
         }
 
         .trust-item {
@@ -85,27 +141,120 @@
             flex-shrink: 0;
         }
 
-        /* Catalog Toolbar & Grid */
+        /* 3. Interactive Pill Catalog Filter & Toolbar */
         .catalog-header {
             display: flex;
             align-items: baseline;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 10px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
-        .catalog-toolbar {
+        .catalog-filter-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .filter-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 12px;
-            padding: 12px 14px;
-            background: var(--surface);
+            gap: 10px;
+        }
+
+        .pill-scroll-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            flex: 1;
+        }
+
+        .filter-row-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+            min-width: 74px;
+        }
+
+        .filter-pill {
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-bottom: 20px;
+            background: var(--surface-subtle);
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--border-hover);
+            color: var(--text-primary);
+            background: var(--surface-hover);
+        }
+
+        .filter-pill.active {
+            background: var(--brand-green);
+            border-color: var(--brand-green);
+            color: #FFFFFF;
+        }
+
+        .filter-pill.brand-chip.active {
+            background: var(--brand-green-soft);
+            border-color: var(--brand-green);
+            color: var(--brand-green);
+        }
+
+        .catalog-controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .sort-pills {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .sort-btn {
+            padding: 5px 10px;
+            border-radius: var(--radius-xs);
+            border: 1px solid transparent;
+            background: transparent;
+            color: var(--text-secondary);
+            font-family: inherit;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .sort-btn:hover {
+            color: var(--text-primary);
+            background: var(--surface-subtle);
+        }
+
+        .sort-btn.active {
+            background: var(--surface-subtle);
+            border-color: var(--border);
+            color: var(--brand-green);
         }
 
         .toolbar-group {
@@ -115,10 +264,11 @@
             flex-wrap: wrap;
         }
 
+        /* 4. Product Grid & Hardware Spec-Tag Cards */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
-            gap: 20px;
+            gap: 18px;
             margin-bottom: 24px;
         }
 
@@ -136,7 +286,7 @@
 
         .product-card .product-image-box {
             aspect-ratio: 4 / 3;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-subtle);
             position: relative;
@@ -193,17 +343,26 @@
             color: var(--brand-green);
         }
 
-        .product-spec-chip {
-            font-size: 11px;
+        .hw-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 14px;
+            min-height: 24px;
+        }
+
+        .hw-tag {
+            font-family: var(--font-mono);
+            font-size: 10.5px;
             color: var(--text-secondary);
             background: var(--surface-subtle);
-            border: 1px solid var(--border-subtle);
+            border: 1px solid var(--border);
             border-radius: var(--radius-xs);
-            padding: 5px 8px;
+            padding: 2px 7px;
+            max-width: 100%;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            margin-bottom: 14px;
         }
 
         .product-price-row {
@@ -228,8 +387,6 @@
             font-size: 10px;
             font-weight: 600;
             color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
         }
 
         .product-card-actions {
@@ -257,11 +414,61 @@
             border-color: var(--brand-orange);
         }
 
-        /* Store Directory & Repair Booking */
+        /* 5. Store Directory, Listed Service Pricing & Repair Booking */
         .repair-section {
             margin: 56px 0 64px;
             padding-top: 40px;
             border-top: 1px solid var(--border);
+        }
+
+        .service-rates-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 900px) {
+            .service-rates-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 520px) {
+            .service-rates-grid { grid-template-columns: 1fr; }
+        }
+
+        .service-rate-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+        }
+
+        .service-rate-card:hover {
+            border-color: var(--brand-green);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .service-rate-name {
+            font-size: var(--text-xs);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .service-rate-price {
+            font-family: var(--font-mono);
+            font-size: var(--text-sm);
+            font-weight: 700;
+            color: var(--brand-orange);
+            margin-bottom: 2px;
+        }
+
+        .service-rate-note {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         .repair-grid {
@@ -384,47 +591,93 @@
     <header id="appHeader"></header>
 
     <main class="container">
-        <!-- 1. Compact Visual Editorial Banner -->
-        <section class="editorial-banner">
-            <div class="editorial-content">
-                <h1>Laptop, PC chính hãng và dịch vụ kỹ thuật tại cửa hàng.</h1>
-                <p>Bảo hành điện tử minh bạch, thanh toán VietQR nhanh gọn và hỗ trợ sửa chữa trong ngày hoặc tận nhà.</p>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <a href="#catalog" class="btn btn-primary">Xem sản phẩm</a>
-                    <a href="#repair-center" class="btn btn-outline" style="color: #FFFFFF; border-color: rgba(255,255,255,0.35); background: rgba(15,23,42,0.35);">Hệ thống cửa hàng</a>
+        <!-- 1. Retail Hero Grid: 2/3 Flagship Spotlight + 1/3 Stacked Service Cards -->
+        <section class="hero-retail-grid">
+            <div class="editorial-banner">
+                <div class="editorial-content">
+                    <h1>Laptop, PC chính hãng và trung tâm kỹ thuật phần cứng.</h1>
+                    <p>Cấu hình minh bạch, xuất hóa đơn VAT đầy đủ, bảo hành điện tử theo mã đơn hàng và dịch vụ sửa chữa tại 10 chi nhánh.</p>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <a href="#catalog" class="btn btn-primary">Xem danh mục máy</a>
+                        <a href="#repair-center" class="btn btn-outline" style="color: #FFFFFF; border-color: rgba(255,255,255,0.35); background: rgba(15,23,42,0.35);">Bảng giá dịch vụ sửa chữa</a>
+                    </div>
                 </div>
+            </div>
+
+            <div class="hero-side-stack">
+                <a href="#repair-center" class="hero-promo-card">
+                    <div>
+                        <div class="hero-promo-top" style="margin-bottom: 6px;">
+                            <span class="badge badge-warning">Dịch vụ kỹ thuật</span>
+                            <span class="badge badge-success">Giảm 20.000đ đặt lịch trước</span>
+                        </div>
+                        <div class="hero-promo-title">Vệ sinh, nâng cấp &amp; sửa chữa Laptop / PC trong ngày</div>
+                        <div class="hero-promo-desc" style="margin-top: 4px;">Kiểm tra lỗi miễn phí, xem trực tiếp kỹ thuật viên thao tác tại cửa hàng hoặc đặt lịch hỗ trợ tận nơi.</div>
+                    </div>
+                    <span class="hero-promo-link">Đặt lịch hẹn ngay →</span>
+                </a>
+
+                <a href="warranty.html" class="hero-promo-card">
+                    <div>
+                        <div class="hero-promo-top" style="margin-bottom: 6px;">
+                            <span class="badge badge-info">Hậu mãi chính hãng</span>
+                            <span style="font-size: 11px; color: var(--text-muted);" class="tabular-nums">12 – 36 tháng</span>
+                        </div>
+                        <div class="hero-promo-title">Tra cứu Bảo hành Điện tử &amp; Tiến độ xử lý trực tuyến</div>
+                        <div class="hero-promo-desc" style="margin-top: 4px;">Tự động kích hoạt phiếu bảo hành theo mã đơn hàng ngay khi hoàn tất thanh toán.</div>
+                    </div>
+                    <span class="hero-promo-link">Tra cứu thời hạn bảo hành →</span>
+                </a>
             </div>
         </section>
 
         <!-- 2. Subtle Single-Line Trust Strip -->
         <div class="trust-strip">
-            <span class="trust-item"><span class="trust-dot"></span>Chính hãng 100%, xuất VAT đầy đủ</span>
-            <span class="trust-item"><span class="trust-dot"></span>Bảo hành điện tử 1 đổi 1</span>
-            <span class="trust-item"><span class="trust-dot"></span>Sửa chữa, nâng cấp trong ngày</span>
-            <span class="trust-item"><span class="trust-dot"></span>Thanh toán VietQR &amp; VNPay</span>
+            <span class="trust-item"><span class="trust-dot"></span>Sản phẩm chính hãng, xuất VAT đầy đủ</span>
+            <span class="trust-item"><span class="trust-dot"></span>Bảo hành điện tử theo mã đơn hàng</span>
+            <span class="trust-item"><span class="trust-dot"></span>Miễn phí công lắp khi nâng cấp RAM / SSD</span>
+            <span class="trust-item"><span class="trust-dot"></span>Thanh toán chuyển khoản VietQR &amp; thẻ ATM</span>
         </div>
 
-        <!-- 3. Product-First Live Catalog -->
+        <!-- 3. Product-First Live Catalog with Interactive Pill Filters -->
         <section id="catalog">
             <div class="catalog-header">
                 <h2 style="font-size: var(--text-xl);">Danh mục sản phẩm</h2>
-                <span id="catalogStatus" style="font-size: var(--text-xs); color: var(--text-secondary);">Đang tải...</span>
+                <span id="catalogStatus" class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">Đang tải...</span>
             </div>
 
-            <div class="catalog-toolbar">
-                <div class="toolbar-group">
-                    <select id="categoryFilter" class="select" style="width: auto; min-width: 168px;">
-                        <option value="">Tất cả danh mục</option>
-                    </select>
-                    <select id="brandFilter" class="select" style="width: auto; min-width: 156px;">
-                        <option value="">Tất cả thương hiệu</option>
-                    </select>
-                    <button type="button" id="btnResetFilter" class="btn btn-secondary btn-sm" style="display: none;">Xóa lọc</button>
+            <div class="catalog-filter-panel">
+                <div class="filter-row">
+                    <span class="filter-row-label">Danh mục:</span>
+                    <div id="categoryPills" class="pill-scroll-row">
+                        <button type="button" class="filter-pill active" data-cat="">Tất cả</button>
+                    </div>
                 </div>
 
-                <div class="toolbar-group" style="flex: 1; justify-content: flex-end; min-width: 240px;">
-                    <input type="text" id="searchInput" class="input" style="max-width: 300px;" placeholder="Tìm tên máy, VGA, linh kiện..." />
-                    <button type="button" id="btnSearch" class="btn btn-primary btn-sm">Tìm kiếm</button>
+                <div class="filter-row">
+                    <span class="filter-row-label">Thương hiệu:</span>
+                    <div id="brandPills" class="pill-scroll-row">
+                        <button type="button" class="filter-pill brand-chip active" data-brand="">Tất cả hãng</button>
+                    </div>
+                </div>
+
+                <!-- Hidden native selects preserved for compatibility -->
+                <select id="categoryFilter" style="display: none;"><option value="">Tất cả danh mục</option></select>
+                <select id="brandFilter" style="display: none;"><option value="">Tất cả thương hiệu</option></select>
+
+                <div class="catalog-controls-row">
+                    <div class="sort-pills" id="sortPills">
+                        <span class="filter-row-label" style="min-width: auto; margin-right: 4px;">Sắp xếp:</span>
+                        <button type="button" class="sort-btn active" data-sort="newest">Mới nhất</button>
+                        <button type="button" class="sort-btn" data-sort="price_asc">Giá thấp → cao</button>
+                        <button type="button" class="sort-btn" data-sort="price_desc">Giá cao → thấp</button>
+                        <button type="button" id="btnResetFilter" class="btn btn-secondary btn-sm" style="display: none; margin-left: 6px;">Xóa bộ lọc</button>
+                    </div>
+
+                    <div class="toolbar-group" style="flex: 1; justify-content: flex-end; min-width: 240px;">
+                        <input type="text" id="searchInput" class="input" style="max-width: 280px; height: 36px;" placeholder="Lọc nhanh theo tên máy, CPU, VGA..." />
+                        <button type="button" id="btnSearch" class="btn btn-primary btn-sm">Tìm</button>
+                    </div>
                 </div>
             </div>
 
@@ -432,13 +685,37 @@
             <div id="paginationBar" style="display: flex; justify-content: center; gap: 8px; margin-top: 16px;"></div>
         </section>
 
-        <!-- 4. Clean Store Directory & Smart Repair Booking -->
+        <!-- 4. Listed Service Pricing, Store Directory & Smart Repair Booking -->
         <section id="repair-center" class="repair-section">
-            <div style="margin-bottom: 24px;">
-                <h2 style="font-size: var(--text-2xl); margin-bottom: 6px;">Hệ thống cửa hàng &amp; Đặt lịch sửa chữa</h2>
+            <div style="margin-bottom: 20px;">
+                <h2 style="font-size: var(--text-2xl); margin-bottom: 6px;">Trung tâm Kỹ thuật, Bảng giá Dịch vụ &amp; Hệ thống Cửa hàng</h2>
                 <p style="font-size: var(--text-sm);">
-                    Chọn khu vực để xem địa chỉ trung tâm gần bạn, hoặc đặt lịch để kỹ thuật viên hỗ trợ tại cửa hàng / tận nhà.
+                    Bấm chọn dịch vụ niêm yết bên dưới hoặc chọn chi nhánh gần bạn để đặt lịch hẹn trước (giảm ngay 20.000đ).
                 </p>
+            </div>
+
+            <!-- Listed Service Rate Cards -->
+            <div class="service-rates-grid">
+                <button type="button" class="service-rate-card" data-pick-service="Kiểm tra lỗi tổng quát (Miễn phí)">
+                    <div class="service-rate-name">Kiểm tra &amp; Chẩn đoán lỗi</div>
+                    <div class="service-rate-price">Miễn phí 100%</div>
+                    <div class="service-rate-note">Báo đúng bệnh, đúng giá trước khi sửa</div>
+                </button>
+                <button type="button" class="service-rate-card" data-pick-service="Vệ sinh & Tra keo tản nhiệt (150.000đ)">
+                    <div class="service-rate-name">Vệ sinh &amp; Tra keo tản nhiệt</div>
+                    <div class="service-rate-price">150.000 ₫</div>
+                    <div class="service-rate-note">Làm sạch bụi quạt, tra keo chuẩn</div>
+                </button>
+                <button type="button" class="service-rate-card" data-pick-service="Nâng cấp RAM / Ổ cứng SSD">
+                    <div class="service-rate-name">Nâng cấp RAM / Ổ cứng SSD</div>
+                    <div class="service-rate-price">Miễn phí công lắp</div>
+                    <div class="service-rate-note">Chỉ tính giá linh kiện chính hãng</div>
+                </button>
+                <button type="button" class="service-rate-card" data-pick-service="Cài đặt Windows & Phần mềm (100.000đ)">
+                    <div class="service-rate-name">Cài đặt Windows &amp; Phần mềm</div>
+                    <div class="service-rate-price">100.000 ₫</div>
+                    <div class="service-rate-note">Đầy đủ driver, phần mềm văn phòng</div>
+                </button>
             </div>
 
             <div class="repair-grid">
@@ -448,7 +725,7 @@
                     <div id="branchList" class="store-directory"></div>
                 </div>
 
-                <!-- Right: Smart Repair Booking Form (No Email, At Store / At Home Switch) -->
+                <!-- Right: Smart Repair Booking Form -->
                 <div class="card">
                     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
                         <h3 style="font-size: var(--text-lg); margin: 0;">Đặt lịch sửa chữa Laptop / PC</h3>
@@ -545,6 +822,6 @@
 
     <footer id="appFooter"></footer>
 
-    <script type="module" src="./assets/js/home.js?v=9"></script>
+    <script type="module" src="./assets/js/home.js?v=10"></script>
 </body>
 </html>

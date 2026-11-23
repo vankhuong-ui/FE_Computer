@@ -124,10 +124,11 @@
         function renderAccountInfo() {
             const user = auth.getUser();
             if (!user) return;
+            const isAdm = auth.isAdmin();
             document.getElementById('accountInfoBox').innerHTML = `
-                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Tên hiển thị:</span> <b>${user.accountname || '-'}</b></div>
+                <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Họ và tên:</span> <b>${user.accountname || '-'}</b></div>
                 <div style="margin-bottom: 8px;"><span style="color: var(--text-secondary);">Email:</span> <span class="tabular-nums">${user.gmail || '-'}</span></div>
-                <div><span style="color: var(--text-secondary);">Vai trò:</span> <span class="badge badge-info">${user.role || 'USER'}</span></div>
+                <div><span style="color: var(--text-secondary);">Hạng tài khoản:</span> <span class="badge badge-info">${isAdm ? 'Quản trị viên' : 'Khách hàng thành viên'}</span></div>
             `;
         }
 
@@ -213,7 +214,14 @@
                             <div style="font-weight: 600; font-size: var(--text-xs);">${item.deviceModel}</div>
                             <div style="font-size: 11px; color: var(--text-secondary);">${item.serviceType}</div>
                         </td>
-                        <td style="font-size: var(--text-xs);">${item.branchName}</td>
+                        <td style="font-size: var(--text-xs);">
+                            <div style="margin-bottom: 2px;">
+                                ${item.serviceMethod === 'AT_HOME'
+                                    ? '<span class="badge badge-warning">Sửa tận nơi</span>'
+                                    : '<span class="badge badge-info">Tại cửa hàng</span>'}
+                            </div>
+                            <div>${item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName || '-') : (item.branchName || '-')}</div>
+                        </td>
                         <td class="tabular-nums" style="font-size: var(--text-xs);">${item.appointmentTime}<br/>${item.appointmentDate}</td>
                         <td>${getRepairBadge(item.status)}</td>
                         <td style="font-size: var(--text-xs); color: var(--text-secondary);">${item.adminNote || '<i>Đang chờ tiếp nhận</i>'}</td>

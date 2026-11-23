@@ -245,22 +245,22 @@
                         <h3 style="font-size: var(--text-lg); margin: 28px 0 12px;">2. Phương thức thanh toán</h3>
                         <div class="payment-methods">
                             <div class="payment-method-card ${selectedPaymentMethod === 'SEPAY' ? 'selected' : ''}" data-method="SEPAY">
-                                <div class="payment-method-title">VietQR SePay</div>
-                                <div class="payment-method-desc">Quét mã QR ngân hàng, xác nhận tự động.</div>
+                                <div class="payment-method-title">Chuyển khoản ngân hàng (Quét mã VietQR)</div>
+                                <div class="payment-method-desc">Quét mã QR bằng ứng dụng ngân hàng, tự động xác nhận đơn hàng.</div>
                             </div>
                             <div class="payment-method-card ${selectedPaymentMethod === 'VNPAY' ? 'selected' : ''}" data-method="VNPAY">
-                                <div class="payment-method-title">Cổng VNPay</div>
-                                <div class="payment-method-desc">Thanh toán qua thẻ ATM nội địa hoặc ví VNPay.</div>
+                                <div class="payment-method-title">Thẻ ATM / Ngân hàng nội địa (VNPay)</div>
+                                <div class="payment-method-desc">Thanh toán trực tuyến qua cổng thẻ ATM nội địa hoặc ứng dụng VNPay.</div>
                             </div>
                             <div class="payment-method-card ${selectedPaymentMethod === 'LATER' ? 'selected' : ''}" data-method="LATER">
-                                <div class="payment-method-title">Giữ đơn thanh toán sau</div>
-                                <div class="payment-method-desc">Đặt giữ tồn kho và thanh toán tại mục Đơn hàng.</div>
+                                <div class="payment-method-title">Đặt giữ hàng (Thanh toán sau)</div>
+                                <div class="payment-method-desc">Giữ sản phẩm và thanh toán trực tiếp trong mục Đơn hàng của tôi.</div>
                             </div>
                         </div>
 
                         <div class="form-group" style="margin-top: 24px;">
-                            <label class="form-label" for="orderNote">Ghi chú giao hàng & lắp ráp (Tùy chọn)</label>
-                            <textarea id="orderNote" class="textarea" rows="3" placeholder="Ví dụ: Nhờ kỹ thuật viên lắp sẵn Windows và cập nhật BIOS..."></textarea>
+                            <label class="form-label" for="orderNote">Ghi chú giao hàng &amp; lắp ráp (Tùy chọn)</label>
+                            <textarea id="orderNote" class="textarea" rows="3"></textarea>
                         </div>
 
                         <button type="button" id="btnPlaceOrder" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 12px;">

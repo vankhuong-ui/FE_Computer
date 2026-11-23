@@ -71,7 +71,7 @@
                         <td class="tabular-nums">#${acc.id}</td>
                         <td style="font-weight: var(--font-medium);">${acc.accountname || '-'}</td>
                         <td>${acc.gmail}</td>
-                        <td><span class="badge badge-info">${acc.role || 'USER'}</span></td>
+                        <td><span class="badge badge-info">${(acc.role || '').toUpperCase().includes('ADMIN') ? 'Quản trị viên' : 'Khách hàng'}</span></td>
                         <td>${acc.enabled ? '<span class="badge badge-success">Hoạt động</span>' : '<span class="badge badge-danger">Đã khóa</span>'}</td>
                         <td>
                             <button type="button" class="btn btn-sm ${acc.enabled ? 'btn-outline text-danger' : 'btn-primary'} btn-toggle" data-id="${acc.id}" data-next="${!acc.enabled}">

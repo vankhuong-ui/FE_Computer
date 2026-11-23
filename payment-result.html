@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="./assets/css/base.css?v=6" />
     <link rel="stylesheet" href="./assets/css/components.css?v=6" />
     <style>
-        body {
+        .result-wrap {
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 100dvh;
-            padding: 24px;
-            background-color: var(--canvas);
+            padding: 48px 20px;
         }
         .result-card {
             background: var(--surface);
@@ -27,14 +26,20 @@
     </style>
 </head>
 <body>
-    <div class="result-card" id="resultContent">
-        <p style="font-size: var(--text-sm);">Đang xác thực giao dịch thanh toán...</p>
-    </div>
+    <header id="appHeader"></header>
+
+    <main class="result-wrap">
+        <div class="result-card" id="resultContent">
+            <p style="font-size: var(--text-sm); margin: 0 auto;">Đang xác thực giao dịch thanh toán...</p>
+        </div>
+    </main>
+
+    <footer id="appFooter"></footer>
 
     <script type="module">
-        import './assets/js/theme.js';
         import { api } from './assets/js/api.js';
         import { CONFIG } from './assets/js/config.js';
+        import { initStoreLayout } from './assets/js/layout.js?v=7';
 
         const container = document.getElementById('resultContent');
         const queryParams = new URLSearchParams(window.location.search);
@@ -56,37 +61,40 @@
                 const res = await api.post(CONFIG.ENDPOINTS.PAYMENT.VERIFY, { params });
                 const success = res?.status?.toUpperCase() === 'SUCCESS';
                 renderStatus(success, res?.orderId || orderId, success
-                    ? 'Thanh toán thành công! Phiếu bảo hành điện tử của bạn đã được kích hoạt.'
-                    : 'Giao dịch không thành công hoặc đã bị hủy.');
+                    ? 'Thanh toán đã hoàn tất. Phiếu bảo hành điện tử của bạn đã được kích hoạt.'
+                    : 'Giao dịch chưa hoàn tất hoặc đã bị hủy.');
             } catch (e) {
                 const fallbackSuccess = responseCode === '00';
                 renderStatus(fallbackSuccess, orderId, fallbackSuccess
-                    ? 'Thanh toán đã ghi nhận. Vui lòng kiểm tra trạng thái trong mục Đơn hàng.'
+                    ? 'Giao dịch đã được ghi nhận. Vui lòng kiểm tra trạng thái trong mục Đơn hàng của tôi.'
                     : 'Giao dịch không thành công.');
             }
         }
 
         function renderStatus(isSuccess, orderId, message) {
             container.innerHTML = `
-                <div style="margin-bottom: 16px;">
-                    <span class="badge ${isSuccess ? 'badge-success' : 'badge-danger'}" style="font-size: var(--text-sm); padding: 6px 14px;">
-                        ${isSuccess ? '✓ GIAO DỊCH THÀNH CÔNG' : '✕ GIAO DỊCH THẤT BẠI'}
+                <div style="margin-bottom: 14px;">
+                    <span class="badge ${isSuccess ? 'badge-success' : 'badge-danger'}" style="font-size: var(--text-xs); padding: 5px 12px;">
+                        ${isSuccess ? 'Giao dịch thành công' : 'Giao dịch chưa hoàn tất'}
                     </span>
                 </div>
                 <h1 style="font-size: var(--text-2xl); margin-bottom: 8px;">
-                    ${isSuccess ? 'Cảm ơn bạn đã đặt hàng' : 'Thanh toán chưa hoàn tất'}
+                    ${isSuccess ? 'Cảm ơn bạn đã mua hàng' : 'Thanh toán chưa hoàn tất'}
                 </h1>
-                ${orderId ? `<p class="tabular-nums" style="font-size: var(--text-sm); margin-bottom: 8px;">Mã đơn hàng: <b>#${orderId}</b></p>` : ''}
-                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 24px;">${message}</p>
+                ${orderId ? `<p class="tabular-nums" style="font-size: var(--text-sm); margin: 0 auto 8px;">Mã đơn hàng: <b>#${orderId}</b></p>` : ''}
+                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin: 0 auto 24px;">${message}</p>
                 <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
                     <a href="order.html" class="btn btn-primary btn-sm">Xem đơn hàng</a>
-                    <a href="warranty.html" class="btn btn-secondary btn-sm">Xem bảo hành</a>
-                    <a href="index.html" class="btn btn-outline btn-sm">Trang chủ</a>
+                    <a href="warranty.html" class="btn btn-secondary btn-sm">Tra cứu bảo hành</a>
+                    <a href="index.html" class="btn btn-outline btn-sm">Về trang chủ</a>
                 </div>
             `;
         }
 
-        handleResult();
+        document.addEventListener('DOMContentLoaded', () => {
+            initStoreLayout({ activeNav: '' });
+            handleResult();
+        });
     </script>
 </body>
 </html>

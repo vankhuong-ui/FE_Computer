@@ -131,8 +131,7 @@ export const auth = {
         const cartCount = parseInt(localStorage.getItem('cartCount') || '0');
 
         if (user) {
-            // Đã đăng nhập: ẩn nút icon giỏ hàng ngoài header, gộp vào thanh Tài khoản
-            if (guestCartBtn) guestCartBtn.style.display = 'none';
+            if (guestCartBtn) guestCartBtn.style.display = 'inline-flex';
 
             const displayName = user.accountname || user.gmail || 'Tài khoản';
             const initial = displayName[0].toUpperCase();

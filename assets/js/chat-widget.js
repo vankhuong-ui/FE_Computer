@@ -169,21 +169,21 @@ class GeminiChatWidget {
                 }
             </style>
 
-            <button type="button" class="ai-fab" id="btnToggleAi" aria-label="AI Tư vấn Laptop" title="AI Tư vấn Laptop">
+            <button type="button" class="ai-fab" id="btnToggleAi" aria-label="Tư vấn cấu hình & Dịch vụ" title="Tư vấn cấu hình & Dịch vụ">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
                 </svg>
-                <span class="ai-fab-label">AI Tư vấn Laptop</span>
+                <span class="ai-fab-label">Tư vấn cấu hình</span>
             </button>
 
             <div class="ai-panel" id="aiPanel">
                 <div class="ai-panel-header">
-                    <span class="ai-panel-title">AI Tư vấn Laptop — HK COMPUTER</span>
+                    <span class="ai-panel-title">Tư vấn cấu hình &amp; Dịch vụ — HK COMPUTER</span>
                     <button type="button" class="ai-panel-close" id="btnCloseAi">×</button>
                 </div>
                 <div class="ai-panel-messages" id="aiMessagesContainer"></div>
                 <div class="ai-panel-footer">
-                    <input type="text" class="ai-panel-input" id="aiInput" placeholder="VD: Laptop văn phòng dưới 20 triệu?..." />
+                    <input type="text" class="ai-panel-input" id="aiInput" placeholder="Nhập nhu cầu sử dụng hoặc dòng máy cần tư vấn..." />
                     <button type="button" class="btn btn-primary btn-sm" id="btnSendAi">Gửi</button>
                 </div>
             </div>

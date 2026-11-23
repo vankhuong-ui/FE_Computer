@@ -87,9 +87,9 @@
 
         function getStatusBadge(status) {
             const s = (status || '').toUpperCase();
-            if (s === 'OPEN') return `<span class="badge badge-warning">Đang mở</span>`;
-            if (s === 'IN_PROGRESS') return `<span class="badge badge-info">Đang xử lý</span>`;
-            if (s === 'CLOSED') return `<span class="badge badge-success">Đã hoàn tất</span>`;
+            if (s === 'OPEN') return `<span class="badge badge-warning">Chờ phản hồi</span>`;
+            if (s === 'IN_PROGRESS') return `<span class="badge badge-info">Đang tư vấn / xử lý</span>`;
+            if (s === 'CLOSED') return `<span class="badge badge-success">Đã giải quyết</span>`;
             return `<span class="badge">${status}</span>`;
         }
 

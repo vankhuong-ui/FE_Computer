@@ -212,19 +212,22 @@
                         </div>
                     </div>
 
-                    <div class="card" style="height: fit-content;">
-                        <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Tóm tắt thanh toán</h3>
+                    <div class="card" style="height: fit-content; position: sticky; top: 84px;">
+                        <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">Tóm tắt đơn hàng</h3>
                         <div style="display: flex; justify-content: space-between; font-size: var(--text-sm); margin-bottom: 10px;">
                             <span style="color: var(--text-secondary);">Số sản phẩm đã chọn</span>
                             <span class="tabular-nums" id="selectedCountDisplay">0</span>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: var(--text-lg); font-weight: var(--font-semibold); padding-top: 14px; border-top: 1px solid var(--border); margin-bottom: 20px;">
+                        <div style="display: flex; justify-content: space-between; font-size: var(--text-lg); font-weight: var(--font-semibold); padding-top: 14px; border-top: 1px solid var(--border); margin-bottom: 16px;">
                             <span>Tổng tạm tính</span>
-                            <span class="tabular-nums" id="totalPriceDisplay">0 ₫</span>
+                            <span class="tabular-nums" id="totalPriceDisplay" style="color: var(--brand-orange);">0 ₫</span>
                         </div>
                         <button type="button" id="btnProceedCheckout" class="btn btn-primary btn-lg" style="width: 100%;">
-                            Tiến hành thanh toán
+                            Tiến hành đặt hàng
                         </button>
+                        <p style="font-size: 11.5px; color: var(--text-secondary); margin-top: 12px;">
+                            Giá đã bao gồm VAT · Kích hoạt bảo hành điện tử tự động sau khi hoàn tất thanh toán.
+                        </p>
                     </div>
                 </div>
             `;

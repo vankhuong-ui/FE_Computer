@@ -194,6 +194,30 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
     const headerHost = document.getElementById('appHeader');
     if (headerHost) {
         headerHost.className = 'header';
+
+        // Insert top utility bar right above the sticky header once
+        if (!document.getElementById('hkTopUtilityBar')) {
+            const topBar = document.createElement('div');
+            topBar.id = 'hkTopUtilityBar';
+            topBar.className = 'top-utility-bar';
+            topBar.innerHTML = `
+                <div class="container top-utility-inner">
+                    <div class="utility-group">
+                        <span class="utility-item"><a href="index.html#repair-center">Hệ thống 10 chi nhánh toàn quốc</a></span>
+                        <span style="color: var(--border-hover);">|</span>
+                        <span class="utility-item tabular-nums">Mở cửa: ${CONFIG.OPEN_HOURS}</span>
+                    </div>
+                    <div class="utility-group">
+                        <span class="utility-item">Mua hàng &amp; Kỹ thuật: <a href="tel:18006889" class="tabular-nums" style="font-weight: 700; color: var(--brand-green);">${CONFIG.HOTLINE}</a></span>
+                        <span style="color: var(--border-hover);">|</span>
+                        <span class="utility-item"><a href="warranty.html">Tra cứu bảo hành điện tử</a></span>
+                    </div>
+                </div>
+            `;
+            headerHost.parentNode?.insertBefore(topBar, headerHost);
+        }
+
+        const initialQ = new URLSearchParams(window.location.search).get('q') || '';
         headerHost.innerHTML = `
             <div class="container header-inner">
                 <a href="index.html" class="brand-logo" aria-label="HK COMPUTER">
@@ -201,10 +225,17 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                     <span class="brand-computer">COMPUTER</span>
                 </a>
 
+                <form id="headerSearchForm" class="header-search-form" role="search">
+                    <input type="search" id="headerSearchInput" class="header-search-input" placeholder="Tìm laptop, PC, linh kiện, mã máy..." value="${initialQ.replace(/"/g, '&quot;')}" />
+                    <button type="submit" class="header-search-btn" aria-label="Tìm kiếm">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </form>
+
                 <nav aria-label="Điều hướng chính">
                     <ul class="nav-links">
-                        <li><a href="index.html" class="nav-link ${activeNav === 'home' ? 'active' : ''}">Sản phẩm</a></li>
-                        <li><a href="index.html#repair-center" class="nav-link ${activeNav === 'repair' ? 'active' : ''}">Cửa hàng</a></li>
+                        <li><a href="index.html#catalog" class="nav-link ${activeNav === 'home' ? 'active' : ''}">Sản phẩm</a></li>
+                        <li><a href="index.html#repair-center" class="nav-link ${activeNav === 'repair' ? 'active' : ''}">Sửa chữa</a></li>
                         <li><a href="warranty.html" class="nav-link ${activeNav === 'warranty' ? 'active' : ''}">Bảo hành</a></li>
                         <li><a href="support.html" class="nav-link ${activeNav === 'support' ? 'active' : ''}">Hỗ trợ</a></li>
                     </ul>
@@ -217,7 +248,7 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
 
                     <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
 
-                    <a href="cart.html" class="cart-icon-btn" id="headerCartBtn" aria-label="Giỏ hàng" title="Giỏ hàng">
+                    <a href="cart.html" class="cart-icon-btn" id="headerCartBtn" aria-label="Giỏ hàng" title="Giỏ hàng của bạn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="9" cy="21" r="1"></circle>
                             <circle cx="20" cy="21" r="1"></circle>
@@ -230,6 +261,19 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 </div>
             </div>
         `;
+
+        document.getElementById('headerSearchForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const q = document.getElementById('headerSearchInput')?.value.trim() || '';
+            const pageInput = document.getElementById('searchInput');
+            if (pageInput) {
+                pageInput.value = q;
+                document.getElementById('btnSearch')?.click();
+                document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                window.location.href = q ? `index.html?q=${encodeURIComponent(q)}#catalog` : 'index.html#catalog';
+            }
+        });
     }
 
     const footerHost = document.getElementById('appFooter');
@@ -244,7 +288,7 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                             <span class="brand-computer">COMPUTER</span>
                         </a>
                         <p style="font-size: var(--text-xs); margin-bottom: 8px;">
-                            Hệ thống bán lẻ Laptop, PC và trung tâm sửa chữa, bảo hành điện tử chính hãng.
+                            Hệ thống bán lẻ Laptop, PC, Linh kiện chính hãng và Trung tâm dịch vụ sửa chữa, nâng cấp phần cứng chuyên nghiệp.
                         </p>
                         <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">
                             Giờ mở cửa: ${CONFIG.OPEN_HOURS}
@@ -252,28 +296,28 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                     </div>
 
                     <div>
-                        <div class="footer-title">Dịch vụ &amp; Trải nghiệm</div>
+                        <div class="footer-title">Dịch vụ khách hàng</div>
                         <ul class="footer-links">
                             <li><a href="index.html#repair-center">Hệ thống cửa hàng &amp; Đặt lịch sửa chữa</a></li>
-                            <li><a href="warranty.html">Tra cứu bảo hành điện tử (1 đổi 1)</a></li>
-                            <li><a href="order.html">Tra cứu &amp; Thanh toán đơn hàng</a></li>
-                            <li><a href="profile.html">Quản lý tài khoản &amp; Sổ địa chỉ</a></li>
+                            <li><a href="warranty.html">Tra cứu bảo hành điện tử chính hãng</a></li>
+                            <li><a href="order.html">Theo dõi &amp; Thanh toán đơn hàng</a></li>
+                            <li><a href="profile.html">Sổ địa chỉ &amp; Lịch hẹn của tôi</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <div class="footer-title">Tổng đài &amp; Thanh toán</div>
+                        <div class="footer-title">Tổng đài &amp; Hỗ trợ thanh toán</div>
                         <ul class="footer-links">
                             <li>Hotline miễn phí: <a href="tel:18006889" class="tabular-nums" style="font-weight: 700; color: var(--brand-green);">${CONFIG.HOTLINE}</a></li>
-                            <li>Thanh toán: VietQR SePay • VNPay • Tiền mặt</li>
-                            <li><a href="dang-nhap-admin.html">Cổng Quản trị (Admin)</a></li>
+                            <li>Thanh toán: Chuyển khoản VietQR · Thẻ ATM / VNPay · Tiền mặt</li>
+                            <li><a href="support.html">Gửi yêu cầu tư vấn cấu hình &amp; hỗ trợ kỹ thuật</a></li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="footer-bottom">
-                    <span>© 2026 HK COMPUTER.</span>
-                    <span>Bảo hành điện tử 12 – 36 tháng</span>
+                    <span>© 2026 HK COMPUTER. Hệ thống bán lẻ máy tính &amp; dịch vụ kỹ thuật.</span>
+                    <span>Bảo hành điện tử chính hãng 12 – 36 tháng</span>
                 </div>
             </div>
         `;
