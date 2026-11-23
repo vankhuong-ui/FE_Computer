@@ -96,7 +96,7 @@ async function loadProducts(page = 0) {
         if (!items.length) {
             productsGrid.innerHTML = `
                 <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 48px 24px;">
-                    <p style="color: var(--text-primary); font-weight: 600; margin-bottom: 6px;">Không tìm thấy sản phẩm phù hợp</p>
+                    <p style="color: var(--text-primary); font-weight: 600; margin: 0 auto 6px;">Không tìm thấy sản phẩm phù hợp</p>
                     <p style="font-size: var(--text-xs); margin: 0 auto;">Thử từ khóa hoặc bộ lọc khác.</p>
                 </div>
             `;
