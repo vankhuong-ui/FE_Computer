@@ -1,19 +1,22 @@
 /**
- * tokens.css - HK COMPUTER Minimalist Dual-Theme Design Tokens (Light & Dark)
+ * tokens.css - HK COMPUTER Dual-Theme Design Tokens (Light & Dark)
+ * Calibrated neutral slate palette, restrained brand accents, tinted shadows
  */
 
 :root {
-    /* Brand Identity: HK COMPUTER */
-    --brand-green: #008B45;
-    --brand-green-dark: #006B35;
-    --brand-green-soft: #E8F5EE;
-    --brand-orange: #F37021;
-    --brand-orange-dark: #D95B10;
-    --brand-orange-soft: #FFF3EC;
+    /* Brand Identity: HK COMPUTER (calibrated saturation < 80%) */
+    --brand-green: #047857;
+    --brand-green-dark: #065F46;
+    --brand-green-soft: rgba(4, 120, 87, 0.10);
+    --brand-green-ring: rgba(4, 120, 87, 0.22);
+    --brand-orange: #EA580C;
+    --brand-orange-dark: #C2410C;
+    --brand-orange-soft: rgba(234, 88, 12, 0.10);
 
-    /* Light Mode Canvas & Surfaces */
-    --canvas: #F4F6F8;
+    /* Light Mode Canvas & Surfaces (single cool-neutral slate family) */
+    --canvas: #F5F7F9;
     --surface: #FFFFFF;
+    --surface-glass: rgba(255, 255, 255, 0.84);
     --surface-subtle: #F8FAFC;
     --surface-hover: #F1F5F9;
 
@@ -22,23 +25,23 @@
     --border-subtle: rgba(15, 23, 42, 0.06);
     --border-hover: #CBD5E1;
 
-    /* Typographic Colors */
+    /* Typographic Colors (WCAG AA+) */
     --text-primary: #0F172A;
     --text-secondary: #475569;
-    --text-muted: #94A3B8;
+    --text-muted: #64748B;
     --text-inverse: #FFFFFF;
 
     /* Semantic Status Badges */
-    --pastel-green: #DCFCE7;
-    --pastel-green-text: #166534;
+    --pastel-green: #ECFDF5;
+    --pastel-green-text: #065F46;
 
-    --pastel-yellow: #FEF3C7;
+    --pastel-yellow: #FFFBEB;
     --pastel-yellow-text: #92400E;
 
-    --pastel-red: #FEE2E2;
+    --pastel-red: #FEF2F2;
     --pastel-red-text: #991B1B;
 
-    --pastel-blue: #DBEAFE;
+    --pastel-blue: #EFF6FF;
     --pastel-blue-text: #1E40AF;
 
     /* Typography Hierarchy */
@@ -59,26 +62,31 @@
     --font-semibold: 600;
     --font-bold: 700;
 
-    /* Border Radii */
+    /* Consistent Corner-Radius Scale */
     --radius-xs: 4px;
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 14px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
     --radius-pill: 9999px;
 
-    /* Shadows */
+    /* Slate-Tinted Shadows (consistent top-down light source) */
     --shadow-none: none;
-    --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.04);
-    --shadow-hover: 0 6px 20px rgba(15, 23, 42, 0.06);
+    --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.03);
+    --shadow-hover: 0 10px 26px -6px rgba(15, 23, 42, 0.08), 0 4px 10px -4px rgba(15, 23, 42, 0.04);
+    --shadow-modal: 0 24px 48px -12px rgba(15, 23, 42, 0.18);
 
     /* Transitions */
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-    --transition-fast: 150ms var(--ease-out);
-    --transition-normal: 240ms var(--ease-out);
+    --transition-fast: 160ms var(--ease-out);
+    --transition-normal: 260ms var(--ease-out);
 
-    /* Layout Constraints */
+    /* Layout & Z-Index Scale */
     --container-max-width: 1240px;
     --header-height: 64px;
+    --z-sticky: 100;
+    --z-dropdown: 300;
+    --z-modal: 900;
+    --z-toast: 1000;
 }
 
 /* ==================== DARK THEME ==================== */
@@ -86,16 +94,18 @@
     --brand-green: #10B981;
     --brand-green-dark: #059669;
     --brand-green-soft: rgba(16, 185, 129, 0.14);
+    --brand-green-ring: rgba(16, 185, 129, 0.28);
     --brand-orange: #F97316;
     --brand-orange-dark: #EA580C;
     --brand-orange-soft: rgba(249, 115, 22, 0.14);
 
-    --canvas: #0B1120;
+    --canvas: #0B111C;
     --surface: #111827;
-    --surface-subtle: #1E293B;
-    --surface-hover: #273549;
+    --surface-glass: rgba(17, 24, 39, 0.84);
+    --surface-subtle: #1A2333;
+    --surface-hover: #222E42;
 
-    --border: #1F2937;
+    --border: #1F2A3D;
     --border-subtle: rgba(255, 255, 255, 0.06);
     --border-hover: #334155;
 
@@ -104,18 +114,19 @@
     --text-muted: #64748B;
     --text-inverse: #FFFFFF;
 
-    --pastel-green: rgba(16, 185, 129, 0.18);
+    --pastel-green: rgba(16, 185, 129, 0.16);
     --pastel-green-text: #6EE7B7;
 
-    --pastel-yellow: rgba(245, 158, 11, 0.18);
+    --pastel-yellow: rgba(245, 158, 11, 0.16);
     --pastel-yellow-text: #FCD34D;
 
-    --pastel-red: rgba(239, 68, 68, 0.18);
+    --pastel-red: rgba(239, 68, 68, 0.16);
     --pastel-red-text: #FCA5A5;
 
-    --pastel-blue: rgba(59, 130, 246, 0.18);
+    --pastel-blue: rgba(59, 130, 246, 0.16);
     --pastel-blue-text: #93C5FD;
 
-    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.32);
+    --shadow-hover: 0 12px 28px -6px rgba(0, 0, 0, 0.5);
+    --shadow-modal: 0 24px 48px -12px rgba(0, 0, 0, 0.65);
 }

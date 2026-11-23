@@ -91,6 +91,21 @@ class CartManager {
         toast.success(`Đã thêm "${product.name}" vào giỏ hàng.`);
     }
 
+    buyNow(product, quantity = 1) {
+        const buyItem = [{
+            products: {
+                id: Number(product.id),
+                nameProduct: product.name,
+                price: Number(product.price) || 0,
+                image: product.image || product.imageUrl || ''
+            },
+            quality: Math.max(1, Number(quantity) || 1)
+        }];
+        sessionStorage.setItem('selectedCartItems', JSON.stringify(buyItem));
+        if (!auth.requireAuth()) return;
+        window.location.href = 'checkout.html';
+    }
+
     async updateQuantity(productId, quality) {
         if (quality <= 0) {
             return;

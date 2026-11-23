@@ -8,7 +8,7 @@
 import { api } from './api.js';
 import { theme } from './theme.js?v=6';
 import { auth } from './auth.js';
-import { cart } from './cart.js';
+import { cart } from './cart.js?v=7';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
 
@@ -20,9 +20,12 @@ function mountQuickRepairModal() {
     modalEl.className = 'hk-modal-backdrop';
     modalEl.innerHTML = `
         <div class="hk-modal-box">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap: 12px; margin-bottom:14px;">
                 <div>
-                    <h3 style="font-size: var(--text-lg); margin-bottom: 2px;">Đặt lịch sửa chữa nhanh</h3>
+                    <div style="display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom: 4px;">
+                        <h3 style="font-size: var(--text-lg); margin: 0;">Đặt lịch sửa chữa nhanh</h3>
+                        <span class="badge badge-success">Giảm 20.000đ khi đặt lịch trước</span>
+                    </div>
                     <p style="font-size: var(--text-xs);">Chọn mang máy tới cửa hàng hoặc kỹ thuật viên đến tận nhà</p>
                 </div>
                 <button type="button" id="btnCloseQuickRepair" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-secondary);">×</button>
@@ -31,18 +34,18 @@ function mountQuickRepairModal() {
             <form id="quickRepairForm">
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrName">Họ và tên *</label>
-                        <input type="text" id="qrName" class="input" placeholder="Nguyễn Văn A" required />
+                        <label class="form-label" for="qrName">Họ và tên</label>
+                        <input type="text" id="qrName" class="input" required />
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrPhone">Số điện thoại *</label>
-                        <input type="tel" id="qrPhone" class="input tabular-nums" placeholder="09xxxxxxxx" required />
+                        <label class="form-label" for="qrPhone">Số điện thoại</label>
+                        <input type="tel" id="qrPhone" class="input tabular-nums" required />
                     </div>
                 </div>
 
                 <!-- Service Method Toggle -->
                 <div class="form-group" style="margin-bottom:12px;">
-                    <label class="form-label">Hình thức tiếp nhận *</label>
+                    <label class="form-label">Hình thức tiếp nhận</label>
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
                         <label class="method-pill active" data-qr-method="AT_STORE" style="display:flex; align-items:center; gap:8px; padding:10px 12px; border:1px solid var(--brand-green); background:var(--brand-green-soft); border-radius:var(--radius-sm); cursor:pointer; font-size:var(--text-xs); font-weight:600;">
                             <input type="radio" name="qrMethod" value="AT_STORE" checked style="accent-color:var(--brand-green);" />
@@ -56,24 +59,24 @@ function mountQuickRepairModal() {
                 </div>
 
                 <div class="form-group" id="qrBranchGroup" style="margin-bottom:12px;">
-                    <label class="form-label" for="qrBranch">Chọn cửa hàng gần bạn *</label>
+                    <label class="form-label" for="qrBranch">Chọn cửa hàng gần bạn</label>
                     <select id="qrBranch" class="select">
                         ${CONFIG.BRANCHES.map(b => `<option value="${b.name} — ${b.address}">${b.name} (${b.city})</option>`).join('')}
                     </select>
                 </div>
 
                 <div class="form-group" id="qrHomeAddrGroup" style="margin-bottom:12px; display:none;">
-                    <label class="form-label" for="qrHomeAddress">Địa chỉ sửa tại nhà *</label>
-                    <input type="text" id="qrHomeAddress" class="input" placeholder="Số nhà, tên đường, quận/huyện, tỉnh/thành phố..." />
+                    <label class="form-label" for="qrHomeAddress">Địa chỉ sửa tại nhà</label>
+                    <input type="text" id="qrHomeAddress" class="input" />
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrDevice">Dòng máy *</label>
-                        <input type="text" id="qrDevice" class="input" placeholder="VD: Dell XPS / MacBook" required />
+                        <label class="form-label" for="qrDevice">Dòng máy</label>
+                        <input type="text" id="qrDevice" class="input" required />
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrService">Dịch vụ *</label>
+                        <label class="form-label" for="qrService">Dịch vụ</label>
                         <select id="qrService" class="select" required>
                             <option value="Kiểm tra lỗi tổng quát (Miễn phí)">Kiểm tra lỗi tổng quát — Miễn phí</option>
                             <option value="Vệ sinh & Tra keo tản nhiệt (150.000đ)">Vệ sinh &amp; Tra keo — 150.000đ</option>
@@ -87,11 +90,11 @@ function mountQuickRepairModal() {
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrDate">Ngày hẹn *</label>
+                        <label class="form-label" for="qrDate">Ngày hẹn</label>
                         <input type="date" id="qrDate" class="input tabular-nums" required />
                     </div>
                     <div class="form-group" style="margin-bottom:12px;">
-                        <label class="form-label" for="qrTime">Khung giờ *</label>
+                        <label class="form-label" for="qrTime">Khung giờ</label>
                         <select id="qrTime" class="select" required>
                             <option value="08:30 - 10:00">08:30 - 10:00</option>
                             <option value="10:00 - 11:30">10:00 - 11:30</option>
@@ -104,7 +107,7 @@ function mountQuickRepairModal() {
 
                 <div class="form-group" style="margin-bottom:14px;">
                     <label class="form-label" for="qrIssue">Mô tả tình trạng máy (Tùy chọn)</label>
-                    <textarea id="qrIssue" class="textarea" rows="2" placeholder="VD: Máy nóng nhanh, sạc không vào pin..."></textarea>
+                    <textarea id="qrIssue" class="textarea" rows="2"></textarea>
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; gap:8px;">
@@ -172,7 +175,7 @@ function mountQuickRepairModal() {
                 appointmentTime: document.getElementById('qrTime').value,
                 issueDescription: document.getElementById('qrIssue').value.trim()
             });
-            toast.success(`Đặt lịch thành công! Mã lịch hẹn #${saved.id}`);
+            toast.success(`Đã tiếp nhận lịch hẹn #${saved.id}.`);
             document.getElementById('quickRepairForm').reset();
             dateEl.value = todayStr;
             branchGroup.style.display = 'flex';
@@ -241,7 +244,7 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                             <span class="brand-computer">COMPUTER</span>
                         </a>
                         <p style="font-size: var(--text-xs); margin-bottom: 8px;">
-                            Hệ thống bán lẻ Laptop, PC &amp; Trung tâm Sửa chữa — Bảo hành điện tử chính hãng trên toàn quốc.
+                            Hệ thống bán lẻ Laptop, PC và trung tâm sửa chữa, bảo hành điện tử chính hãng.
                         </p>
                         <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">
                             Giờ mở cửa: ${CONFIG.OPEN_HOURS}
@@ -269,7 +272,7 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 </div>
 
                 <div class="footer-bottom">
-                    <span>© 2026 HK COMPUTER. Trải nghiệm — Chính hãng — Tận tâm.</span>
+                    <span>© 2026 HK COMPUTER.</span>
                     <span>Bảo hành điện tử 12 – 36 tháng</span>
                 </div>
             </div>

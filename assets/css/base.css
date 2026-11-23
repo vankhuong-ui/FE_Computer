@@ -1,6 +1,5 @@
 /**
- * base.css - Minimalist Layout, Resets & Typography Scale
- * Strictly follows taste-skill minimalist directives
+ * base.css - Layout, Resets, Typography Scale & Accessibility Foundations
  */
 
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -30,22 +29,29 @@ body {
     transition: background-color 200ms ease, color 200ms ease;
 }
 
+/* Keyboard Focus Ring (WCAG AA) */
+:focus-visible {
+    outline: 2px solid var(--brand-green);
+    outline-offset: 2px;
+}
+
 /* Typography Scale */
 h1, h2, h3, h4, h5, h6 {
     color: var(--text-primary);
     font-weight: var(--font-semibold);
-    line-height: 1.25;
-    letter-spacing: -0.02em;
+    line-height: 1.24;
+    letter-spacing: -0.022em;
+    text-wrap: balance;
 }
 
 h1 {
     font-size: var(--text-4xl);
-    letter-spacing: -0.035em;
+    letter-spacing: -0.032em;
 }
 
 h2 {
     font-size: var(--text-3xl);
-    letter-spacing: -0.025em;
+    letter-spacing: -0.026em;
 }
 
 h3 {
@@ -59,7 +65,8 @@ h4 {
 p {
     color: var(--text-secondary);
     line-height: 1.65;
-    max-width: 68ch; /* Enforce comfortable reading width */
+    max-width: 65ch;
+    text-wrap: pretty;
 }
 
 a {
@@ -79,12 +86,50 @@ a:hover {
     letter-spacing: -0.01em;
 }
 
+/* Skeleton Shimmer Loader */
+.skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--surface-subtle);
+    border-radius: var(--radius-xs);
+}
+
+.skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent 0%, rgba(148, 163, 184, 0.14) 50%, transparent 100%);
+    animation: hk-shimmer 1.4s infinite;
+}
+
+@keyframes hk-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton::after {
+        animation: none;
+    }
+    html {
+        scroll-behavior: auto;
+    }
+}
+
 /* Container & Macro-Whitespace */
 .container {
     width: 100%;
     max-width: var(--container-max-width);
     margin: 0 auto;
     padding: 0 24px;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 0 16px;
+    }
 }
 
 .section {

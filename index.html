@@ -117,18 +117,55 @@
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));
+            gap: 20px;
             margin-bottom: 24px;
         }
 
-        .stock-dot-row {
+        .product-card {
+            padding: 16px;
+            border-radius: var(--radius-md);
+            transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-fast);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: var(--brand-green);
+        }
+
+        .product-card .product-image-box {
+            aspect-ratio: 4 / 3;
+            margin-bottom: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+        }
+
+        .product-card .product-image-box img {
+            padding: 14px;
+            transition: transform 280ms var(--ease-out);
+        }
+
+        .product-card:hover .product-image-box img {
+            transform: scale(1.06);
+        }
+
+        .product-stock-pill {
+            position: absolute;
+            top: 10px;
+            left: 10px;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            padding: 3px 9px;
+            border-radius: var(--radius-pill);
+            background: var(--surface);
+            border: 1px solid var(--border);
             font-size: 11px;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-subtle);
         }
 
         .stock-dot {
@@ -136,6 +173,84 @@
             height: 6px;
             border-radius: 50%;
             background: var(--brand-green);
+            flex-shrink: 0;
+        }
+
+        .product-card .product-title {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            line-height: 1.4;
+            min-height: 2.8em;
+            margin-bottom: 8px;
+            transition: color var(--transition-fast);
+        }
+
+        .product-card:hover .product-title {
+            color: var(--brand-green);
+        }
+
+        .product-spec-chip {
+            font-size: 11px;
+            color: var(--text-secondary);
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xs);
+            padding: 5px 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 14px;
+        }
+
+        .product-price-row {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 8px;
+            padding-top: 12px;
+            margin-top: auto;
+            border-top: 1px solid var(--border-subtle);
+            margin-bottom: 12px;
+        }
+
+        .product-price-row .product-price {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--brand-orange);
+            letter-spacing: -0.01em;
+        }
+
+        .product-vat-tag {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .product-card-actions {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 8px;
+        }
+
+        .product-card-actions .btn {
+            padding: 8px 10px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            gap: 5px;
+        }
+
+        .btn-cart-soft {
+            background: var(--brand-orange-soft);
+            color: var(--brand-orange);
+            border-color: transparent;
+        }
+
+        .btn-cart-soft:hover {
+            background: var(--brand-orange);
+            color: #FFFFFF;
+            border-color: var(--brand-orange);
         }
 
         /* Store Directory & Repair Booking */
@@ -268,22 +383,21 @@
         <!-- 1. Compact Visual Editorial Banner -->
         <section class="editorial-banner">
             <div class="editorial-content">
-                <div class="editorial-kicker">HK COMPUTER · HỆ THỐNG MÁY TÍNH &amp; KỸ THUẬT</div>
-                <h1>Laptop, PC chuẩn chính hãng &amp; Dịch vụ sửa chữa lấy ngay.</h1>
-                <p>Bảo hành điện tử minh bạch, thanh toán VietQR tự động và hỗ trợ kỹ thuật trực tiếp tại cửa hàng hoặc tận nhà.</p>
+                <h1>Laptop, PC chính hãng và dịch vụ kỹ thuật tại cửa hàng.</h1>
+                <p>Bảo hành điện tử minh bạch, thanh toán VietQR nhanh gọn và hỗ trợ sửa chữa trong ngày hoặc tận nhà.</p>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                     <a href="#catalog" class="btn btn-primary">Xem sản phẩm</a>
-                    <a href="#repair-center" class="btn btn-accent">Đặt lịch sửa chữa</a>
+                    <a href="#repair-center" class="btn btn-outline" style="color: #FFFFFF; border-color: rgba(255,255,255,0.35); background: rgba(15,23,42,0.35);">Hệ thống cửa hàng</a>
                 </div>
             </div>
         </section>
 
         <!-- 2. Subtle Single-Line Trust Strip -->
         <div class="trust-strip">
-            <span class="trust-item"><span class="trust-dot"></span>Chính hãng 100% xuất VAT</span>
+            <span class="trust-item"><span class="trust-dot"></span>Chính hãng 100%, xuất VAT đầy đủ</span>
             <span class="trust-item"><span class="trust-dot"></span>Bảo hành điện tử 1 đổi 1</span>
-            <span class="trust-item"><span class="trust-dot"></span>Sửa chữa xem trực tiếp lấy ngay</span>
-            <span class="trust-item"><span class="trust-dot"></span>Thanh toán VietQR SePay &amp; VNPay</span>
+            <span class="trust-item"><span class="trust-dot"></span>Sửa chữa, nâng cấp trong ngày</span>
+            <span class="trust-item"><span class="trust-dot"></span>Thanh toán VietQR &amp; VNPay</span>
         </div>
 
         <!-- 3. Product-First Live Catalog -->
@@ -332,24 +446,26 @@
 
                 <!-- Right: Smart Repair Booking Form (No Email, At Store / At Home Switch) -->
                 <div class="card">
-                    <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">Đặt lịch sửa chữa Laptop / PC</h3>
-                    <p style="font-size: var(--text-xs); margin-bottom: 18px;">Chỉ cần Họ tên &amp; SĐT — kỹ thuật viên sẽ gọi xác nhận trong 10 phút.</p>
+                    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">
+                        <h3 style="font-size: var(--text-lg); margin: 0;">Đặt lịch sửa chữa Laptop / PC</h3>
+                        <span class="badge badge-success">Giảm 20.000đ khi đặt lịch trước</span>
+                    </div>
 
                     <form id="repairBookingForm">
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label" for="repairName">Họ và tên *</label>
-                                <input type="text" id="repairName" class="input" placeholder="Nguyễn Văn A" required />
+                                <label class="form-label" for="repairName">Họ và tên</label>
+                                <input type="text" id="repairName" class="input" required />
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="repairPhone">Số điện thoại *</label>
-                                <input type="tel" id="repairPhone" class="input tabular-nums" placeholder="09xxxxxxxx" required />
+                                <label class="form-label" for="repairPhone">Số điện thoại</label>
+                                <input type="tel" id="repairPhone" class="input tabular-nums" required />
                             </div>
                         </div>
 
                         <!-- Method Switch: At Store vs At Home -->
                         <div class="form-group">
-                            <label class="form-label">Phương thức sửa chữa *</label>
+                            <label class="form-label">Phương thức sửa chữa</label>
                             <div class="method-segment">
                                 <label class="method-option active" data-method-opt="AT_STORE">
                                     <input type="radio" name="repairMethod" value="AT_STORE" checked style="accent-color: var(--brand-green);" />
@@ -363,25 +479,25 @@
                         </div>
 
                         <div class="form-group" id="repairBranchGroup">
-                            <label class="form-label" for="repairBranch">Chọn cơ sở tiếp nhận *</label>
+                            <label class="form-label" for="repairBranch">Chọn cơ sở tiếp nhận</label>
                             <select id="repairBranch" class="select"></select>
                         </div>
 
                         <div class="form-group" id="repairHomeAddrGroup" style="display: none;">
-                            <label class="form-label" for="repairHomeAddress">Địa chỉ sửa tận nhà *</label>
-                            <input type="text" id="repairHomeAddress" class="input" placeholder="Số nhà, đường, phường/xã, quận/huyện..." />
+                            <label class="form-label" for="repairHomeAddress">Địa chỉ sửa tận nhà</label>
+                            <input type="text" id="repairHomeAddress" class="input" />
                         </div>
 
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label" for="repairDevice">Dòng máy *</label>
-                                <input type="text" id="repairDevice" class="input" placeholder="VD: Dell XPS 15 / MacBook Air" required />
+                                <label class="form-label" for="repairDevice">Dòng máy</label>
+                                <input type="text" id="repairDevice" class="input" required />
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="repairService">Dịch vụ dự kiến *</label>
+                                <label class="form-label" for="repairService">Dịch vụ dự kiến</label>
                                 <select id="repairService" class="select" required>
                                     <option value="Kiểm tra lỗi tổng quát (Miễn phí)">Kiểm tra lỗi tổng quát — Miễn phí</option>
-                                    <option value="Vệ sinh & Tra keo tản nhiệt (150.000đ)">Vệ sinh &amp; Tra keo — 150.000đ (~45p)</option>
+                                    <option value="Vệ sinh & Tra keo tản nhiệt (150.000đ)">Vệ sinh &amp; Tra keo — 150.000đ</option>
                                     <option value="Nâng cấp RAM / Ổ cứng SSD">Nâng cấp RAM / SSD — Miễn phí lắp</option>
                                     <option value="Cài đặt Windows & Phần mềm (100.000đ)">Cài Windows &amp; Phần mềm — 100.000đ</option>
                                     <option value="Thay Pin / Màn hình / Bàn phím">Thay Pin / Màn hình / Bàn phím</option>
@@ -392,11 +508,11 @@
 
                         <div class="form-row-2">
                             <div class="form-group">
-                                <label class="form-label" for="repairDate">Ngày hẹn *</label>
+                                <label class="form-label" for="repairDate">Ngày hẹn</label>
                                 <input type="date" id="repairDate" class="input tabular-nums" required />
                             </div>
                             <div class="form-group">
-                                <label class="form-label" for="repairTime">Khung giờ *</label>
+                                <label class="form-label" for="repairTime">Khung giờ</label>
                                 <select id="repairTime" class="select" required>
                                     <option value="08:30 - 10:00">08:30 - 10:00</option>
                                     <option value="10:00 - 11:30">10:00 - 11:30</option>
@@ -409,7 +525,7 @@
 
                         <div class="form-group">
                             <label class="form-label" for="repairIssue">Ghi chú tình trạng máy (Tùy chọn)</label>
-                            <textarea id="repairIssue" class="textarea" rows="2" placeholder="VD: Quạt kêu to, pin chai, cần kiểm tra trước khi thay..."></textarea>
+                            <textarea id="repairIssue" class="textarea" rows="2"></textarea>
                         </div>
 
                         <button type="submit" id="btnSubmitRepair" class="btn btn-accent btn-lg" style="width: 100%;">
@@ -425,6 +541,6 @@
 
     <footer id="appFooter"></footer>
 
-    <script type="module" src="./assets/js/home.js?v=6"></script>
+    <script type="module" src="./assets/js/home.js?v=8"></script>
 </body>
 </html>

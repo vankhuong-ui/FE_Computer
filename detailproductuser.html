@@ -7,16 +7,64 @@
     <link rel="stylesheet" href="./assets/css/base.css?v=6" />
     <link rel="stylesheet" href="./assets/css/components.css?v=6" />
     <style>
-        .product-detail-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 32px;
-            margin: 32px 0 48px;
+        .breadcrumb-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 20px 0 4px;
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
         }
 
-        @media (max-width: 860px) {
+        .breadcrumb-bar a {
+            color: var(--text-secondary);
+            transition: color var(--transition-fast);
+        }
+
+        .breadcrumb-bar a:hover {
+            color: var(--brand-green);
+        }
+
+        .breadcrumb-sep {
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 600;
+            max-width: 360px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 28px;
+            margin: 18px 0 40px;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
             .product-detail-grid {
                 grid-template-columns: 1fr;
+            }
+        }
+
+        /* Left visual column */
+        .detail-media-col {
+            position: sticky;
+            top: calc(var(--header-height) + 20px);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        @media (max-width: 900px) {
+            .detail-media-col {
+                position: static;
             }
         }
 
@@ -24,26 +72,183 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 28px;
+            padding: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            min-height: 360px;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            position: relative;
         }
 
         .detail-image-card img {
             max-width: 100%;
-            max-height: 380px;
+            max-height: 100%;
             object-fit: contain;
+            transition: transform 320ms var(--ease-out);
+        }
+
+        .detail-image-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .media-highlights {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        @media (max-width: 520px) {
+            .media-highlights {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .media-highlight-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 10px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.35;
+        }
+
+        .media-highlight-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: var(--radius-sm);
+            background: var(--brand-green-soft);
+            color: var(--brand-green);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Right buy box */
+        .detail-buy-card {
+            padding: 28px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        @media (max-width: 560px) {
+            .detail-buy-card {
+                padding: 20px;
+            }
+        }
+
+        .detail-meta-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .detail-title {
+            font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+            line-height: 1.28;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .price-banner {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .price-main {
+            font-family: var(--font-mono);
+            font-size: clamp(1.45rem, 2.4vw, 1.85rem);
+            font-weight: 800;
+            color: var(--brand-orange);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .price-sub {
+            font-size: var(--text-xs);
+            color: var(--text-secondary);
+            margin-top: 4px;
         }
 
         .specs-box {
             background: var(--surface-subtle);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
-            padding: 16px;
+            padding: 16px 18px;
+        }
+
+        .specs-header {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: var(--text-xs);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .specs-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .spec-chip {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            font-family: var(--font-mono);
+            font-size: 12px;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .detail-description {
             font-size: var(--text-sm);
-            margin: 16px 0;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin: 0;
+        }
+
+        /* Quantity + Action Bar */
+        .buy-actions-section {
+            padding-top: 18px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .qty-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .qty-label {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .qty-control {
@@ -57,32 +262,97 @@
 
         .qty-control button {
             width: 38px;
-            height: 40px;
+            height: 38px;
             background: var(--surface-subtle);
             border: none;
             cursor: pointer;
-            font-weight: var(--font-semibold);
+            font-weight: 600;
             font-size: var(--text-base);
+            color: var(--text-primary);
+            transition: background-color var(--transition-fast);
+        }
+
+        .qty-control button:hover {
+            background: var(--surface-hover);
         }
 
         .qty-control input {
             width: 52px;
-            height: 40px;
+            height: 38px;
             border: none;
             border-left: 1px solid var(--border);
             border-right: 1px solid var(--border);
             text-align: center;
             font-family: var(--font-mono);
             font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            background: var(--surface);
             outline: none;
         }
 
+        .cta-btn-row {
+            display: grid;
+            grid-template-columns: 1fr 1.25fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 520px) {
+            .cta-btn-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .cta-btn-row .btn-lg {
+            height: 48px;
+            font-size: var(--text-sm);
+            font-weight: 700;
+            border-radius: var(--radius-md);
+        }
+
+        .btn-cart-outline {
+            background: var(--brand-orange-soft);
+            color: var(--brand-orange);
+            border: 1px solid var(--brand-orange);
+        }
+
+        .btn-cart-outline:hover:not(:disabled) {
+            background: var(--brand-orange);
+            color: #FFFFFF;
+            border-color: var(--brand-orange);
+        }
+
+        /* Reviews */
         .review-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             padding: 28px;
             margin-bottom: 64px;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .review-summary-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: var(--radius-pill);
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            font-size: var(--text-xs);
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .review-item {
@@ -92,35 +362,42 @@
 
         .review-item:last-child {
             border-bottom: none;
+            padding-bottom: 0;
         }
 
-
-
-
+        .review-stars {
+            color: #F59E0B;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
     <header id="appHeader"></header>
 
     <main class="container">
-        <div style="padding-top: 24px;">
-            <a href="index.html" style="font-size: var(--text-xs); color: var(--text-secondary);">← Quay lại danh sách sản phẩm</a>
-        </div>
+        <nav class="breadcrumb-bar" aria-label="Breadcrumb">
+            <a href="index.html">Trang chủ</a>
+            <span class="breadcrumb-sep">/</span>
+            <a href="index.html#catalog">Danh mục sản phẩm</a>
+            <span class="breadcrumb-sep">/</span>
+            <span id="breadcrumbProductName" class="breadcrumb-current">Chi tiết sản phẩm</span>
+        </nav>
 
         <div id="productDetailContainer">
-            <div class="card" style="text-align: center; padding: 48px; margin-top: 24px;">
-                <p>Đang tải thông tin sản phẩm...</p>
+            <div class="card" style="text-align: center; padding: 56px 24px; margin: 20px 0 40px;">
+                <p style="color: var(--text-secondary);">Đang tải thông tin sản phẩm...</p>
             </div>
         </div>
 
-        <div id="reviewSection" class="review-card" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px;">
-                <h2 style="font-size: var(--text-xl);">Đánh giá từ khách hàng</h2>
-                <div id="reviewSummary" class="tabular-nums" style="font-size: var(--text-sm); font-weight: var(--font-semibold);"></div>
+        <section id="reviewSection" class="review-card" style="display: none;">
+            <div class="review-header">
+                <h2 style="font-size: var(--text-xl); margin: 0;">Đánh giá từ khách hàng</h2>
+                <div id="reviewSummary" class="review-summary-pill tabular-nums"></div>
             </div>
             <div id="reviewList"></div>
-            <div id="reviewPagination" style="display: flex; gap: 8px; justify-content: center; margin-top: 16px;"></div>
-        </div>
+            <div id="reviewPagination" style="display: flex; gap: 8px; justify-content: center; margin-top: 18px;"></div>
+        </section>
     </main>
 
     <footer id="appFooter"></footer>
@@ -130,19 +407,42 @@
     <script type="module">
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
-        import { cart } from './assets/js/cart.js';
+        import { cart } from './assets/js/cart.js?v=7';
         import { CONFIG } from './assets/js/config.js';
-        import { initStoreLayout } from './assets/js/layout.js?v=6';
+        import { initStoreLayout } from './assets/js/layout.js?v=7';
         import { toast } from './assets/js/toast.js';
         import './assets/js/chat-widget.js?v=6';
 
         const productId = new URLSearchParams(window.location.search).get('id');
         const detailContainer = document.getElementById('productDetailContainer');
+        const breadcrumbProductName = document.getElementById('breadcrumbProductName');
         let currentStock = 0;
         let currentProduct = null;
 
         function formatPrice(p) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
+        }
+
+        function renderSpecsHtml(rawSpecs) {
+            if (!rawSpecs) return '';
+            const parts = rawSpecs
+                .split(/[|;\n]+/)
+                .map(s => s.trim())
+                .filter(Boolean);
+
+            const content = parts.length > 1
+                ? `<div class="specs-chips">${parts.map(p => `<span class="spec-chip">${p}</span>`).join('')}</div>`
+                : `<div class="mono-spec" style="font-size: var(--text-xs); color: var(--text-primary); line-height: 1.6;">${rawSpecs}</div>`;
+
+            return `
+                <div class="specs-box">
+                    <div class="specs-header">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                        <span>Thông số kỹ thuật</span>
+                    </div>
+                    ${content}
+                </div>
+            `;
         }
 
         async function loadDetail() {
@@ -161,53 +461,88 @@
                 currentStock = inv?.soluong ?? null;
                 const img = product.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=600&q=80';
                 const inStock = currentStock === null || currentStock > 0;
+                const safeTitle = (product.nameProduct || 'Sản phẩm').replace(/"/g, '&quot;');
+
+                document.title = `${product.nameProduct || 'Chi tiết sản phẩm'} — HK COMPUTER`;
+                if (breadcrumbProductName) breadcrumbProductName.textContent = product.nameProduct || 'Chi tiết sản phẩm';
 
                 detailContainer.innerHTML = `
                     <div class="product-detail-grid">
-                        <div class="detail-image-card">
-                            <img src="${img}" alt="${product.nameProduct}" />
+                        <!-- Left: Visual Showcase & Quick Highlights -->
+                        <div class="detail-media-col">
+                            <div class="detail-image-card">
+                                <img src="${img}" alt="${safeTitle}" />
+                            </div>
+
+                            <div class="media-highlights">
+                                <div class="media-highlight-item">
+                                    <span class="media-highlight-icon">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                                    </span>
+                                    <span>Bảo hành điện tử 12–36 tháng</span>
+                                </div>
+                                <div class="media-highlight-item">
+                                    <span class="media-highlight-icon">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+                                    </span>
+                                    <span>Thanh toán VietQR &amp; VNPay</span>
+                                </div>
+                                <div class="media-highlight-item">
+                                    <span class="media-highlight-icon">
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+                                    </span>
+                                    <span>Hỗ trợ cài đặt &amp; nâng cấp</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
-                            <div>
-                                <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 10px;">
-                                    <span class="badge badge-info">SKU #${product.id}</span>
-                                    <span id="stockBadge" class="badge ${inStock ? 'badge-success' : 'badge-danger'}">
-                                        ${currentStock === null ? 'Sẵn sàng đặt hàng' : (currentStock > 0 ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng')}
+                        <!-- Right: Buy Box -->
+                        <div class="card detail-buy-card">
+                            <div class="detail-meta-row">
+                                <span class="badge badge-info">SKU #${product.id}</span>
+                                <span id="stockBadge" class="badge ${inStock ? 'badge-success' : 'badge-danger'}">
+                                    ${currentStock === null ? 'Sẵn sàng đặt hàng' : (currentStock > 0 ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng')}
+                                </span>
+                            </div>
+
+                            <h1 class="detail-title">${product.nameProduct}</h1>
+
+                            <div class="price-banner">
+                                <div>
+                                    <div class="price-main tabular-nums">${formatPrice(product.price)}</div>
+                                    <div class="price-sub">Đã bao gồm VAT · Xuất hóa đơn điện tử</div>
+                                </div>
+                                <span class="badge badge-success">Chính hãng 100%</span>
+                            </div>
+
+                            ${renderSpecsHtml(product.specs)}
+
+                            ${product.description ? `
+                                <p class="detail-description">${product.description}</p>
+                            ` : ''}
+
+                            <div class="buy-actions-section">
+                                <div class="qty-row">
+                                    <span class="qty-label">Số lượng</span>
+                                    <div class="qty-control">
+                                        <button type="button" id="btnQtyDec" aria-label="Giảm số lượng">−</button>
+                                        <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
+                                        <button type="button" id="btnQtyInc" aria-label="Tăng số lượng">+</button>
+                                    </div>
+                                    <span id="stockHint" style="font-size: var(--text-xs); color: var(--text-muted);" class="tabular-nums">
+                                        ${currentStock !== null && currentStock > 0 ? `${currentStock} sản phẩm có sẵn` : ''}
                                     </span>
                                 </div>
 
-                                <h1 style="font-size: var(--text-2xl); margin-bottom: 12px;">${product.nameProduct}</h1>
-                                <div class="tabular-nums" style="font-size: var(--text-2xl); font-weight: var(--font-bold); margin-bottom: 16px;">
-                                    ${formatPrice(product.price)}
-                                </div>
-
-                                ${product.specs ? `
-                                    <div class="specs-box">
-                                        <div style="font-size: var(--text-xs); text-transform: uppercase; color: var(--text-secondary); margin-bottom: 4px; font-weight: var(--font-semibold);">Thông số kỹ thuật</div>
-                                        <div class="mono-spec" style="font-size: var(--text-xs);">${product.specs}</div>
-                                    </div>
-                                ` : ''}
-
-                                ${product.description ? `
-                                    <p style="font-size: var(--text-sm); margin-bottom: 20px;">${product.description}</p>
-                                ` : ''}
-                            </div>
-
-                            <div>
-                                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap; padding-top: 16px; border-top: 1px solid var(--border);">
-                                    <div class="qty-control">
-                                        <button type="button" id="btnQtyDec">−</button>
-                                        <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
-                                        <button type="button" id="btnQtyInc">+</button>
-                                    </div>
-                                    <button type="button" id="btnAddToCart" class="btn btn-primary btn-lg" style="flex: 1;" ${!inStock ? 'disabled' : ''}>
-                                        ${inStock ? 'Thêm vào giỏ hàng' : 'Hết hàng'}
+                                <div class="cta-btn-row">
+                                    <button type="button" id="btnAddToCart" class="btn btn-cart-outline btn-lg" ${!inStock ? 'disabled' : ''}>
+                                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                        <span>${inStock ? 'Thêm vào giỏ' : 'Hết hàng'}</span>
+                                    </button>
+                                    <button type="button" id="btnBuyNow" class="btn btn-primary btn-lg" ${!inStock ? 'disabled' : ''}>
+                                        <span>${inStock ? 'Mua ngay' : 'Tạm hết hàng'}</span>
                                     </button>
                                 </div>
-                                <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-top: 12px;">
-                                    🛡️ Bảo hành điện tử chính hãng 12 - 36 tháng • Hỗ trợ thanh toán VietQR SePay & VNPay
-                                </p>
                             </div>
                         </div>
                     </div>
@@ -223,17 +558,36 @@
 
         function bindDetailEvents() {
             const qtyInput = document.getElementById('qtyInput');
+            const getQty = () => {
+                const max = currentStock > 0 ? currentStock : 99;
+                const val = Math.max(1, Math.min(max, parseInt(qtyInput.value) || 1));
+                qtyInput.value = val;
+                return val;
+            };
+
             document.getElementById('btnQtyDec')?.addEventListener('click', () => {
-                let v = parseInt(qtyInput.value) || 1;
+                const v = getQty();
                 if (v > 1) qtyInput.value = v - 1;
             });
+
             document.getElementById('btnQtyInc')?.addEventListener('click', () => {
-                let v = parseInt(qtyInput.value) || 1;
+                const v = getQty();
                 const max = currentStock > 0 ? currentStock : 99;
                 if (v < max) qtyInput.value = v + 1;
             });
+
+            document.getElementById('btnBuyNow')?.addEventListener('click', () => {
+                const qty = getQty();
+                cart.buyNow({
+                    id: currentProduct.id,
+                    name: currentProduct.nameProduct,
+                    price: currentProduct.price,
+                    image: currentProduct.image
+                }, qty);
+            });
+
             document.getElementById('btnAddToCart')?.addEventListener('click', async () => {
-                const qty = parseInt(qtyInput.value) || 1;
+                const qty = getQty();
                 await cart.addItem({
                     id: currentProduct.id,
                     name: currentProduct.nameProduct,
@@ -255,15 +609,28 @@
                             const data = JSON.parse(msg.body);
                             if (data.stockQuantity !== undefined) {
                                 currentStock = data.stockQuantity;
+                                const inStock = currentStock > 0;
                                 const badge = document.getElementById('stockBadge');
-                                const btn = document.getElementById('btnAddToCart');
+                                const stockHint = document.getElementById('stockHint');
+                                const btnBuy = document.getElementById('btnBuyNow');
+                                const btnCart = document.getElementById('btnAddToCart');
+
                                 if (badge) {
-                                    badge.className = `badge ${currentStock > 0 ? 'badge-success' : 'badge-danger'}`;
-                                    badge.textContent = currentStock > 0 ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng';
+                                    badge.className = `badge ${inStock ? 'badge-success' : 'badge-danger'}`;
+                                    badge.textContent = inStock ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng';
                                 }
-                                if (btn) {
-                                    btn.disabled = currentStock <= 0;
-                                    btn.textContent = currentStock > 0 ? 'Thêm vào giỏ hàng' : 'Hết hàng';
+                                if (stockHint) {
+                                    stockHint.textContent = inStock ? `${currentStock} sản phẩm có sẵn` : 'Hết hàng';
+                                }
+                                if (btnBuy) {
+                                    btnBuy.disabled = !inStock;
+                                    const span = btnBuy.querySelector('span');
+                                    if (span) span.textContent = inStock ? 'Mua ngay' : 'Tạm hết hàng';
+                                }
+                                if (btnCart) {
+                                    btnCart.disabled = !inStock;
+                                    const span = btnCart.querySelector('span');
+                                    if (span) span.textContent = inStock ? 'Thêm vào giỏ' : 'Hết hàng';
                                 }
                                 toast.info(`Cập nhật tồn kho mới nhất: còn ${currentStock} sản phẩm.`);
                             }
@@ -283,19 +650,19 @@
 
                 if (!items.length) {
                     document.getElementById('reviewSummary').textContent = 'Chưa có đánh giá';
-                    document.getElementById('reviewList').innerHTML = `<p style="font-size: var(--text-sm);">Chưa có đánh giá nào cho sản phẩm này.</p>`;
+                    document.getElementById('reviewList').innerHTML = `<p style="font-size: var(--text-sm); color: var(--text-secondary);">Chưa có đánh giá nào cho sản phẩm này.</p>`;
                     return;
                 }
 
                 const avg = (items.reduce((s, r) => s + r.rating, 0) / items.length).toFixed(1);
-                document.getElementById('reviewSummary').textContent = `⭐ ${avg} / 5 (${data.totalElements || items.length} đánh giá)`;
+                document.getElementById('reviewSummary').innerHTML = `<span class="review-stars">★</span> ${avg} / 5 (${data.totalElements || items.length} đánh giá)`;
                 document.getElementById('reviewList').innerHTML = items.map(r => `
                     <div class="review-item">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-                            <span style="color: #D97706; font-weight: var(--font-semibold);">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-                            <span style="font-size: var(--text-xs); color: var(--text-secondary);">${new Date(r.createdAt).toLocaleDateString('vi-VN')}</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span class="review-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                            <span style="font-size: var(--text-xs); color: var(--text-muted);" class="tabular-nums">${new Date(r.createdAt).toLocaleDateString('vi-VN')}</span>
                         </div>
-                        <p style="font-size: var(--text-sm); color: var(--text-primary);">${r.comment || 'Không có bình luận'}</p>
+                        <p style="font-size: var(--text-sm); color: var(--text-primary); margin: 0; line-height: 1.55;">${r.comment || 'Không có bình luận'}</p>
                     </div>
                 `).join('');
 

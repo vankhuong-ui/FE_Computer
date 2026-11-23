@@ -215,8 +215,8 @@
                 <p style="font-size: var(--text-xs);">Theo dõi trạng thái đơn hàng, thanh toán trực tuyến (VietQR SePay / VNPay) và kích hoạt bảo hành.</p>
             </div>
             <div style="display: flex; gap: 10px;">
-                <a href="warranty.html" class="btn btn-secondary btn-sm">🛡️ Phiếu bảo hành của tôi</a>
-                <a href="index.html" class="btn btn-primary btn-sm">+ Mua thêm linh kiện</a>
+                <a href="warranty.html" class="btn btn-secondary btn-sm">Phiếu bảo hành của tôi</a>
+                <a href="index.html" class="btn btn-primary btn-sm">Mua thêm sản phẩm</a>
             </div>
         </div>
 
@@ -389,9 +389,9 @@
                     let itemActions = '';
                     if (isCompleted && prodId) {
                         const reviewBtn = reviewed
-                            ? `<span class="badge badge-success">✓ Đã đánh giá</span>`
-                            : `<a href="review.html?orderId=${order.id}&productId=${prodId}" class="btn btn-secondary btn-sm">⭐ Đánh giá</a>`;
-                        const warrantyBtn = `<a href="warranty.html?orderId=${order.id}&productId=${prodId}&serial=${serialCode}" class="btn btn-outline btn-sm">🛡️ Bảo hành (${serialCode})</a>`;
+                            ? `<span class="badge badge-success">Đã đánh giá</span>`
+                            : `<a href="review.html?orderId=${order.id}&productId=${prodId}" class="btn btn-secondary btn-sm">Đánh giá</a>`;
+                        const warrantyBtn = `<a href="warranty.html?orderId=${order.id}&productId=${prodId}&serial=${serialCode}" class="btn btn-outline btn-sm">Bảo hành (${serialCode})</a>`;
                         itemActions = `<div style="display:flex; gap:8px; align-items:center;">${warrantyBtn}${reviewBtn}</div>`;
                     }
 
@@ -428,10 +428,10 @@
                             <div class="order-actions">
                                 ${isUnpaid ? `
                                     <button type="button" class="btn btn-primary btn-sm btn-pay-sepay" data-id="${order.id}">
-                                        📱 Quét mã VietQR (SePay)
+                                        Quét mã VietQR (SePay)
                                     </button>
                                     <button type="button" class="btn btn-secondary btn-sm btn-pay-vnpay" data-id="${order.id}">
-                                        💳 Thanh toán VNPay
+                                        Thanh toán VNPay
                                     </button>
                                     <button type="button" class="btn btn-outline btn-sm text-danger btn-cancel-order" data-id="${order.id}">
                                         Hủy đơn
@@ -464,7 +464,7 @@
                     } catch (err) {
                         toast.error(err.message || 'Lỗi tạo thanh toán VNPay');
                         btn.disabled = false;
-                        btn.textContent = '💳 Thanh toán VNPay';
+                        btn.textContent = 'Thanh toán VNPay';
                     }
                 });
             });

@@ -4,10 +4,10 @@
 
 import { api } from './api.js';
 import { auth } from './auth.js';
-import { cart } from './cart.js';
+import { cart } from './cart.js?v=7';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
-import { initStoreLayout } from './layout.js?v=6';
+import { initStoreLayout } from './layout.js?v=7';
 import './chat-widget.js?v=6';
 
 let currentPage = 0;
@@ -56,11 +56,16 @@ async function loadFilters() {
 
 async function loadProducts(page = 0) {
     currentPage = page;
-    productsGrid.innerHTML = Array(5).fill(0).map(() => `
-        <div class="card" style="height: 290px; display:flex; flex-direction:column; gap:12px;">
-            <div style="flex:1; background: var(--surface-subtle); border-radius: var(--radius-sm);"></div>
-            <div style="height:14px; width:75%; background: var(--surface-subtle); border-radius:4px;"></div>
-            <div style="height:18px; width:45%; background: var(--surface-subtle); border-radius:4px;"></div>
+    productsGrid.innerHTML = Array(4).fill(0).map(() => `
+        <div class="card product-card" style="gap: 12px;">
+            <div class="skeleton" style="aspect-ratio: 4/3; border-radius: var(--radius-sm);"></div>
+            <div class="skeleton" style="height: 15px; width: 85%;"></div>
+            <div class="skeleton" style="height: 24px; width: 100%;"></div>
+            <div class="skeleton" style="height: 20px; width: 52%; margin-top: 4px;"></div>
+            <div style="display: grid; grid-template-columns: 1fr 1.15fr; gap: 8px; margin-top: 4px;">
+                <div class="skeleton" style="height: 34px; border-radius: var(--radius-sm);"></div>
+                <div class="skeleton" style="height: 34px; border-radius: var(--radius-sm);"></div>
+            </div>
         </div>
     `).join('');
 
@@ -101,34 +106,58 @@ async function loadProducts(page = 0) {
 
         productsGrid.innerHTML = items.map(p => {
             const name = p.nameProduct || p.name || 'Sản phẩm';
+            const safeName = name.replace(/"/g, '&quot;');
             const img = p.image || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&q=80';
             const specs = p.specs || 'Bảo hành điện tử chính hãng';
             return `
-                <article class="card product-card" style="padding: 16px;">
-                    <a href="detailproductuser.html?id=${p.id}" class="product-image-box" style="margin-bottom: 12px;">
-                        <img src="${img}" alt="${name}" loading="lazy" />
+                <article class="card product-card">
+                    <a href="detailproductuser.html?id=${p.id}" class="product-image-box">
+                        <span class="product-stock-pill">
+                            <span class="stock-dot"></span>
+                            Sẵn hàng
+                        </span>
+                        <img src="${img}" alt="${safeName}" loading="lazy" />
                     </a>
-                    <div class="stock-dot-row">
-                        <span class="stock-dot"></span>
-                        <span>Sẵn hàng</span>
-                    </div>
-                    <a href="detailproductuser.html?id=${p.id}" class="product-title" title="${name}">${name}</a>
-                    <div class="mono-spec" style="font-size: 11px; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 12px;" title="${specs}">
+                    <a href="detailproductuser.html?id=${p.id}" class="product-title" title="${safeName}">${name}</a>
+                    <div class="mono-spec product-spec-chip" title="${specs.replace(/"/g, '&quot;')}">
                         ${specs}
                     </div>
-                    <div class="product-card-footer" style="padding-top: 12px;">
-                        <span class="product-price" style="font-size: var(--text-base); color: var(--brand-orange);">${formatVnd(p.price)}</span>
-                        <button type="button" class="btn btn-secondary btn-sm btn-add-cart"
+                    <div class="product-price-row">
+                        <span class="product-price tabular-nums">${formatVnd(p.price)}</span>
+                        <span class="product-vat-tag">VAT</span>
+                    </div>
+                    <div class="product-card-actions">
+                        <button type="button" class="btn btn-cart-soft btn-add-cart"
                             data-id="${p.id}"
-                            data-name="${name.replace(/"/g, '&quot;')}"
+                            data-name="${safeName}"
+                            data-price="${p.price || 0}"
+                            data-img="${img}"
+                            title="Thêm vào giỏ hàng">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                            <span>Thêm giỏ</span>
+                        </button>
+                        <button type="button" class="btn btn-primary btn-buy-now"
+                            data-id="${p.id}"
+                            data-name="${safeName}"
                             data-price="${p.price || 0}"
                             data-img="${img}">
-                            Thêm vào giỏ
+                            Mua ngay
                         </button>
                     </div>
                 </article>
             `;
         }).join('');
+
+        productsGrid.querySelectorAll('.btn-buy-now').forEach(btn => {
+            btn.addEventListener('click', () => {
+                cart.buyNow({
+                    id: btn.dataset.id,
+                    name: btn.dataset.name,
+                    price: parseFloat(btn.dataset.price) || 0,
+                    image: btn.dataset.img
+                }, 1);
+            });
+        });
 
         productsGrid.querySelectorAll('.btn-add-cart').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -272,7 +301,7 @@ function initRepairForm() {
 
         try {
             const saved = await api.post(CONFIG.ENDPOINTS.REPAIRS.CREATE, payload);
-            toast.success(`Đặt lịch thành công! Mã lịch hẹn #${saved.id}`);
+            toast.success(`Đã tiếp nhận lịch hẹn #${saved.id}.`);
             const methodLabel = saved.serviceMethod === 'AT_HOME' ? 'Kỹ thuật viên sửa tại nhà' : 'Mang tới cửa hàng';
             bookingReceipt.style.display = 'block';
             bookingReceipt.innerHTML = `
