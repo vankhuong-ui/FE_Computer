@@ -148,6 +148,25 @@ class GeminiChatWidget {
                 .ai-panel-input:focus {
                     border-color: #008B45;
                 }
+                .ai-action-link {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 4px;
+                    margin: 4px 6px 2px 0;
+                    padding: 4px 10px;
+                    border-radius: 999px;
+                    background: rgba(0, 139, 69, 0.12);
+                    color: #008B45;
+                    font-size: 12px;
+                    font-weight: 600;
+                    text-decoration: none;
+                    border: 1px solid rgba(0, 139, 69, 0.28);
+                    transition: background-color 150ms ease, color 150ms ease;
+                }
+                .ai-action-link:hover {
+                    background: #008B45;
+                    color: #FFFFFF;
+                }
             </style>
 
             <button type="button" class="ai-fab" id="btnToggleAi" aria-label="AI Tư vấn Laptop" title="AI Tư vấn Laptop">
@@ -219,10 +238,32 @@ class GeminiChatWidget {
         input.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleSend(); });
     }
 
+    formatMessage(text) {
+        const safe = String(text ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const withLinks = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
+            const cleanHref = href.trim();
+            const isAllowed =
+                /^(detailproductuser\.html\?id=\d+|checkout\.html|cart\.html|warranty\.html|support\.html|order\.html|index\.html)$/i.test(cleanHref) ||
+                /^https:\/\/vankhuongdev\.id\.vn\/[a-z0-9\-._~:/?#=&]*$/i.test(cleanHref);
+            if (!isAllowed) {
+                return label;
+            }
+            return `<a href="${cleanHref}" class="ai-action-link">${label} &rarr;</a>`;
+        });
+
+        return withLinks.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    }
+
     renderMessages() {
         const container = document.getElementById('aiMessagesContainer');
         if (!container) return;
-        container.innerHTML = this.messages.map(m => `<div class="ai-msg ai-msg-${m.role}">${m.text}</div>`).join('');
+        container.innerHTML = this.messages.map(m => `<div class="ai-msg ai-msg-${m.role}">${this.formatMessage(m.text)}</div>`).join('');
         container.scrollTop = container.scrollHeight;
     }
 }
