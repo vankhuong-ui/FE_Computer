@@ -4,7 +4,7 @@
  */
 
 const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const defaultApiUrl = isLocalhost ? 'http://localhost:8080' : 'https://hoang89computer-be.onrender.com';
+const defaultApiUrl = isLocalhost ? 'http://localhost:8080' : 'https://be-computer.onrender.com';
 
 export const CONFIG = {
     BRAND_NAME: 'HK COMPUTER',
@@ -12,18 +12,18 @@ export const CONFIG = {
     OPEN_HOURS: '8:00 - 21:00 (T2 - CN)',
     API_BASE_URL: localStorage.getItem('CUSTOM_API_BASE_URL') || defaultApiUrl,
 
-    // 10 Chi nhánh Cửa hàng & Trung tâm Sửa chữa Laptop/PC
+    // 10 Chi nhÃ¡nh Cá»­a hÃ ng & Trung tÃ¢m Sá»­a chá»¯a Laptop/PC
     BRANCHES: [
-        { id: 1, city: 'Hà Nội', name: 'HK COMPUTER — Thái Hà', address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội', phone: '024 7300 6801', hours: '8:00 - 21:00', services: 'Bán hàng • Sửa Laptop lấy ngay • Bảo hành' },
-        { id: 2, city: 'Hà Nội', name: 'HK COMPUTER — Cầu Giấy', address: '268 Xuân Thủy, P. Dịch Vọng Hậu, Q. Cầu Giấy, Hà Nội', phone: '024 7300 6802', hours: '8:00 - 21:00', services: 'Sửa Laptop • Vệ sinh • Nâng cấp RAM/SSD' },
-        { id: 3, city: 'Hà Nội', name: 'HK COMPUTER — Hai Bà Trưng', address: '89 Lê Thanh Nghị, P. Bách Khoa, Q. Hai Bà Trưng, Hà Nội', phone: '024 7300 6803', hours: '8:00 - 21:00', services: 'Build PC Gaming • Sửa phần cứng chuyên sâu' },
-        { id: 4, city: 'TP.HCM', name: 'HK COMPUTER — Quận 10', address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', hours: '8:00 - 21:00', services: 'Showroom chính • Bảo hành 1 đổi 1' },
-        { id: 5, city: 'TP.HCM', name: 'HK COMPUTER — Bình Thạnh', address: '175 Xô Viết Nghệ Tĩnh, P. 17, Q. Bình Thạnh, TP.HCM', phone: '028 7300 6805', hours: '8:00 - 21:00', services: 'Sửa Laptop lấy ngay • Cài đặt phần mềm' },
-        { id: 6, city: 'TP.HCM', name: 'HK COMPUTER — Thủ Đức', address: '312 Võ Văn Ngân, P. Bình Thọ, TP. Thủ Đức, TP.HCM', phone: '028 7300 6806', hours: '8:00 - 21:00', services: 'Bán Laptop Sinh viên • Nâng cấp linh kiện' },
-        { id: 7, city: 'Đà Nẵng', name: 'HK COMPUTER — Hải Châu', address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng', phone: '0236 730 6807', hours: '8:00 - 20:30', services: 'Bán hàng • Sửa chữa Laptop & PC' },
-        { id: 8, city: 'Hải Phòng', name: 'HK COMPUTER — Ngô Quyền', address: '98 Lạch Tray, Q. Ngô Quyền, Hải Phòng', phone: '0225 730 6808', hours: '8:00 - 20:30', services: 'Sửa Laptop • Vệ sinh • Tiếp nhận Bảo hành' },
-        { id: 9, city: 'Cần Thơ', name: 'HK COMPUTER — Ninh Kiều', address: '215 Đường 3/2, P. Hưng Lợi, Q. Ninh Kiều, Cần Thơ', phone: '0292 730 6809', hours: '8:00 - 20:30', services: 'Showroom Miền Tây • Sửa chữa & Bảo hành' },
-        { id: 10, city: 'Bình Dương', name: 'HK COMPUTER — Thủ Dầu Một', address: '405 Đại lộ Bình Dương, P. Phú Cường, TP. Thủ Dầu Một', phone: '0274 730 6810', hours: '8:00 - 20:30', services: 'Bán Laptop/PC • Sửa chữa lấy ngay' }
+        { id: 1, city: 'HÃ  Ná»™i', name: 'HK COMPUTER â€” ThÃ¡i HÃ ', address: '123 ThÃ¡i HÃ , P. Trung Liá»‡t, Q. Äá»‘ng Äa, HÃ  Ná»™i', phone: '024 7300 6801', hours: '8:00 - 21:00', services: 'BÃ¡n hÃ ng â€¢ Sá»­a Laptop láº¥y ngay â€¢ Báº£o hÃ nh' },
+        { id: 2, city: 'HÃ  Ná»™i', name: 'HK COMPUTER â€” Cáº§u Giáº¥y', address: '268 XuÃ¢n Thá»§y, P. Dá»‹ch Vá»ng Háº­u, Q. Cáº§u Giáº¥y, HÃ  Ná»™i', phone: '024 7300 6802', hours: '8:00 - 21:00', services: 'Sá»­a Laptop â€¢ Vá»‡ sinh â€¢ NÃ¢ng cáº¥p RAM/SSD' },
+        { id: 3, city: 'HÃ  Ná»™i', name: 'HK COMPUTER â€” Hai BÃ  TrÆ°ng', address: '89 LÃª Thanh Nghá»‹, P. BÃ¡ch Khoa, Q. Hai BÃ  TrÆ°ng, HÃ  Ná»™i', phone: '024 7300 6803', hours: '8:00 - 21:00', services: 'Build PC Gaming â€¢ Sá»­a pháº§n cá»©ng chuyÃªn sÃ¢u' },
+        { id: 4, city: 'TP.HCM', name: 'HK COMPUTER â€” Quáº­n 10', address: '456 CÃ¡ch Máº¡ng ThÃ¡ng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', hours: '8:00 - 21:00', services: 'Showroom chÃ­nh â€¢ Báº£o hÃ nh 1 Ä‘á»•i 1' },
+        { id: 5, city: 'TP.HCM', name: 'HK COMPUTER â€” BÃ¬nh Tháº¡nh', address: '175 XÃ´ Viáº¿t Nghá»‡ TÄ©nh, P. 17, Q. BÃ¬nh Tháº¡nh, TP.HCM', phone: '028 7300 6805', hours: '8:00 - 21:00', services: 'Sá»­a Laptop láº¥y ngay â€¢ CÃ i Ä‘áº·t pháº§n má»m' },
+        { id: 6, city: 'TP.HCM', name: 'HK COMPUTER â€” Thá»§ Äá»©c', address: '312 VÃµ VÄƒn NgÃ¢n, P. BÃ¬nh Thá», TP. Thá»§ Äá»©c, TP.HCM', phone: '028 7300 6806', hours: '8:00 - 21:00', services: 'BÃ¡n Laptop Sinh viÃªn â€¢ NÃ¢ng cáº¥p linh kiá»‡n' },
+        { id: 7, city: 'ÄÃ  Náºµng', name: 'HK COMPUTER â€” Háº£i ChÃ¢u', address: '142 HÃ m Nghi, P. Tháº¡c GiÃ¡n, Q. Thanh KhÃª, ÄÃ  Náºµng', phone: '0236 730 6807', hours: '8:00 - 20:30', services: 'BÃ¡n hÃ ng â€¢ Sá»­a chá»¯a Laptop & PC' },
+        { id: 8, city: 'Háº£i PhÃ²ng', name: 'HK COMPUTER â€” NgÃ´ Quyá»n', address: '98 Láº¡ch Tray, Q. NgÃ´ Quyá»n, Háº£i PhÃ²ng', phone: '0225 730 6808', hours: '8:00 - 20:30', services: 'Sá»­a Laptop â€¢ Vá»‡ sinh â€¢ Tiáº¿p nháº­n Báº£o hÃ nh' },
+        { id: 9, city: 'Cáº§n ThÆ¡', name: 'HK COMPUTER â€” Ninh Kiá»u', address: '215 ÄÆ°á»ng 3/2, P. HÆ°ng Lá»£i, Q. Ninh Kiá»u, Cáº§n ThÆ¡', phone: '0292 730 6809', hours: '8:00 - 20:30', services: 'Showroom Miá»n TÃ¢y â€¢ Sá»­a chá»¯a & Báº£o hÃ nh' },
+        { id: 10, city: 'BÃ¬nh DÆ°Æ¡ng', name: 'HK COMPUTER â€” Thá»§ Dáº§u Má»™t', address: '405 Äáº¡i lá»™ BÃ¬nh DÆ°Æ¡ng, P. PhÃº CÆ°á»ng, TP. Thá»§ Dáº§u Má»™t', phone: '0274 730 6810', hours: '8:00 - 20:30', services: 'BÃ¡n Laptop/PC â€¢ Sá»­a chá»¯a láº¥y ngay' }
     ],
 
     ENDPOINTS: {
