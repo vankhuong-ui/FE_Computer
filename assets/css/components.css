@@ -108,15 +108,15 @@
 .header-search-input {
     width: 100%;
     height: 40px;
-    padding: 0 58px 0 36px;
-    border-radius: 10px;
+    padding: 0 58px 0 38px;
+    border-radius: 999px;
     border: 1px solid var(--border);
-    background: var(--surface);
+    background: var(--surface-subtle);
     color: var(--text-primary);
     font-family: var(--font-sans);
     font-size: var(--text-xs);
     outline: none;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
 }
 
 .header-search-input:focus {

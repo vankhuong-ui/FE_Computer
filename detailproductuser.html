@@ -217,12 +217,33 @@
         }
 
         .price-main {
-            font-family: var(--font-mono);
             font-size: clamp(1.45rem, 2.4vw, 1.85rem);
             font-weight: 800;
-            color: var(--brand-orange);
+            color: #D0021C;
             letter-spacing: -0.02em;
             line-height: 1.1;
+        }
+
+        .price-old-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+            font-size: 13px;
+        }
+
+        .price-old-strike {
+            color: #98A2B3;
+            text-decoration: line-through;
+        }
+
+        .price-discount-tag {
+            color: #D0021C;
+            background: #FEE4E2;
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 12px;
         }
 
         .price-sub {
@@ -593,6 +614,9 @@
                 }
 
                 const previewBranches = CONFIG.BRANCHES.slice(0, 3);
+                const curPrice = Number(product.price) || 0;
+                const discountPct = 6 + ((Number(product.id) || 1) % 12);
+                const oldPrice = curPrice > 0 ? Math.round((curPrice * (100 + discountPct)) / 100000) * 1000 : 0;
 
                 detailContainer.innerHTML = `
                     <div class="product-detail-grid">
@@ -650,6 +674,12 @@
                             <div class="price-banner">
                                 <div>
                                     <div class="price-main tabular-nums">${formatPrice(product.price)}</div>
+                                    ${oldPrice > curPrice ? `
+                                        <div class="price-old-row tabular-nums">
+                                            <span class="price-old-strike">${formatPrice(oldPrice)}</span>
+                                            <span class="price-discount-tag">-${discountPct}%</span>
+                                        </div>
+                                    ` : ''}
                                     <div class="price-sub">Đã bao gồm VAT 10% · Xuất hóa đơn điện tử</div>
                                 </div>
                                 <span class="badge badge-success">Chính hãng 100%</span>
