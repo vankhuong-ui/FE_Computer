@@ -133,7 +133,7 @@ async function handleResponse(response) {
     }
 
     const appLevelError = json && typeof json === 'object' && typeof json.code === 'number'
-        && json.code !== 1000 && json.code !== 200;
+        && ![1000, 1001, 200].includes(json.code);
 
     if (!response.ok || appLevelError) {
         let errorMsg = json?.message || json?.error || `Lỗi máy chủ (${response.status})`;
