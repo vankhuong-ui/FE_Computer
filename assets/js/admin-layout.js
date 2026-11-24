@@ -1,10 +1,12 @@
 /**
- * admin-layout.js - Shared Sidebar, Responsive Drawer & Topbar for HK COMPUTER Admin Portal
- * Unified SVG iconography (stroke-width 1.75), zero emojis
+ * admin-layout.js - Creative Tim Paper Dashboard Sidebar, Drawer & Live Pending Badges
+ * Unified SVG iconography, zero emojis, shared BI summary cache
  */
 
 import { theme } from './theme.js?v=6';
 import { auth } from './auth.js';
+import { api } from './api.js';
+import { CONFIG } from './config.js';
 
 const ICONS = {
     dashboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"></rect><rect x="14" y="3" width="7" height="5" rx="1"></rect><rect x="14" y="12" width="7" height="9" rx="1"></rect><rect x="3" y="16" width="7" height="5" rx="1"></rect></svg>',
@@ -12,7 +14,9 @@ const ICONS = {
     categories: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
     brands: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>',
     inventory: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
+    branches: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
     orders: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>',
+    vouchers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>',
     payments: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
     repairs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>',
     warranty: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>',
@@ -23,7 +27,7 @@ const ICONS = {
 
 const MENU_GROUPS = [
     {
-        label: 'Tổng quan',
+        label: 'Tổng quan BI',
         items: [
             { id: 'dashboard', href: 'trangchu-admin.html', label: 'Bảng điều khiển' }
         ]
@@ -34,17 +38,19 @@ const MENU_GROUPS = [
             { id: 'products', href: 'admin-product.html', label: 'Sản phẩm' },
             { id: 'categories', href: 'admin-category.html', label: 'Danh mục' },
             { id: 'brands', href: 'admin-brand.html', label: 'Thương hiệu' },
-            { id: 'inventory', href: 'admin-inventory.html', label: 'Tồn kho' }
+            { id: 'branches', href: 'admin-branches.html', label: 'Cơ sở & Chi nhánh' },
+            { id: 'inventory', href: 'admin-inventory.html', label: 'Tồn kho đa cơ sở', badgeKey: 'lowStockCount' }
         ]
     },
     {
         label: 'Kinh doanh & Dịch vụ',
         items: [
-            { id: 'orders', href: 'admin-orders.html', label: 'Đơn hàng' },
+            { id: 'orders', href: 'admin-orders.html', label: 'Đơn hàng', badgeKey: 'unpaidOrders' },
+            { id: 'vouchers', href: 'admin-vouchers.html', label: 'Mã giảm giá (Voucher)' },
             { id: 'payments', href: 'admin-payment.html', label: 'Thanh toán' },
-            { id: 'repairs', href: 'admin-repairs.html', label: 'Lịch hẹn sửa chữa' },
-            { id: 'warranty', href: 'admin-warranty.html', label: 'Bảo hành điện tử' },
-            { id: 'support', href: 'admin-support.html', label: 'Hỗ trợ khách hàng' }
+            { id: 'repairs', href: 'admin-repairs.html', label: 'Lịch hẹn sửa chữa', badgeKey: 'pendingRepairs' },
+            { id: 'warranty', href: 'admin-warranty.html', label: 'Bảo hành điện tử', badgeKey: 'pendingWarranties' },
+            { id: 'support', href: 'admin-support.html', label: 'Hỗ trợ khách hàng', badgeKey: 'openSupports' }
         ]
     },
     {
@@ -56,15 +62,41 @@ const MENU_GROUPS = [
     }
 ];
 
+export function fetchAdminSummaryShared(forceRefresh = false) {
+    if (!forceRefresh && window.__hkAdminSummaryPromise) {
+        return window.__hkAdminSummaryPromise;
+    }
+    const endpoint = CONFIG.ENDPOINTS.ADMIN_DASHBOARD?.SUMMARY || '/api/admin/dashboard/summary';
+    window.__hkAdminSummaryPromise = api.get(endpoint).catch(() => null);
+    return window.__hkAdminSummaryPromise;
+}
+
+async function hydrateSidebarBadges() {
+    if (!auth.isLoggedIn() || !auth.isAdmin()) return;
+    const summary = await fetchAdminSummaryShared(false);
+    if (!summary || typeof summary !== 'object') return;
+
+    document.querySelectorAll('[data-admin-badge]').forEach((badgeEl) => {
+        const key = badgeEl.getAttribute('data-admin-badge');
+        const count = Number(summary[key] || 0);
+        if (count > 0) {
+            badgeEl.textContent = count > 99 ? '99+' : String(count);
+            badgeEl.hidden = false;
+        } else {
+            badgeEl.hidden = true;
+        }
+    });
+}
+
 export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều khiển' } = {}) {
     const sidebarHost = document.getElementById('adminSidebar');
     if (sidebarHost) {
         sidebarHost.className = 'admin-sidebar';
         sidebarHost.innerHTML = `
             <a href="trangchu-admin.html" class="admin-brand">
-                <span style="color: var(--brand-green); font-weight: 800;">HK</span>
-                <span style="font-weight: 700;">COMPUTER</span>
-                <span class="admin-brand-tag">Admin</span>
+                <span class="admin-brand-logo">HK</span>
+                <span>HK COMPUTER</span>
+                <span class="admin-brand-tag">Paper</span>
             </a>
             <ul class="admin-menu">
                 ${MENU_GROUPS.map(g => `
@@ -74,6 +106,7 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
                             <a href="${item.href}" class="${active === item.id ? 'active' : ''}">
                                 ${ICONS[item.id] || ''}
                                 <span>${item.label}</span>
+                                ${item.badgeKey ? `<span class="admin-nav-badge" data-admin-badge="${item.badgeKey}" hidden>0</span>` : ''}
                             </a>
                         </li>
                     `).join('')}
@@ -103,6 +136,8 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
         year: 'numeric'
     });
 
+    const swaggerUrl = `${CONFIG.API_BASE_URL.replace(/\/$/, '')}/swagger-ui.html`;
+
     const topbarHost = document.getElementById('adminTopbar');
     if (topbarHost) {
         topbarHost.className = 'admin-topbar';
@@ -114,9 +149,12 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
                 <div class="admin-topbar-title">${title}</div>
                 <span class="admin-topbar-date tabular-nums">${todayText}</span>
             </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
-                <a href="index.html" class="btn btn-outline btn-sm">
+            <div class="admin-topbar-right">
+                <a href="${swaggerUrl}" target="_blank" rel="noopener" class="btn btn-outline btn-sm admin-api-doc-link" title="Tài liệu OpenAPI / Swagger UI">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+                    <span>API Docs</span>
+                </a>
+                <a href="index.html" class="btn btn-outline btn-sm admin-topbar-store-btn" title="Xem giao diện cửa hàng">
                     <span>Cửa hàng</span>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
                 </a>
@@ -132,4 +170,5 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
 
     theme.init();
     auth.initHeaderNav();
+    hydrateSidebarBadges();
 }

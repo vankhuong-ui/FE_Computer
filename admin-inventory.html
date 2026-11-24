@@ -3,12 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Quản lý Tồn kho — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
+    <title>Quản lý Tồn kho Đa Cơ sở — HK COMPUTER Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css?v=8" />
     <style>
         .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 440px; width: 100%; padding: 28px; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 480px; width: 100%; padding: 26px; }
+        .inv-filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; padding: 12px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); }
+        .state-tabs { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .state-tab { height: 32px; padding: 0 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-subtle); font-size: 12px; font-weight: 600; color: var(--text-secondary); cursor: pointer; }
+        .state-tab.active { border-color: var(--brand-green); background: var(--brand-green-soft); color: var(--brand-green); }
     </style>
 </head>
 <body>
@@ -21,19 +25,49 @@
             <main class="admin-content-body">
                 <div class="table-toolbar">
                     <div>
-                        <h1 style="font-size: var(--text-2xl);">Tồn kho Sản phẩm</h1>
-                        <p style="font-size: var(--text-xs);">Theo dõi số lượng tồn kho và nhập bổ sung hàng hóa.</p>
+                        <h1 style="font-size: var(--text-2xl);">Tồn kho Sản phẩm theo Cơ sở</h1>
+                        <p style="font-size: var(--text-xs);">Quản lý số lượng tồn tại từng chi nhánh: Nhập thêm (+), Kiểm kê thực tế (=) và Chuyển kho nội bộ.</p>
                     </div>
-                    <button type="button" id="btnAddInv" class="btn btn-primary btn-sm">+ Tạo kho sản phẩm</button>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <a href="admin-branches.html" class="btn btn-outline btn-sm">Quản lý Cơ sở</a>
+                        <button type="button" id="btnOpenTransfer" class="btn btn-secondary btn-sm">⇄ Chuyển kho giữa cơ sở</button>
+                        <button type="button" id="btnAddInv" class="btn btn-primary btn-sm">+ Khởi tạo / Phân bổ kho</button>
+                    </div>
+                </div>
+
+                <!-- Multi-Branch Filter Bar -->
+                <div class="inv-filter-bar">
+                    <select id="cityFilter" class="select" style="width: 170px; height: 36px;">
+                        <option value="">Tất cả Tỉnh/TP</option>
+                    </select>
+                    <select id="branchFilter" class="select" style="width: 240px; height: 36px;">
+                        <option value="">Tất cả Cơ sở / Chi nhánh</option>
+                    </select>
+                    <input type="search" id="keywordInput" class="input" style="max-width: 240px; height: 36px;" placeholder="Tìm tên sản phẩm..." />
+
+                    <div class="state-tabs" id="stockStateTabs" style="margin-left: auto;">
+                        <button type="button" class="state-tab active" data-state="">Tất cả</button>
+                        <button type="button" class="state-tab" data-state="IN_STOCK">Còn hàng</button>
+                        <button type="button" class="state-tab" data-state="LOW_STOCK">Sắp hết (≤3)</button>
+                        <button type="button" class="state-tab" data-state="OUT_OF_STOCK">Hết hàng (0)</button>
+                    </div>
                 </div>
 
                 <div class="table-container">
                     <table class="table">
                         <thead>
-                            <tr><th>ID Kho</th><th>Sản phẩm</th><th>Số lượng tồn</th><th>Trạng thái</th><th>Thao tác</th></tr>
+                            <tr>
+                                <th>ID Kho</th>
+                                <th>Sản phẩm</th>
+                                <th>Cơ sở / Chi nhánh</th>
+                                <th>Tồn khả dụng</th>
+                                <th>Đã bán</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác kho</th>
+                            </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="5" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;">Đang tải dữ liệu kho...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -42,32 +76,89 @@
         </div>
     </div>
 
-    <!-- Import Stock Modal -->
+    <!-- 1. Import Stock Modal (+ Cộng dồn) -->
     <div class="modal-backdrop" id="stockModal">
         <div class="modal-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: var(--text-lg);">Nhập thêm hàng vào kho</h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: var(--text-lg); margin: 0;">Nhập thêm hàng vào cơ sở</h3>
                 <button type="button" id="btnCloseStock" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
+            <p id="stockModalContext" style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 14px;"></p>
             <form id="stockForm">
                 <input type="hidden" id="stockInvId" />
                 <div class="form-group">
-                    <label class="form-label" for="stockQty">Số lượng nhập thêm</label>
-                    <input type="number" id="stockQty" class="input tabular-nums" min="1" required />
+                    <label class="form-label" for="stockQty">Số lượng nhập thêm (Sẽ cộng dồn vào số tồn hiện tại)</label>
+                    <input type="number" id="stockQty" class="input tabular-nums" min="1" value="10" required />
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="btnCancelStock" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Xác nhận nhập</button>
+                    <button type="submit" class="btn btn-primary">+ Xác nhận nhập thêm</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Create Inventory Modal -->
+    <!-- 2. Adjust Stock Modal (= Kiểm kê thực tế) -->
+    <div class="modal-backdrop" id="adjustModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h3 style="font-size: var(--text-lg); margin: 0;">Kiểm kê / Đặt lại tồn thực tế</h3>
+                <button type="button" id="btnCloseAdjust" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <p id="adjustModalContext" style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 14px;"></p>
+            <form id="adjustForm">
+                <input type="hidden" id="adjustInvId" />
+                <div class="form-group">
+                    <label class="form-label" for="adjustQty">Số lượng tồn thực tế sau kiểm kê</label>
+                    <input type="number" id="adjustQty" class="input tabular-nums" min="0" required />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelAdjust" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu số lượng kiểm kê</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Transfer Stock Between Branches Modal -->
+    <div class="modal-backdrop" id="transferModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <h3 style="font-size: var(--text-lg); margin: 0;">Chuyển kho nội bộ giữa 2 cơ sở</h3>
+                <button type="button" id="btnCloseTransfer" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="transferForm">
+                <div class="form-group">
+                    <label class="form-label" for="trProductId">Sản phẩm chuyển kho</label>
+                    <select id="trProductId" class="select" required></select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label" for="trFromBranchId">Từ cơ sở xuất</label>
+                        <select id="trFromBranchId" class="select" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="trToBranchId">Sang cơ sở nhận</label>
+                        <select id="trToBranchId" class="select" required></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="trQuantity">Số lượng chuyển</label>
+                    <input type="number" id="trQuantity" class="input tabular-nums" min="1" value="2" required />
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelTransfer" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Thực hiện chuyển kho</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Create / Allocate Inventory Modal -->
     <div class="modal-backdrop" id="createModal">
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: var(--text-lg);">Khởi tạo kho cho sản phẩm</h3>
+                <h3 style="font-size: var(--text-lg); margin: 0;">Khởi tạo / Bổ sung kho tại cơ sở</h3>
                 <button type="button" id="btnCloseCreate" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
             <form id="createForm">
@@ -76,12 +167,19 @@
                     <select id="createProdId" class="select" required></select>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="createQty">Số lượng ban đầu</label>
-                    <input type="number" id="createQty" class="input tabular-nums" min="0" value="10" required />
+                    <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:12.5px; font-weight:600; margin-bottom:8px;">
+                        <input type="checkbox" id="createAllBranches" style="accent-color: var(--brand-green);" />
+                        <span>Phân bổ đồng loạt cho tất cả cơ sở đang hoạt động</span>
+                    </label>
+                    <select id="createBranchId" class="select"></select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="createQty">Số lượng nhập cho cơ sở</label>
+                    <input type="number" id="createQty" class="input tabular-nums" min="0" value="5" required />
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="btnCancelCreate" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Khởi tạo</button>
+                    <button type="submit" class="btn btn-primary">Xác nhận khởi tạo</button>
                 </div>
             </form>
         </div>
@@ -91,42 +189,144 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=8';
         import { toast } from './assets/js/toast.js';
 
         let currentPage = 0;
+        let branches = [];
+        let products = [];
+        let selectedBranchId = new URLSearchParams(window.location.search).get('branchId') || '';
+        let selectedCity = '';
+        let keyword = '';
+        let stockState = '';
+
+        const cityFilter = document.getElementById('cityFilter');
+        const branchFilter = document.getElementById('branchFilter');
+        const keywordInput = document.getElementById('keywordInput');
+
+        async function loadMeta() {
+            try {
+                const [bRes, pRes] = await Promise.all([
+                    api.get(CONFIG.ENDPOINTS.BRANCHES.ADMIN_ALL).catch(() => CONFIG.BRANCHES),
+                    api.get(CONFIG.ENDPOINTS.PRODUCTS.LIST, { page_no: 0, page_size: 200 }).catch(() => ({ content: [] }))
+                ]);
+                branches = Array.isArray(bRes) && bRes.length ? bRes : CONFIG.BRANCHES;
+                products = pRes?.content || [];
+
+                const cities = [...new Set(branches.map(b => b.city).filter(Boolean))];
+                cityFilter.innerHTML = `<option value="">Tất cả Tỉnh/TP (${cities.length})</option>` +
+                    cities.map(c => `<option value="${c}">${c}</option>`).join('');
+
+                renderBranchDropdown();
+            } catch (_) {}
+        }
+
+        function renderBranchDropdown() {
+            const visible = selectedCity
+                ? branches.filter(b => b.city === selectedCity)
+                : branches;
+            branchFilter.innerHTML = `<option value="">Tất cả Cơ sở / Chi nhánh (${visible.length})</option>` +
+                visible.map(b => `<option value="${b.id}" ${String(b.id) === String(selectedBranchId) ? 'selected' : ''}>${b.name} (${b.city})</option>`).join('');
+        }
 
         async function loadInventory(page = 0) {
             if (!auth.requireAdmin()) return;
             currentPage = page;
             try {
-                const data = await api.get(CONFIG.ENDPOINTS.INVENTORY.LIST, { page_no: page, page_size: 10, sortBy: 'id', sortDir: 'asc' });
+                const params = {
+                    page_no: page,
+                    page_size: 12,
+                    sortBy: 'id',
+                    sortDir: 'asc'
+                };
+                if (selectedBranchId) params.branch_id = selectedBranchId;
+                if (selectedCity) params.city = selectedCity;
+                if (keyword) params.keyword = keyword;
+                if (stockState) params.stock_state = stockState;
+
+                const data = await api.get(CONFIG.ENDPOINTS.INVENTORY.LIST, params);
                 const items = data?.content || [];
                 const totalPages = data?.totalPages || 1;
                 const tbody = document.getElementById('tableBody');
 
                 if (!items.length) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px;">Chưa có dữ liệu tồn kho.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px;">Không có bản ghi tồn kho phù hợp bộ lọc.</td></tr>`;
+                    document.getElementById('paginationBar').innerHTML = '';
                     return;
                 }
 
-                tbody.innerHTML = items.map(inv => `
-                    <tr>
-                        <td class="tabular-nums">#${inv.id}</td>
-                        <td style="font-weight: var(--font-medium);">${inv.nameProduct || inv.products?.nameProduct || 'Sản phẩm'}</td>
-                        <td class="tabular-nums" style="font-weight: var(--font-semibold);">${inv.soluong}</td>
-                        <td>${inv.soluong > 0 ? '<span class="badge badge-success">Còn hàng</span>' : '<span class="badge badge-danger">Hết hàng</span>'}</td>
-                        <td>
-                            <button type="button" class="btn btn-secondary btn-sm btn-import" data-id="${inv.id}">+ Nhập hàng</button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = items.map(inv => {
+                    const pName = inv.productName || inv.nameProduct || inv.products?.nameProduct || `Sản phẩm #${inv.productId || ''}`;
+                    const bName = inv.branchName || 'Cơ sở mặc định';
+                    const bCity = inv.branchCity || '';
+                    const qty = Number(inv.soluong) || 0;
+                    const selled = Number(inv.selled) || 0;
 
-                document.querySelectorAll('.btn-import').forEach(btn => {
+                    let badgeHtml = '<span class="badge badge-success">Còn hàng</span>';
+                    if (qty <= 0) badgeHtml = '<span class="badge badge-danger">Hết hàng</span>';
+                    else if (qty <= 3) badgeHtml = '<span class="badge badge-warning">Sắp hết (≤3)</span>';
+
+                    return `
+                        <tr>
+                            <td class="tabular-nums">#${inv.id}</td>
+                            <td style="font-weight: var(--font-semibold); color: var(--text-primary);">${pName}</td>
+                            <td>
+                                <div style="font-weight: 600; font-size: 12.5px;">${bName}</div>
+                                ${bCity ? `<span class="badge badge-info" style="margin-top:2px;">${bCity}</span>` : ''}
+                            </td>
+                            <td class="tabular-nums" style="font-weight: 700; font-size: 14px; color: ${qty > 0 ? 'var(--brand-green)' : '#EF4444'};">${qty}</td>
+                            <td class="tabular-nums" style="color: var(--text-secondary);">${selled}</td>
+                            <td>${badgeHtml}</td>
+                            <td>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-primary btn-sm btn-import"
+                                        data-id="${inv.id}"
+                                        data-pname="${pName.replace(/"/g, '&quot;')}"
+                                        data-bname="${bName.replace(/"/g, '&quot;')}"
+                                        data-qty="${qty}">
+                                        + Nhập thêm
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm btn-adjust"
+                                        data-id="${inv.id}"
+                                        data-pname="${pName.replace(/"/g, '&quot;')}"
+                                        data-bname="${bName.replace(/"/g, '&quot;')}"
+                                        data-qty="${qty}">
+                                        Kiểm kê
+                                    </button>
+                                    <button type="button" class="btn btn-outline btn-sm btn-quick-transfer"
+                                        data-pid="${inv.productId}"
+                                        data-bid="${inv.branchId}">
+                                        ⇄ Chuyển
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tbody.querySelectorAll('.btn-import').forEach(btn => {
                     btn.addEventListener('click', () => {
                         document.getElementById('stockInvId').value = btn.dataset.id;
-                        document.getElementById('stockQty').value = 10;
+                        document.getElementById('stockQty').value = 5;
+                        document.getElementById('stockModalContext').innerHTML =
+                            `Sản phẩm: <b>${btn.dataset.pname}</b><br/>Cơ sở: <b>${btn.dataset.bname}</b> (Tồn hiện tại: <b>${btn.dataset.qty}</b>)`;
                         document.getElementById('stockModal').classList.add('active');
+                    });
+                });
+
+                tbody.querySelectorAll('.btn-adjust').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.getElementById('adjustInvId').value = btn.dataset.id;
+                        document.getElementById('adjustQty').value = btn.dataset.qty;
+                        document.getElementById('adjustModalContext').innerHTML =
+                            `Sản phẩm: <b>${btn.dataset.pname}</b><br/>Cơ sở: <b>${btn.dataset.bname}</b> (Tồn sổ sách: <b>${btn.dataset.qty}</b>)`;
+                        document.getElementById('adjustModal').classList.add('active');
+                    });
+                });
+
+                tbody.querySelectorAll('.btn-quick-transfer').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        openTransferModal(btn.dataset.pid, btn.dataset.bid);
                     });
                 });
 
@@ -136,20 +336,73 @@
                 ).join('') : '';
                 pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadInventory(Number(b.dataset.page))));
             } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-danger">${err.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
-        document.getElementById('btnAddInv').addEventListener('click', async () => {
-            try {
-                const prods = await api.get(CONFIG.ENDPOINTS.PRODUCTS.LIST, { page_no: 0, page_size: 200 });
-                document.getElementById('createProdId').innerHTML = (prods?.content || []).map(p => `<option value="${p.id}">${p.nameProduct}</option>`).join('');
-                document.getElementById('createModal').classList.add('active');
-            } catch (err) { toast.error(err.message); }
+        function openTransferModal(presetProdId, presetFromBranchId) {
+            document.getElementById('trProductId').innerHTML = products.map(p =>
+                `<option value="${p.id}" ${String(p.id) === String(presetProdId) ? 'selected' : ''}>${p.nameProduct}</option>`
+            ).join('');
+            document.getElementById('trFromBranchId').innerHTML = branches.map(b =>
+                `<option value="${b.id}" ${String(b.id) === String(presetFromBranchId) ? 'selected' : ''}>${b.name} (${b.city})</option>`
+            ).join('');
+            const defaultTo = branches.find(b => String(b.id) !== String(presetFromBranchId || branches[0]?.id)) || branches[0];
+            document.getElementById('trToBranchId').innerHTML = branches.map(b =>
+                `<option value="${b.id}" ${defaultTo && b.id === defaultTo.id ? 'selected' : ''}>${b.name} (${b.city})</option>`
+            ).join('');
+            document.getElementById('transferModal').classList.add('active');
+        }
+
+        cityFilter.addEventListener('change', () => {
+            selectedCity = cityFilter.value;
+            selectedBranchId = '';
+            renderBranchDropdown();
+            loadInventory(0);
+        });
+
+        branchFilter.addEventListener('change', () => {
+            selectedBranchId = branchFilter.value;
+            loadInventory(0);
+        });
+
+        let kwTimer = null;
+        keywordInput.addEventListener('input', () => {
+            clearTimeout(kwTimer);
+            kwTimer = setTimeout(() => {
+                keyword = keywordInput.value.trim();
+                loadInventory(0);
+            }, 220);
+        });
+
+        document.querySelectorAll('#stockStateTabs [data-state]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                stockState = btn.dataset.state || '';
+                document.querySelectorAll('#stockStateTabs [data-state]').forEach(b => b.classList.toggle('active', b === btn));
+                loadInventory(0);
+            });
+        });
+
+        document.getElementById('btnOpenTransfer').addEventListener('click', () => openTransferModal(products[0]?.id, branches[0]?.id));
+
+        document.getElementById('btnAddInv').addEventListener('click', () => {
+            document.getElementById('createProdId').innerHTML = products.map(p => `<option value="${p.id}">${p.nameProduct}</option>`).join('');
+            document.getElementById('createBranchId').innerHTML = branches.map(b => `<option value="${b.id}">${b.name} (${b.city})</option>`).join('');
+            document.getElementById('createAllBranches').checked = false;
+            document.getElementById('createBranchId').disabled = false;
+            document.getElementById('createModal').classList.add('active');
+        });
+
+        document.getElementById('createAllBranches').addEventListener('change', (e) => {
+            document.getElementById('createBranchId').disabled = e.target.checked;
         });
 
         document.getElementById('btnCloseStock').addEventListener('click', () => document.getElementById('stockModal').classList.remove('active'));
         document.getElementById('btnCancelStock').addEventListener('click', () => document.getElementById('stockModal').classList.remove('active'));
+        document.getElementById('btnCloseAdjust').addEventListener('click', () => document.getElementById('adjustModal').classList.remove('active'));
+        document.getElementById('btnCancelAdjust').addEventListener('click', () => document.getElementById('adjustModal').classList.remove('active'));
+        document.getElementById('btnCloseTransfer').addEventListener('click', () => document.getElementById('transferModal').classList.remove('active'));
+        document.getElementById('btnCancelTransfer').addEventListener('click', () => document.getElementById('transferModal').classList.remove('active'));
         document.getElementById('btnCloseCreate').addEventListener('click', () => document.getElementById('createModal').classList.remove('active'));
         document.getElementById('btnCancelCreate').addEventListener('click', () => document.getElementById('createModal').classList.remove('active'));
 
@@ -159,26 +412,60 @@
             const qty = document.getElementById('stockQty').value;
             try {
                 await api.put(`${CONFIG.ENDPOINTS.INVENTORY.UPDATE_STOCK(id)}?luongnhap=${qty}`);
-                toast.success('Đã nhập kho thành công!');
+                toast.success(`Đã nhập cộng thêm ${qty} sản phẩm vào kho cơ sở!`);
                 document.getElementById('stockModal').classList.remove('active');
+                loadInventory(currentPage);
+            } catch (err) { toast.error(err.message); }
+        });
+
+        document.getElementById('adjustForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('adjustInvId').value;
+            const qty = document.getElementById('adjustQty').value;
+            try {
+                await api.put(`${CONFIG.ENDPOINTS.INVENTORY.ADJUST_STOCK(id)}?soluong=${qty}`);
+                toast.success('Đã cập nhật số lượng kiểm kê thực tế!');
+                document.getElementById('adjustModal').classList.remove('active');
+                loadInventory(currentPage);
+            } catch (err) { toast.error(err.message); }
+        });
+
+        document.getElementById('transferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api.post(CONFIG.ENDPOINTS.INVENTORY.TRANSFER, {
+                    productId: Number(document.getElementById('trProductId').value),
+                    fromBranchId: Number(document.getElementById('trFromBranchId').value),
+                    toBranchId: Number(document.getElementById('trToBranchId').value),
+                    quantity: Number(document.getElementById('trQuantity').value)
+                });
+                toast.success('Chuyển kho nội bộ giữa 2 cơ sở thành công!');
+                document.getElementById('transferModal').classList.remove('active');
                 loadInventory(currentPage);
             } catch (err) { toast.error(err.message); }
         });
 
         document.getElementById('createForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const allBr = document.getElementById('createAllBranches').checked;
             try {
                 await api.post(CONFIG.ENDPOINTS.INVENTORY.CREATE, {
                     productId: Number(document.getElementById('createProdId').value),
-                    soluong: Number(document.getElementById('createQty').value)
+                    branchId: allBr ? null : Number(document.getElementById('createBranchId').value),
+                    soluong: Number(document.getElementById('createQty').value),
+                    allBranches: allBr
                 });
-                toast.success('Khởi tạo tồn kho thành công!');
+                toast.success('Đã khởi tạo / phân bổ tồn kho thành công!');
                 document.getElementById('createModal').classList.remove('active');
                 loadInventory(currentPage);
             } catch (err) { toast.error(err.message); }
         });
 
-        document.addEventListener('DOMContentLoaded', () => { initAdminLayout({ active: 'inventory', title: 'Quản lý Tồn kho' }); loadInventory(0); });
+        document.addEventListener('DOMContentLoaded', async () => {
+            initAdminLayout({ active: 'inventory', title: 'Quản lý Tồn kho Đa Cơ sở' });
+            await loadMeta();
+            loadInventory(0);
+        });
     </script>
 </body>
 </html>

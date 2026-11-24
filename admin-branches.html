@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Cơ sở &amp; Chi nhánh — HK COMPUTER Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css?v=8" />
+    <style>
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 560px; width: 100%; padding: 26px; max-height: 90dvh; overflow-y: auto; }
+        .filter-strip { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside id="adminSidebar"></aside>
+
+        <div class="admin-main">
+            <header id="adminTopbar"></header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Hệ thống Cơ sở &amp; Chi nhánh</h1>
+                        <p style="font-size: var(--text-xs);">Quản lý danh sách cửa hàng, địa chỉ, số điện thoại và theo dõi tổng lượng tồn kho từng chi nhánh.</p>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <a href="admin-inventory.html" class="btn btn-secondary btn-sm">Quản lý kho đa cơ sở</a>
+                        <button type="button" id="btnAddBranch" class="btn btn-primary btn-sm">+ Thêm cơ sở mới</button>
+                    </div>
+                </div>
+
+                <div class="filter-strip">
+                    <select id="cityFilter" class="select" style="width: 190px; height: 36px;">
+                        <option value="">Tất cả Tỉnh/Thành phố</option>
+                    </select>
+                    <input type="search" id="keywordFilter" class="input" style="max-width: 280px; height: 36px;" placeholder="Tìm tên, mã cơ sở, địa chỉ..." />
+                    <span id="branchSummaryText" style="font-size: var(--text-xs); color: var(--text-secondary); margin-left: auto;"></span>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên cơ sở &amp; Địa chỉ</th>
+                                <th>Tỉnh/TP</th>
+                                <th>Liên hệ &amp; Giờ mở</th>
+                                <th>Tồn kho tại cơ sở</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;">Đang tải danh sách cơ sở...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create / Edit Branch Modal -->
+    <div class="modal-backdrop" id="branchModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg); margin: 0;" id="modalTitle">Thêm cơ sở mới</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="branchForm">
+                <input type="hidden" id="editId" />
+                <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="bCode">Mã cơ sở</label>
+                        <input type="text" id="bCode" class="input mono-spec" placeholder="VD: HN-THAIHA" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bName">Tên cơ sở hiển thị</label>
+                        <input type="text" id="bName" class="input" placeholder="VD: HK COMPUTER - Thái Hà" required />
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="bCity">Tỉnh / Thành phố</label>
+                        <input type="text" id="bCity" class="input" placeholder="Hà Nội, TP.HCM, Đà Nẵng..." required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bDistrict">Quận / Huyện</label>
+                        <input type="text" id="bDistrict" class="input" placeholder="Q. Đống Đa..." />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bAddress">Địa chỉ chi tiết</label>
+                    <input type="text" id="bAddress" class="input" required />
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="bPhone">Số điện thoại cơ sở</label>
+                        <input type="text" id="bPhone" class="input tabular-nums" placeholder="024 7300 6801" />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="bHours">Giờ mở cửa</label>
+                        <input type="text" id="bHours" class="input tabular-nums" value="8:00 - 21:00" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="bServices">Dịch vụ tại cơ sở</label>
+                    <input type="text" id="bServices" class="input" value="Bán hàng · Sửa Laptop trong ngày · Bảo hành" />
+                </div>
+
+                <div class="form-group">
+                    <label style="display:inline-flex; align-items:center; gap:8px; cursor:pointer; font-size:var(--text-sm); font-weight:600;">
+                        <input type="checkbox" id="bActive" checked style="accent-color: var(--brand-green);" />
+                        <span>Đang hoạt động (Hiển thị cho khách chọn trên website)</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu cơ sở</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=8';
+        import { toast } from './assets/js/toast.js';
+
+        let allBranches = [];
+        const modal = document.getElementById('branchModal');
+        const form = document.getElementById('branchForm');
+        const cityFilter = document.getElementById('cityFilter');
+        const keywordFilter = document.getElementById('keywordFilter');
+
+        async function loadBranches() {
+            if (!auth.requireAdmin()) return;
+            try {
+                const res = await api.get(CONFIG.ENDPOINTS.BRANCHES.ADMIN_ALL);
+                allBranches = Array.isArray(res) ? res : [];
+
+                const cities = [...new Set(allBranches.map(b => b.city).filter(Boolean))];
+                const curCity = cityFilter.value;
+                cityFilter.innerHTML = `<option value="">Tất cả Tỉnh/Thành phố (${allBranches.length})</option>` +
+                    cities.map(c => `<option value="${c}" ${c === curCity ? 'selected' : ''}>${c}</option>`).join('');
+
+                renderTable();
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="text-danger">${err.message}</td></tr>`;
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const cityVal = cityFilter.value.trim().toLowerCase();
+            const kwVal = keywordFilter.value.trim().toLowerCase();
+
+            const filtered = allBranches.filter(b => {
+                if (cityVal && (b.city || '').toLowerCase() !== cityVal) return false;
+                if (kwVal) {
+                    const hay = `${b.code || ''} ${b.name || ''} ${b.address || ''} ${b.city || ''}`.toLowerCase();
+                    if (!hay.includes(kwVal)) return false;
+                }
+                return true;
+            });
+
+            const totalStockAll = filtered.reduce((sum, b) => sum + (b.totalStock || 0), 0);
+            document.getElementById('branchSummaryText').textContent =
+                `Hiển thị ${filtered.length} cơ sở · Tổng tồn kho: ${totalStockAll} sản phẩm`;
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px;">Không có cơ sở nào khớp bộ lọc.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(b => `
+                <tr>
+                    <td class="mono-spec" style="font-size:12px; font-weight:700;">${b.code || '#' + b.id}</td>
+                    <td>
+                        <div style="font-weight:700; color:var(--text-primary);">${b.name}</div>
+                        <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">${b.address}</div>
+                        <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${b.services || ''}</div>
+                    </td>
+                    <td><span class="badge badge-info">${b.city}</span></td>
+                    <td class="tabular-nums" style="font-size:12px;">
+                        <div>${b.phone || '-'}</div>
+                        <div style="color:var(--text-secondary);">${b.openingHours || '8:00 - 21:00'}</div>
+                    </td>
+                    <td class="tabular-nums">
+                        <div style="font-weight:700;">${b.totalStock ?? 0} sản phẩm</div>
+                        <div style="font-size:11.5px; color:var(--text-secondary);">${b.productCount ?? 0} mã hàng có sẵn</div>
+                    </td>
+                    <td>
+                        ${b.active
+                            ? '<span class="badge badge-success">Đang hoạt động</span>'
+                            : '<span class="badge badge-danger">Tạm ngưng</span>'}
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            <a href="admin-inventory.html?branchId=${b.id}" class="btn btn-outline btn-sm">Xem kho</a>
+                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${b.id}">Sửa</button>
+                            <button type="button" class="btn btn-outline btn-sm text-danger btn-del" data-id="${b.id}">Xóa</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const b = allBranches.find(x => Number(x.id) === Number(btn.dataset.id));
+                    if (!b) return;
+                    document.getElementById('modalTitle').textContent = `Cập nhật cơ sở #${b.id}`;
+                    document.getElementById('editId').value = b.id;
+                    document.getElementById('bCode').value = b.code || '';
+                    document.getElementById('bName').value = b.name || '';
+                    document.getElementById('bCity').value = b.city || '';
+                    document.getElementById('bDistrict').value = b.district || '';
+                    document.getElementById('bAddress').value = b.address || '';
+                    document.getElementById('bPhone').value = b.phone || '';
+                    document.getElementById('bHours').value = b.openingHours || '8:00 - 21:00';
+                    document.getElementById('bServices').value = b.services || '';
+                    document.getElementById('bActive').checked = Boolean(b.active);
+                    modal.classList.add('active');
+                });
+            });
+
+            tbody.querySelectorAll('.btn-del').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm('Xóa cơ sở này? (Chỉ xóa được khi tồn kho tại cơ sở bằng 0)')) return;
+                    try {
+                        await api.delete(CONFIG.ENDPOINTS.BRANCHES.DELETE(btn.dataset.id));
+                        toast.success('Đã xóa cơ sở.');
+                        loadBranches();
+                    } catch (err) {
+                        toast.error(err.message);
+                    }
+                });
+            });
+        }
+
+        cityFilter.addEventListener('change', renderTable);
+        keywordFilter.addEventListener('input', renderTable);
+
+        document.getElementById('btnAddBranch').addEventListener('click', () => {
+            document.getElementById('modalTitle').textContent = 'Thêm cơ sở mới';
+            form.reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('bHours').value = '8:00 - 21:00';
+            document.getElementById('bServices').value = 'Bán hàng · Sửa Laptop trong ngày · Bảo hành';
+            document.getElementById('bActive').checked = true;
+            modal.classList.add('active');
+        });
+
+        const closeModal = () => modal.classList.remove('active');
+        document.getElementById('btnCloseModal').addEventListener('click', closeModal);
+        document.getElementById('btnCancelModal').addEventListener('click', closeModal);
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const payload = {
+                code: document.getElementById('bCode').value.trim(),
+                name: document.getElementById('bName').value.trim(),
+                city: document.getElementById('bCity').value.trim(),
+                district: document.getElementById('bDistrict').value.trim(),
+                address: document.getElementById('bAddress').value.trim(),
+                phone: document.getElementById('bPhone').value.trim(),
+                openingHours: document.getElementById('bHours').value.trim(),
+                services: document.getElementById('bServices').value.trim(),
+                active: document.getElementById('bActive').checked
+            };
+            try {
+                if (id) {
+                    await api.put(CONFIG.ENDPOINTS.BRANCHES.UPDATE(id), payload);
+                    toast.success('Đã cập nhật thông tin cơ sở!');
+                } else {
+                    await api.post(CONFIG.ENDPOINTS.BRANCHES.CREATE, payload);
+                    toast.success('Đã tạo cơ sở mới!');
+                }
+                closeModal();
+                loadBranches();
+            } catch (err) {
+                toast.error(err.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminLayout({ active: 'branches', title: 'Quản lý Cơ sở & Chi nhánh' });
+            loadBranches();
+        });
+    </script>
+</body>
+</html>

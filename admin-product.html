@@ -4,11 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Sản phẩm — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=8" />
     <style>
         .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 560px; width: 100%; padding: 28px; max-height: 90dvh; overflow-y: auto; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 580px; width: 100%; padding: 26px; max-height: 92dvh; overflow-y: auto; }
+        .prod-filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
     </style>
 </head>
 <body>
@@ -21,19 +22,43 @@
             <main class="admin-content-body">
                 <div class="table-toolbar">
                     <div>
-                        <h1 style="font-size: var(--text-2xl);">Danh mục Sản phẩm</h1>
-                        <p style="font-size: var(--text-xs);">Thêm mới, chỉnh sửa cấu hình và giá bán sản phẩm.</p>
+                        <h1 style="font-size: var(--text-2xl);">Danh mục Sản phẩm (Laptop · PC · Phụ kiện)</h1>
+                        <p style="font-size: var(--text-xs);">Thêm mới, chỉnh sửa cấu hình, giá bán và khởi tạo tồn kho ban đầu tại các cơ sở.</p>
                     </div>
-                    <button type="button" id="btnAdd" class="btn btn-primary btn-sm">+ Thêm sản phẩm</button>
+                    <button type="button" id="btnAdd" class="btn btn-primary btn-sm">+ Thêm sản phẩm mới</button>
+                </div>
+
+                <div class="prod-filter-bar">
+                    <select id="filterGroup" class="select" style="width: 175px; height: 36px;">
+                        <option value="">Tất cả ngành hàng</option>
+                        <option value="LAPTOP">Laptop</option>
+                        <option value="PC">PC &amp; Màn hình</option>
+                        <option value="ACCESSORY">Phụ kiện &amp; Linh kiện</option>
+                    </select>
+                    <select id="filterCategory" class="select" style="width: 190px; height: 36px;">
+                        <option value="">Tất cả danh mục</option>
+                    </select>
+                    <select id="filterBrand" class="select" style="width: 170px; height: 36px;">
+                        <option value="">Tất cả thương hiệu</option>
+                    </select>
+                    <input type="search" id="filterKeyword" class="input" style="max-width: 240px; height: 36px;" placeholder="Tìm tên sản phẩm..." />
                 </div>
 
                 <div class="table-container">
                     <table class="table">
                         <thead>
-                            <tr><th>ID</th><th>Hình ảnh</th><th>Tên sản phẩm</th><th>Giá bán</th><th>Thao tác</th></tr>
+                            <tr>
+                                <th>ID</th>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm &amp; Thông số</th>
+                                <th>Danh mục / Hãng</th>
+                                <th>Giá bán</th>
+                                <th>Tổng tồn kho</th>
+                                <th>Thao tác</th>
+                            </tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="5" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -45,7 +70,7 @@
     <div class="modal-backdrop" id="productModal">
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: var(--text-lg);" id="modalTitle">Thêm sản phẩm</h3>
+                <h3 style="font-size: var(--text-lg); margin: 0;" id="modalTitle">Thêm sản phẩm</h3>
                 <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
             </div>
             <form id="productForm">
@@ -54,11 +79,11 @@
                     <label class="form-label" for="nameProduct">Tên sản phẩm</label>
                     <input type="text" id="nameProduct" class="input" required />
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="price">Giá bán (VNĐ)</label>
-                    <input type="number" id="price" class="input tabular-nums" required min="0" />
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label" for="price">Giá bán (VNĐ)</label>
+                        <input type="number" id="price" class="input tabular-nums" required min="0" />
+                    </div>
                     <div class="form-group">
                         <label class="form-label" for="categoriesId">Danh mục</label>
                         <select id="categoriesId" class="select" required></select>
@@ -73,13 +98,32 @@
                     <input type="text" id="image" class="input" placeholder="https://..." />
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="specs">Thông số kỹ thuật</label>
-                    <input type="text" id="specs" class="input" placeholder="CPU, RAM, SSD, VGA..." />
+                    <label class="form-label" for="specs">Thông số kỹ thuật (Ngăn cách bằng dấu | hoặc dấu phẩy)</label>
+                    <input type="text" id="specs" class="input" placeholder="VD: 15.6 inch | RAM 16 GB | SSD 512 GB (hoặc Không dây | DPI 12000)" />
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="description">Mô tả chi tiết</label>
                     <textarea id="description" class="textarea" rows="3"></textarea>
                 </div>
+
+                <!-- Initial Multi-Branch Stock Allocation (Only shown when creating a new product) -->
+                <div id="initialStockSection" style="padding: 12px 14px; border-radius: 8px; background: var(--surface-subtle); border: 1px solid var(--border); margin-bottom: 14px;">
+                    <div style="font-weight: 700; font-size: 12.5px; margin-bottom: 8px;">Khởi tạo tồn kho ban đầu (Tùy chọn)</div>
+                    <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 10px; align-items: end;">
+                        <div class="form-group" style="margin: 0;">
+                            <label class="form-label" for="initialStock">Số lượng mỗi cơ sở</label>
+                            <input type="number" id="initialStock" class="input tabular-nums" min="0" value="5" />
+                        </div>
+                        <div class="form-group" style="margin: 0;">
+                            <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; margin-bottom:6px; cursor:pointer;">
+                                <input type="checkbox" id="initialAllBranches" checked style="accent-color: var(--brand-green);" />
+                                <span>Phân bổ cho tất cả cơ sở</span>
+                            </label>
+                            <select id="initialBranchId" class="select" disabled></select>
+                        </div>
+                    </div>
+                </div>
+
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
                     <button type="submit" class="btn btn-primary">Lưu sản phẩm</button>
@@ -92,25 +136,37 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=8';
         import { toast } from './assets/js/toast.js';
+        import { formatPrice } from './assets/js/utils.js';
 
         const modal = document.getElementById('productModal');
         const form = document.getElementById('productForm');
         let currentPage = 0;
 
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
-        }
+        const filterGroup = document.getElementById('filterGroup');
+        const filterCategory = document.getElementById('filterCategory');
+        const filterBrand = document.getElementById('filterBrand');
+        const filterKeyword = document.getElementById('filterKeyword');
 
         async function loadDropdowns() {
             try {
-                const [cats, brands] = await Promise.all([
-                    api.get(CONFIG.ENDPOINTS.CATEGORIES.LIST),
-                    api.get(CONFIG.ENDPOINTS.BRANDS.LIST)
+                const [cats, brands, branches] = await Promise.all([
+                    api.get(CONFIG.ENDPOINTS.CATEGORIES.LIST).catch(() => []),
+                    api.get(CONFIG.ENDPOINTS.BRANDS.LIST).catch(() => []),
+                    api.get(CONFIG.ENDPOINTS.BRANCHES.ADMIN_ALL).catch(() => CONFIG.BRANCHES)
                 ]);
-                document.getElementById('categoriesId').innerHTML = (cats || []).map(c => `<option value="${c.id}">${c.nameCategories || c.name}</option>`).join('');
-                document.getElementById('brandsId').innerHTML = (brands || []).map(b => `<option value="${b.id}">${b.nameBrands || b.name}</option>`).join('');
+
+                const catOpts = (cats || []).map(c => `<option value="${c.id}">${c.nameCategories || c.name} (${c.groupType || 'LAPTOP'})</option>`).join('');
+                const brandOpts = (brands || []).map(b => `<option value="${b.id}">${b.nameBrands || b.name}</option>`).join('');
+
+                document.getElementById('categoriesId').innerHTML = catOpts;
+                document.getElementById('brandsId').innerHTML = brandOpts;
+                filterCategory.innerHTML = `<option value="">Tất cả danh mục</option>` + catOpts;
+                filterBrand.innerHTML = `<option value="">Tất cả thương hiệu</option>` + brandOpts;
+
+                const brList = Array.isArray(branches) && branches.length ? branches : CONFIG.BRANCHES;
+                document.getElementById('initialBranchId').innerHTML = brList.map(b => `<option value="${b.id}">${b.name} (${b.city})</option>`).join('');
             } catch (_) {}
         }
 
@@ -118,42 +174,72 @@
             if (!auth.requireAdmin()) return;
             currentPage = page;
             try {
-                const data = await api.get(CONFIG.ENDPOINTS.PRODUCTS.LIST, { page_no: page, page_size: 10, sortBy: 'id', sortDir: 'desc' });
+                const params = {
+                    page_no: page,
+                    page_size: 10,
+                    sort_mode: 'newest'
+                };
+                if (filterGroup.value) params.group_type = filterGroup.value;
+                if (filterCategory.value) params.category_id = filterCategory.value;
+                if (filterBrand.value) params.brand_id = filterBrand.value;
+                if (filterKeyword.value.trim()) params.keyword = filterKeyword.value.trim();
+
+                const data = await api.get(CONFIG.ENDPOINTS.PRODUCTS.CATALOG, params);
                 const items = data?.content || [];
                 const totalPages = data?.totalPages || 1;
                 const tbody = document.getElementById('tableBody');
 
                 if (!items.length) {
-                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px;">Chưa có sản phẩm nào.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px;">Không có sản phẩm nào phù hợp.</td></tr>`;
+                    document.getElementById('paginationBar').innerHTML = '';
                     return;
                 }
 
-                tbody.innerHTML = items.map(p => `
-                    <tr>
-                        <td class="tabular-nums">#${p.id}</td>
-                        <td><img src="${p.image || ''}" alt="" style="width:44px; height:44px; object-fit:contain; border:1px solid var(--border); border-radius:4px; background:var(--surface-subtle);" /></td>
-                        <td style="font-weight: var(--font-medium);">${p.nameProduct}</td>
-                        <td class="tabular-nums" style="font-weight: var(--font-semibold);">${formatPrice(p.price)}</td>
-                        <td>
-                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}">Sửa</button>
-                            <button type="button" class="btn btn-outline btn-sm text-danger btn-del" data-id="${p.id}">Xóa</button>
-                        </td>
-                    </tr>
-                `).join('');
+                tbody.innerHTML = items.map(p => {
+                    const totStock = p.totalStock ?? 0;
+                    const brCount = p.availableBranchCount ?? 0;
+                    return `
+                        <tr>
+                            <td class="tabular-nums">#${p.id}</td>
+                            <td><img src="${p.image || ''}" alt="" style="width:44px; height:44px; object-fit:contain; border:1px solid var(--border); border-radius:4px; background:var(--surface-subtle);" /></td>
+                            <td>
+                                <div style="font-weight: var(--font-semibold); color: var(--text-primary);">${p.nameProduct}</div>
+                                <div style="font-size: 11.5px; color: var(--text-secondary); margin-top: 2px;">${p.specs || '-'}</div>
+                            </td>
+                            <td style="font-size: 12px;">
+                                <div><span class="badge badge-info">${p.categoriesName || 'Danh mục'}</span></div>
+                                <div style="color: var(--text-secondary); margin-top: 3px; font-weight: 600;">${p.brandsName || ''}</div>
+                            </td>
+                            <td class="tabular-nums" style="font-weight: 700; color: #D0021C;">${formatPrice(p.price)}</td>
+                            <td class="tabular-nums">
+                                <span class="badge ${totStock > 0 ? 'badge-success' : 'badge-danger'}">
+                                    ${totStock > 0 ? `${totStock} (${brCount} cơ sở)` : 'Hết kho'}
+                                </span>
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px;">
+                                    <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${p.id}">Sửa</button>
+                                    <button type="button" class="btn btn-outline btn-sm text-danger btn-del" data-id="${p.id}">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
 
                 document.querySelectorAll('.btn-edit').forEach(btn => {
                     btn.addEventListener('click', async () => {
                         try {
                             const p = await api.get(CONFIG.ENDPOINTS.PRODUCTS.DETAIL(btn.dataset.id));
-                            document.getElementById('modalTitle').textContent = 'Cập nhật sản phẩm';
+                            document.getElementById('modalTitle').textContent = `Cập nhật sản phẩm #${p.id}`;
                             document.getElementById('editId').value = p.id;
                             document.getElementById('nameProduct').value = p.nameProduct || '';
                             document.getElementById('price').value = p.price || 0;
                             document.getElementById('image').value = p.image || '';
                             document.getElementById('specs').value = p.specs || '';
                             document.getElementById('description').value = p.description || '';
-                            if (p.brands?.id) document.getElementById('brandsId').value = p.brands.id;
-                            if (p.categories?.id) document.getElementById('categoriesId').value = p.categories.id;
+                            if (p.brandsId || p.brands?.id) document.getElementById('brandsId').value = p.brandsId || p.brands?.id;
+                            if (p.categoriesId || p.categories?.id) document.getElementById('categoriesId').value = p.categoriesId || p.categories?.id;
+                            document.getElementById('initialStockSection').style.display = 'none';
                             modal.classList.add('active');
                         } catch (err) { toast.error(err.message); }
                     });
@@ -176,14 +262,31 @@
                 ).join('') : '';
                 pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadProducts(Number(b.dataset.page))));
             } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-danger">${err.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
+        filterGroup.addEventListener('change', () => loadProducts(0));
+        filterCategory.addEventListener('change', () => loadProducts(0));
+        filterBrand.addEventListener('change', () => loadProducts(0));
+        let kwTimer = null;
+        filterKeyword.addEventListener('input', () => {
+            clearTimeout(kwTimer);
+            kwTimer = setTimeout(() => loadProducts(0), 220);
+        });
+
+        document.getElementById('initialAllBranches').addEventListener('change', (e) => {
+            document.getElementById('initialBranchId').disabled = e.target.checked;
+        });
+
         document.getElementById('btnAdd').addEventListener('click', () => {
-            document.getElementById('modalTitle').textContent = 'Thêm sản phẩm';
+            document.getElementById('modalTitle').textContent = 'Thêm sản phẩm mới';
             form.reset();
             document.getElementById('editId').value = '';
+            document.getElementById('initialStock').value = 5;
+            document.getElementById('initialAllBranches').checked = true;
+            document.getElementById('initialBranchId').disabled = true;
+            document.getElementById('initialStockSection').style.display = 'block';
             modal.classList.add('active');
         });
         document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.remove('active'));
@@ -192,22 +295,28 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const id = document.getElementById('editId').value;
-            const name = document.getElementById('nameProduct').value.trim();
-            const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
+            const nameProduct = document.getElementById('nameProduct').value.trim();
+            const slug = nameProduct.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            const allBr = document.getElementById('initialAllBranches').checked;
+            const initStockVal = document.getElementById('initialStock').value;
+
             const payload = {
-                nameProduct: name,
+                nameProduct,
                 slug,
                 price: Number(document.getElementById('price').value),
-                specs: document.getElementById('specs').value.trim(),
-                image: document.getElementById('image').value.trim(),
-                description: document.getElementById('description').value.trim(),
+                categoriesId: Number(document.getElementById('categoriesId').value),
                 brandsId: Number(document.getElementById('brandsId').value),
-                categoriesId: Number(document.getElementById('categoriesId').value)
+                image: document.getElementById('image').value.trim(),
+                specs: document.getElementById('specs').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                initialStock: (!id && initStockVal !== '') ? Number(initStockVal) : null,
+                initialBranchId: (!id && !allBr) ? Number(document.getElementById('initialBranchId').value) : null,
+                allBranches: !id ? allBr : null
             };
             try {
                 if (id) await api.put(CONFIG.ENDPOINTS.PRODUCTS.UPDATE(id), payload);
                 else await api.post(CONFIG.ENDPOINTS.PRODUCTS.CREATE, payload);
-                toast.success('Lưu sản phẩm thành công!');
+                toast.success('Đã lưu sản phẩm thành công!');
                 modal.classList.remove('active');
                 loadProducts(currentPage);
             } catch (err) { toast.error(err.message); }

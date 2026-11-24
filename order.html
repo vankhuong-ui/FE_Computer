@@ -616,6 +616,7 @@
         import { CONFIG } from './assets/js/config.js';
         import { initStoreLayout } from './assets/js/layout.js?v=6';
         import { toast } from './assets/js/toast.js';
+        import { formatPrice, escapeHtml } from './assets/js/utils.js';
         import './assets/js/chat-widget.js?v=6';
 
         const ordersContainer = document.getElementById('ordersContainer');
@@ -625,10 +626,6 @@
         let stompClient = null;
         let activeSubscription = null;
         let pollInterval = null;
-
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
-        }
 
         const PAGE_SIZE = 5;
         const FALLBACK_IMG = 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=200&q=80';
@@ -654,7 +651,6 @@
             return u === 'PAID' ? 'COMPLETED' : u;
         };
         const orderTime = (o) => (o.createdAt ? new Date(o.createdAt).getTime() : 0);
-        const escapeHtml = (str) => String(str ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
         function getStatusBadge(status) {
             const s = normStatus(status);
@@ -896,13 +892,20 @@
                         itemActions = `${warrantyBtn}${reviewBtn}`;
                     }
 
+                    const branchBadge = item.branchName
+                        ? `<span class="serial-chip" style="margin-right: 4px;">Kho xuất: ${escapeHtml(item.branchName)}</span>`
+                        : '';
+
                     return `
                         <div class="order-item-row">
                             <img class="item-thumb" src="${img}" alt="${prodName}" loading="lazy" />
                             <div style="min-width: 0;">
                                 <a href="detailproductuser.html?id=${prodId}" class="order-item-title">${prodName}</a>
                                 <div class="order-item-sub">${qty} × ${formatPrice(price)}</div>
-                                ${isCompleted && prodId ? `<span class="serial-chip">Mã BH: ${serialCode}</span>` : ''}
+                                <div>
+                                    ${branchBadge}
+                                    ${isCompleted && prodId ? `<span class="serial-chip">Mã BH: ${serialCode}</span>` : ''}
+                                </div>
                             </div>
                             <div class="item-actions">${itemActions}</div>
                         </div>
@@ -923,6 +926,11 @@
                     `;
                 }
 
+                const isStorePickup = (order.fulfillmentType || '').toUpperCase() === 'STORE_PICKUP';
+                const fulfillmentLabel = isStorePickup
+                    ? `Nhận tại: ${escapeHtml(order.pickupBranchName || 'Cửa hàng HK COMPUTER')}`
+                    : 'Giao tận nơi';
+
                 return `
                     <article class="order-card">
                         <div class="order-card-header">
@@ -931,6 +939,7 @@
                                 ${isNew ? '<span class="order-new-tag">Mới</span>' : ''}
                                 <span class="order-meta tabular-nums">${createdDate}</span>
                                 <span class="order-meta">${totalQty} sản phẩm</span>
+                                <span class="badge ${isStorePickup ? 'badge-info' : ''}">${fulfillmentLabel}</span>
                             </div>
                             ${getStatusBadge(order.status)}
                         </div>

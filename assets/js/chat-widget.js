@@ -167,6 +167,23 @@ class GeminiChatWidget {
                     background: #008B45;
                     color: #FFFFFF;
                 }
+                @media (max-width: 760px) {
+                    .ai-fab {
+                        bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+                        right: 14px;
+                        height: 42px;
+                        padding: 0 12px;
+                    }
+                    .ai-panel {
+                        bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+                        right: 12px;
+                        width: calc(100vw - 24px);
+                        height: min(430px, 68dvh);
+                    }
+                    .ai-panel-input {
+                        font-size: 16px;
+                    }
+                }
             </style>
 
             <button type="button" class="ai-fab" id="btnToggleAi" aria-label="Tư vấn cấu hình & Dịch vụ" title="Tư vấn cấu hình & Dịch vụ">
@@ -223,7 +240,12 @@ class GeminiChatWidget {
             this.renderMessages();
 
             try {
-                const response = await api.post(CONFIG.ENDPOINTS.CHAT_AI.SEND, { message: query });
+                let sessionId = sessionStorage.getItem('hk_chat_session_id');
+                if (!sessionId) {
+                    sessionId = 'sess_' + Math.random().toString(36).slice(2, 11);
+                    sessionStorage.setItem('hk_chat_session_id', sessionId);
+                }
+                const response = await api.post(CONFIG.ENDPOINTS.CHAT_AI.SEND, { message: query, sessionId });
                 this.messages.pop();
                 const replyText = typeof response === 'string' ? response : (response?.data || response?.message || 'Không có câu trả lời');
                 this.messages.push({ role: 'assistant', text: replyText });
@@ -249,7 +271,7 @@ class GeminiChatWidget {
         const withLinks = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
             const cleanHref = href.trim();
             const isAllowed =
-                /^(detailproductuser\.html\?id=\d+|checkout\.html|cart\.html|warranty\.html|support\.html|order\.html|index\.html)$/i.test(cleanHref) ||
+                /^(detailproductuser\.html\?(id=\d+|slug=[a-z0-9-]+)|checkout\.html|cart\.html|warranty\.html|support\.html|order\.html|index\.html)$/i.test(cleanHref) ||
                 /^https:\/\/vankhuongdev\.id\.vn\/[a-z0-9\-._~:/?#=&]*$/i.test(cleanHref);
             if (!isAllowed) {
                 return label;

@@ -54,6 +54,7 @@ export async function request(endpoint, options = {}) {
     const config = {
         ...options,
         headers,
+        signal: options.signal || (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(25000) : undefined),
         credentials: 'include' // Required for HTTP-only refreshToken cookie
     };
 
@@ -96,7 +97,8 @@ export async function request(endpoint, options = {}) {
                 setAccessToken(null);
                 sessionStorage.removeItem('accountInfo');
                 // Redirect to login if user was in a protected route
-                if (window.location.pathname.includes('admin') || window.location.pathname.includes('profile')) {
+                const path = window.location.pathname;
+                if (path.includes('admin') || path.includes('profile') || path.includes('checkout') || path.includes('order')) {
                     toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.');
                     setTimeout(() => {
                         window.location.href = CONFIG.ROUTES.LOGIN;
@@ -130,8 +132,16 @@ async function handleResponse(response) {
         }
     }
 
-    if (!response.ok) {
-        const errorMsg = json?.message || json?.error || `Lỗi máy chủ (${response.status})`;
+    const appLevelError = json && typeof json === 'object' && typeof json.code === 'number'
+        && json.code !== 1000 && json.code !== 200;
+
+    if (!response.ok || appLevelError) {
+        let errorMsg = json?.message || json?.error || `Lỗi máy chủ (${response.status})`;
+        const fieldErrors = json?.result || json?.data;
+        if (errorMsg === 'List of error' && fieldErrors && typeof fieldErrors === 'object') {
+            const firstMsg = Object.values(fieldErrors).find(v => typeof v === 'string' && v.trim());
+            if (firstMsg) errorMsg = firstMsg;
+        }
         const error = new Error(errorMsg);
         error.status = response.status;
         error.data = json;

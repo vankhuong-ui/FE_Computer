@@ -121,14 +121,11 @@
         import { CONFIG } from './assets/js/config.js';
         import { initStoreLayout } from './assets/js/layout.js?v=6';
         import { toast } from './assets/js/toast.js';
+        import { formatPrice } from './assets/js/utils.js';
         import './assets/js/chat-widget.js?v=6';
 
         const cartContainer = document.getElementById('cartContainer');
         let cartItems = [];
-
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
-        }
 
         async function loadCart() {
             if (!auth.isAuthenticated()) {

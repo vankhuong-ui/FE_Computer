@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Mã giảm giá (Voucher) — HK COMPUTER Admin</title>
+    <link rel="stylesheet" href="./assets/css/admin.css?v=8" />
+    <style>
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 540px; width: 100%; padding: 26px; max-height: 92dvh; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside id="adminSidebar"></aside>
+
+        <div class="admin-main">
+            <header id="adminTopbar"></header>
+
+            <main class="admin-content-body">
+                <div class="table-toolbar">
+                    <div>
+                        <h1 style="font-size: var(--text-2xl);">Quản lý Mã giảm giá (Voucher)</h1>
+                        <p style="font-size: var(--text-xs);">Tạo mã ưu đãi khách mua lần đầu trên web, giảm theo số tiền cố định hoặc phần trăm.</p>
+                    </div>
+                    <button type="button" id="btnAddVoucher" class="btn btn-primary btn-sm">+ Tạo mã giảm giá</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Mã Code</th>
+                                <th>Chương trình ưu đãi</th>
+                                <th>Mức giảm &amp; Điều kiện</th>
+                                <th>Đối tượng</th>
+                                <th>Đã dùng / Giới hạn</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <tr><td colspan="7" style="text-align: center; padding: 32px;">Đang tải danh sách mã giảm giá...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="modal-backdrop" id="voucherModal">
+        <div class="modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-lg); margin: 0;" id="modalTitle">Tạo mã giảm giá mới</h3>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+            </div>
+            <form id="voucherForm">
+                <input type="hidden" id="editId" />
+                <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="vCode">Mã Voucher</label>
+                        <input type="text" id="vCode" class="input mono-spec" placeholder="VD: CHAO200K" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vTitle">Tên chương trình</label>
+                        <input type="text" id="vTitle" class="input" placeholder="VD: Ưu đãi khách mới mua Laptop" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="vDesc">Mô tả ngắn</label>
+                    <input type="text" id="vDesc" class="input" placeholder="Điều kiện áp dụng hiển thị cho khách..." />
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label" for="vType">Loại giảm</label>
+                        <select id="vType" class="select">
+                            <option value="FIXED">Giảm tiền (VNĐ)</option>
+                            <option value="PERCENT">Giảm phần trăm (%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vValue">Giá trị giảm</label>
+                        <input type="number" id="vValue" class="input tabular-nums" min="1" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vMaxDiscount">Giảm tối đa (VNĐ)</label>
+                        <input type="number" id="vMaxDiscount" class="input tabular-nums" min="0" placeholder="Dùng khi giảm %" />
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div class="form-group">
+                        <label class="form-label" for="vMinOrder">Đơn tối thiểu (VNĐ)</label>
+                        <input type="number" id="vMinOrder" class="input tabular-nums" min="0" value="0" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vLimit">Giới hạn tổng lượt dùng</label>
+                        <input type="number" id="vLimit" class="input tabular-nums" min="1" value="500" required />
+                    </div>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+                    <label style="display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        <input type="checkbox" id="vFirstOrder" style="accent-color: var(--brand-green);" />
+                        <span>Chỉ áp dụng cho đơn hàng đầu tiên (Tài khoản mới)</span>
+                    </label>
+                    <label style="display:inline-flex; align-items:center; gap:8px; font-size:13px; font-weight:600; cursor:pointer;">
+                        <input type="checkbox" id="vActive" checked style="accent-color: var(--brand-green);" />
+                        <span>Đang kích hoạt</span>
+                    </label>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu mã giảm giá</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { api } from './assets/js/api.js';
+        import { auth } from './assets/js/auth.js';
+        import { CONFIG } from './assets/js/config.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=9';
+        import { toast } from './assets/js/toast.js';
+
+        let vouchers = [];
+        const modal = document.getElementById('voucherModal');
+        const form = document.getElementById('voucherForm');
+        const formatVnd = (n) => new Intl.NumberFormat('vi-VN').format(Math.round(n || 0)) + '₫';
+
+        async function loadVouchers() {
+            if (!auth.requireAdmin()) return;
+            try {
+                const res = await api.get(CONFIG.ENDPOINTS.VOUCHERS.ADMIN_ALL);
+                vouchers = Array.isArray(res) ? res : [];
+                const tbody = document.getElementById('tableBody');
+                if (!vouchers.length) {
+                    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px;">Chưa có mã giảm giá nào.</td></tr>`;
+                    return;
+                }
+                tbody.innerHTML = vouchers.map(v => {
+                    const discountText = v.discountType === 'PERCENT'
+                        ? `Giảm ${v.discountValue}%${v.maxDiscount ? ` (tối đa ${formatVnd(v.maxDiscount)})` : ''}`
+                        : `Giảm ${formatVnd(v.discountValue)}`;
+                    return `
+                        <tr>
+                            <td class="mono-spec" style="font-weight:800; color:var(--brand-green);">${v.code}</td>
+                            <td>
+                                <div style="font-weight:600; color:var(--text-primary);">${v.title}</div>
+                                <div style="font-size:11.5px; color:var(--text-secondary);">${v.description || ''}</div>
+                            </td>
+                            <td class="tabular-nums" style="font-size:12.5px;">
+                                <div style="font-weight:700; color:#D0021C;">${discountText}</div>
+                                <div style="font-size:11.5px; color:var(--text-secondary);">Đơn từ ${formatVnd(v.minOrderAmount)}</div>
+                            </td>
+                            <td>
+                                ${v.firstOrderOnly
+                                    ? '<span class="badge badge-warning">Đơn đầu tiên</span>'
+                                    : '<span class="badge badge-info">Mọi khách hàng</span>'}
+                            </td>
+                            <td class="tabular-nums" style="font-weight:600;">${v.usedCount} / ${v.usageLimit}</td>
+                            <td>
+                                ${v.active
+                                    ? '<span class="badge badge-success">Đang bật</span>'
+                                    : '<span class="badge badge-danger">Tạm ngưng</span>'}
+                            </td>
+                            <td>
+                                <div style="display:flex; gap:6px;">
+                                    <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${v.id}">Sửa</button>
+                                    <button type="button" class="btn btn-outline btn-sm text-danger btn-del" data-id="${v.id}">Xóa</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tbody.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const v = vouchers.find(x => Number(x.id) === Number(btn.dataset.id));
+                        if (!v) return;
+                        document.getElementById('modalTitle').textContent = `Cập nhật mã ${v.code}`;
+                        document.getElementById('editId').value = v.id;
+                        document.getElementById('vCode').value = v.code || '';
+                        document.getElementById('vTitle').value = v.title || '';
+                        document.getElementById('vDesc').value = v.description || '';
+                        document.getElementById('vType').value = v.discountType || 'FIXED';
+                        document.getElementById('vValue').value = v.discountValue || 0;
+                        document.getElementById('vMaxDiscount').value = v.maxDiscount ?? '';
+                        document.getElementById('vMinOrder').value = v.minOrderAmount || 0;
+                        document.getElementById('vLimit').value = v.usageLimit || 100;
+                        document.getElementById('vFirstOrder').checked = Boolean(v.firstOrderOnly);
+                        document.getElementById('vActive').checked = Boolean(v.active);
+                        modal.classList.add('active');
+                    });
+                });
+
+                tbody.querySelectorAll('.btn-del').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Xóa hoặc tạm ngưng mã giảm giá này?')) return;
+                        try {
+                            await api.delete(CONFIG.ENDPOINTS.VOUCHERS.DELETE(btn.dataset.id));
+                            toast.success('Đã xử lý mã giảm giá.');
+                            loadVouchers();
+                        } catch (err) { toast.error(err.message); }
+                    });
+                });
+            } catch (err) {
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="7" class="text-danger">${err.message}</td></tr>`;
+            }
+        }
+
+        document.getElementById('btnAddVoucher').addEventListener('click', () => {
+            document.getElementById('modalTitle').textContent = 'Tạo mã giảm giá mới';
+            form.reset();
+            document.getElementById('editId').value = '';
+            document.getElementById('vActive').checked = true;
+            document.getElementById('vLimit').value = 500;
+            modal.classList.add('active');
+        });
+
+        const close = () => modal.classList.remove('active');
+        document.getElementById('btnCloseModal').addEventListener('click', close);
+        document.getElementById('btnCancelModal').addEventListener('click', close);
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editId').value;
+            const maxVal = document.getElementById('vMaxDiscount').value;
+            const payload = {
+                code: document.getElementById('vCode').value.trim().toUpperCase(),
+                title: document.getElementById('vTitle').value.trim(),
+                description: document.getElementById('vDesc').value.trim(),
+                discountType: document.getElementById('vType').value,
+                discountValue: Number(document.getElementById('vValue').value),
+                maxDiscount: maxVal !== '' ? Number(maxVal) : null,
+                minOrderAmount: Number(document.getElementById('vMinOrder').value) || 0,
+                usageLimit: Number(document.getElementById('vLimit').value) || 100,
+                firstOrderOnly: document.getElementById('vFirstOrder').checked,
+                active: document.getElementById('vActive').checked
+            };
+            try {
+                if (id) await api.put(CONFIG.ENDPOINTS.VOUCHERS.UPDATE(id), payload);
+                else await api.post(CONFIG.ENDPOINTS.VOUCHERS.CREATE, payload);
+                toast.success('Lưu mã giảm giá thành công!');
+                close();
+                loadVouchers();
+            } catch (err) { toast.error(err.message); }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initAdminLayout({ active: 'vouchers', title: 'Quản lý Mã giảm giá (Voucher)' });
+            loadVouchers();
+        });
+    </script>
+</body>
+</html>

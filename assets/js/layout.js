@@ -1,16 +1,186 @@
 /**
- * layout.js - Shared Minimalist Header, Footer & Quick Repair Modal for HK COMPUTER
- * - Crisp SVG icons (zero emojis)
- * - No hardcoded branch count
+ * layout.js - Shared Header, Location/Branch Selector Modal, Footer & Quick Repair Modal
+ * - TGDD-style Header Location Pill ("Xem tồn kho tại: Toàn quốc / Hà Nội · Thái Hà")
+ * - Live Branch Directory loaded from GET /api/branches (with fallback to CONFIG.BRANCHES)
  * - Smart Repair Booking Modal: Name + Phone + Service Method (At Store / At Home)
  */
 
 import { api } from './api.js';
 import { theme } from './theme.js?v=6';
-import { auth } from './auth.js';
+import { auth } from './auth.js?v=10';
 import { cart } from './cart.js?v=7';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
+
+let liveBranches = [...CONFIG.BRANCHES];
+
+async function fetchLiveBranches() {
+    try {
+        const res = await api.get(CONFIG.ENDPOINTS.BRANCHES.LIST);
+        if (Array.isArray(res) && res.length > 0) {
+            liveBranches = res;
+            CONFIG.BRANCHES = res.map(b => ({
+                ...b,
+                hours: b.openingHours || b.hours || '8:00 - 21:00'
+            }));
+        }
+    } catch (_) {
+        // Fallback to default CONFIG.BRANCHES
+    }
+    return liveBranches;
+}
+
+function updateHeaderLocationPillLabel() {
+    const loc = CONFIG.getSelectedLocation();
+    const el = document.getElementById('headerLocationLabel');
+    if (el) {
+        el.textContent = loc.label || 'Toàn quốc';
+    }
+}
+
+function mountLocationModal() {
+    if (document.getElementById('hkLocationModal')) return;
+
+    const modalEl = document.createElement('div');
+    modalEl.id = 'hkLocationModal';
+    modalEl.className = 'hk-modal-backdrop';
+    modalEl.innerHTML = `
+        <div class="hk-modal-box" style="max-width: 540px;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:14px;">
+                <div>
+                    <h3 style="font-size: var(--text-lg); margin: 0 0 4px;">Chọn khu vực &amp; cơ sở xem tồn kho</h3>
+                    <p style="font-size: var(--text-xs); margin: 0;">Hệ thống sẽ hiển thị số lượng máy và phụ kiện có sẵn tại cơ sở bạn chọn.</p>
+                </div>
+                <button type="button" id="btnCloseLocationModal" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-secondary);">×</button>
+            </div>
+
+            <div class="loc-city-tabs" id="locModalCityTabs"></div>
+            <div class="loc-branch-list" id="locModalBranchList"></div>
+        </div>
+    `;
+    document.body.appendChild(modalEl);
+
+    let activeModalCity = CONFIG.getSelectedLocation().city || '';
+
+    const close = () => modalEl.classList.remove('active');
+    document.getElementById('btnCloseLocationModal')?.addEventListener('click', close);
+    modalEl.addEventListener('click', (e) => { if (e.target === modalEl) close(); });
+
+    function renderLocationChoices() {
+        const curLoc = CONFIG.getSelectedLocation();
+        const cities = [...new Set(liveBranches.map(b => b.city).filter(Boolean))];
+        const cityTabsEl = document.getElementById('locModalCityTabs');
+        const branchListEl = document.getElementById('locModalBranchList');
+        if (!cityTabsEl || !branchListEl) return;
+
+        cityTabsEl.innerHTML = `
+            <button type="button" class="loc-city-tab ${activeModalCity === '' ? 'active' : ''}" data-loc-city="">
+                Toàn quốc (${liveBranches.length} cơ sở)
+            </button>
+            ${cities.map(c => {
+                const count = liveBranches.filter(b => b.city === c).length;
+                return `<button type="button" class="loc-city-tab ${activeModalCity === c ? 'active' : ''}" data-loc-city="${c}">${c} (${count})</button>`;
+            }).join('')}
+        `;
+
+        cityTabsEl.querySelectorAll('[data-loc-city]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeModalCity = btn.dataset.locCity || '';
+                renderLocationChoices();
+            });
+        });
+
+        const filteredBranches = activeModalCity
+            ? liveBranches.filter(b => b.city === activeModalCity)
+            : liveBranches;
+
+        const nationwideActive = !curLoc.city && !curLoc.branchId;
+        const cityWideActive = activeModalCity && curLoc.city === activeModalCity && !curLoc.branchId;
+
+        let html = `
+            <button type="button" class="loc-branch-card ${nationwideActive ? 'active' : ''}" data-pick-nationwide="1">
+                <div>
+                    <div style="font-weight: 700; font-size: 13px; color: var(--text-primary);">Toàn quốc — Tất cả ${liveBranches.length} cơ sở HK COMPUTER</div>
+                    <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Hiển thị tổng tồn kho trên toàn hệ thống và hỗ trợ giao tận nơi toàn quốc</div>
+                </div>
+                <span class="badge ${nationwideActive ? 'badge-success' : ''}">${nationwideActive ? 'Đang chọn' : 'Chọn'}</span>
+            </button>
+        `;
+
+        if (activeModalCity) {
+            html += `
+                <button type="button" class="loc-branch-card ${cityWideActive ? 'active' : ''}" data-pick-city="${activeModalCity}">
+                    <div>
+                        <div style="font-weight: 700; font-size: 13px; color: var(--text-primary);">Tất cả cơ sở tại ${activeModalCity} (${filteredBranches.length} chi nhánh)</div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">Tổng hợp hàng sẵn có tại các cửa hàng khu vực ${activeModalCity}</div>
+                    </div>
+                    <span class="badge ${cityWideActive ? 'badge-success' : ''}">${cityWideActive ? 'Đang chọn' : 'Chọn khu vực'}</span>
+                </button>
+            `;
+        }
+
+        html += filteredBranches.map(b => {
+            const isSel = Number(curLoc.branchId) === Number(b.id);
+            const shortName = (b.name || '').replace('HK COMPUTER - ', '');
+            return `
+                <button type="button" class="loc-branch-card ${isSel ? 'active' : ''}"
+                    data-pick-branch-id="${b.id}"
+                    data-pick-branch-city="${b.city || ''}"
+                    data-pick-branch-name="${(b.name || '').replace(/"/g, '&quot;')}"
+                    data-pick-branch-label="${b.city} · ${shortName}">
+                    <div style="min-width: 0; flex: 1;">
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span style="font-weight: 700; font-size: 13px; color: var(--text-primary);">${b.name}</span>
+                            <span class="badge badge-info">${b.city}</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-secondary); margin-top: 3px;">${b.address}</div>
+                        <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" class="tabular-nums">
+                            ${b.openingHours || b.hours || '8:00 - 21:00'} · ${b.phone || CONFIG.HOTLINE}
+                        </div>
+                    </div>
+                    <span class="badge ${isSel ? 'badge-success' : ''}" style="flex-shrink:0;">${isSel ? 'Đang chọn' : 'Chọn cơ sở'}</span>
+                </button>
+            `;
+        }).join('');
+
+        branchListEl.innerHTML = html;
+
+        branchListEl.querySelector('[data-pick-nationwide]')?.addEventListener('click', () => {
+            CONFIG.setSelectedLocation({ city: '', branchId: null, branchName: '', label: 'Toàn quốc' });
+            updateHeaderLocationPillLabel();
+            close();
+            toast.info('Đã chuyển sang xem tồn kho Toàn quốc.');
+        });
+
+        branchListEl.querySelector('[data-pick-city]')?.addEventListener('click', (e) => {
+            const city = e.currentTarget.dataset.pickCity;
+            CONFIG.setSelectedLocation({ city, branchId: null, branchName: '', label: `${city} (Tất cả)` });
+            updateHeaderLocationPillLabel();
+            close();
+            toast.info(`Đang xem tồn kho tại khu vực ${city}.`);
+        });
+
+        branchListEl.querySelectorAll('[data-pick-branch-id]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const branchId = Number(btn.dataset.pickBranchId);
+                const city = btn.dataset.pickBranchCity;
+                const branchName = btn.dataset.pickBranchName;
+                const label = btn.dataset.pickBranchLabel;
+                CONFIG.setSelectedLocation({ city, branchId, branchName, label });
+                updateHeaderLocationPillLabel();
+                close();
+                toast.success(`Đang xem tồn kho tại ${branchName}.`);
+            });
+        });
+    }
+
+    window.openHkLocationModal = async () => {
+        activeModalCity = CONFIG.getSelectedLocation().city || '';
+        modalEl.classList.add('active');
+        await fetchLiveBranches();
+        renderLocationChoices();
+    };
+}
 
 function mountQuickRepairModal() {
     if (document.getElementById('hkQuickRepairModal')) return;
@@ -61,7 +231,7 @@ function mountQuickRepairModal() {
                 <div class="form-group" id="qrBranchGroup" style="margin-bottom:12px;">
                     <label class="form-label" for="qrBranch">Chọn cửa hàng gần bạn</label>
                     <select id="qrBranch" class="select">
-                        ${CONFIG.BRANCHES.map(b => `<option value="${b.name} — ${b.address}">${b.name} (${b.city})</option>`).join('')}
+                        ${liveBranches.map(b => `<option value="${b.name} — ${b.address}">${b.name} (${b.city})</option>`).join('')}
                     </select>
                 </div>
 
@@ -128,7 +298,6 @@ function mountQuickRepairModal() {
     const user = auth.getUser();
     if (user?.accountname) document.getElementById('qrName').value = user.accountname;
 
-    // Toggle At Store / At Home
     const branchGroup = document.getElementById('qrBranchGroup');
     const homeGroup = document.getElementById('qrHomeAddrGroup');
     const homeInput = document.getElementById('qrHomeAddress');
@@ -195,7 +364,6 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
     if (headerHost) {
         headerHost.className = 'header';
 
-        // Insert top utility bar right above the sticky header once
         if (!document.getElementById('hkTopUtilityBar')) {
             const topBar = document.createElement('div');
             topBar.id = 'hkTopUtilityBar';
@@ -205,7 +373,7 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                     <div class="utility-group">
                         <span class="utility-item">
                             <span class="utility-dot"></span>
-                            <a href="index.html#repair-center">Hệ thống 10 chi nhánh toàn quốc · Mở cửa: ${CONFIG.OPEN_HOURS}</a>
+                            <a href="index.html#repair-center">Hệ thống chi nhánh toàn quốc · Mở cửa: ${CONFIG.OPEN_HOURS}</a>
                         </span>
                     </div>
                     <div class="utility-group">
@@ -219,41 +387,34 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
         }
 
         const initialQ = new URLSearchParams(window.location.search).get('q') || '';
+        const curLoc = CONFIG.getSelectedLocation();
+
         headerHost.innerHTML = `
             <div class="container header-inner">
-                <a href="index.html" class="brand-logo" aria-label="HK COMPUTER">
-                    <span class="brand-chip-icon">
-                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
-                    </span>
+                <a href="index.html" class="brand-logo" aria-label="HK COMPUTER" style="flex-shrink: 0;">
                     <span class="brand-text-col">
-                        <span class="brand-title-line">HK COMPUTER</span>
-                        <span class="brand-sub-line">Chính hãng &amp; Kỹ thuật</span>
+                        <span class="brand-title-line" style="font-size: 1.15rem; letter-spacing: -0.02em;">HK COMPUTER</span>
+                        <span class="brand-sub-line">Laptop · PC · Phụ kiện</span>
                     </span>
                 </a>
 
                 <form id="headerSearchForm" class="header-search-form" role="search">
                     <span class="header-search-icon">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </span>
-                    <input type="search" id="headerSearchInput" class="header-search-input" placeholder="Tìm laptop, PC, linh kiện, mã máy..." value="${initialQ.replace(/"/g, '&quot;')}" />
-                    <span class="header-search-kbd">Ctrl+K</span>
+                    <input type="search" id="headerSearchInput" class="header-search-input" placeholder="Tìm laptop, chuột, bàn phím, RAM, SSD..." value="${initialQ.replace(/"/g, '&quot;')}" />
                 </form>
 
-                <nav aria-label="Điều hướng chính">
-                    <ul class="nav-links">
-                        <li><a href="index.html#catalog" class="nav-link ${activeNav === 'home' ? 'active' : ''}">Sản phẩm</a></li>
-                        <li><a href="index.html#repair-center" class="nav-link ${activeNav === 'repair' ? 'active' : ''}">Sửa chữa</a></li>
-                        <li><a href="warranty.html" class="nav-link ${activeNav === 'warranty' ? 'active' : ''}">Bảo hành</a></li>
-                        <li><a href="support.html" class="nav-link ${activeNav === 'support' ? 'active' : ''}">Hỗ trợ</a></li>
-                    </ul>
-                </nav>
+                <button type="button" id="btnHeaderLocation" class="header-location-pill" title="Chọn tỉnh/thành hoặc cơ sở để xem tồn kho">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span id="headerLocationLabel">${curLoc.label || 'Toàn quốc'}</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
 
                 <div class="header-actions">
-                    <button type="button" id="btnHeaderQuickRepair" class="btn btn-accent btn-sm" style="height: 38px; border-radius: 10px; font-weight: 600;">
+                    <button type="button" id="btnHeaderQuickRepair" class="btn btn-accent btn-sm" style="height: 38px; border-radius: 999px; padding: 0 16px; font-weight: 600;">
                         Đặt lịch sửa chữa
                     </button>
-
-                    <button type="button" class="theme-toggle-btn" style="width: 38px; height: 38px; border-radius: 10px;" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
 
                     <a href="cart.html" class="cart-icon-btn" style="width: 38px; height: 38px; border-radius: 10px;" id="headerCartBtn" aria-label="Giỏ hàng" title="Giỏ hàng của bạn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
@@ -268,14 +429,6 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 </div>
             </div>
         `;
-
-        // Global Ctrl+K shortcut to focus header search input
-        document.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-                e.preventDefault();
-                document.getElementById('headerSearchInput')?.focus();
-            }
-        });
 
         document.getElementById('headerSearchForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -299,13 +452,10 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 <div class="footer-grid">
                     <div>
                         <a href="index.html" class="brand-logo" style="margin-bottom: 12px;">
-                            <span class="brand-chip-icon" style="width: 30px; height: 30px; border-radius: 8px;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
-                            </span>
-                            <span class="brand-title-line" style="font-size: 1rem;">HK COMPUTER</span>
+                            <span class="brand-title-line" style="font-size: 1.05rem;">HK COMPUTER</span>
                         </a>
                         <p style="font-size: var(--text-xs); margin-bottom: 8px;">
-                            Trung tâm dịch vụ bảo hành, sửa chữa phần cứng và phân phối Laptop &amp; PC chính hãng trên toàn quốc.
+                            Hệ thống phân phối Laptop, PC, Phụ kiện chính hãng và Trung tâm dịch vụ bảo hành, sửa chữa lấy liền trong ngày.
                         </p>
                     </div>
 
@@ -351,11 +501,27 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
         `;
     }
 
+    mountLocationModal();
     mountQuickRepairModal();
-    document.getElementById('btnHeaderQuickRepair')?.addEventListener('click', () => {
+
+    document.getElementById('btnHeaderLocation')?.addEventListener('click', () => {
+        window.openHkLocationModal?.();
+    });
+
+    window.addEventListener('hk:location-changed', () => {
+        updateHeaderLocationPillLabel();
+    });
+
+    document.getElementById('btnHeaderQuickRepair')?.addEventListener('click', async () => {
+        await fetchLiveBranches();
+        const qrBranch = document.getElementById('qrBranch');
+        if (qrBranch && liveBranches.length) {
+            qrBranch.innerHTML = liveBranches.map(b => `<option value="${b.name} — ${b.address}">${b.name} (${b.city})</option>`).join('');
+        }
         document.getElementById('hkQuickRepairModal')?.classList.add('active');
     });
 
+    fetchLiveBranches();
     theme.init();
     auth.initHeaderNav();
     cart.updateHeaderBadge();

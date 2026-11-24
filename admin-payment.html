@@ -41,10 +41,7 @@
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
         import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
-
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
-        }
+        import { formatPrice } from './assets/js/utils.js';
 
         async function loadPayments(page = 0) {
             if (!auth.requireAdmin()) return;

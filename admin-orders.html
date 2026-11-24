@@ -155,6 +155,7 @@
         import { CONFIG } from './assets/js/config.js';
         import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
         import { toast } from './assets/js/toast.js';
+        import { formatPrice } from './assets/js/utils.js';
 
         const PAGE_SIZE = 10;
         const TABS = [
@@ -168,10 +169,6 @@
         let activeTab = 'ALL';
         let searchQuery = '';
         let currentPage = 0;
-
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
-        }
 
         function getBadge(s) {
             if (s === 'COMPLETED') return '<span class="badge badge-success">Đã thanh toán</span>';
@@ -229,14 +226,29 @@
 
             tbody.innerHTML = pageItems.map(o => {
                 const items = o.orderItems || [];
+                const isPickup = (o.fulfillmentType || '').toUpperCase() === 'STORE_PICKUP';
+                const fulfillmentBadge = isPickup
+                    ? `<span class="badge badge-info" style="margin-bottom:4px;">Nhận tại: ${o.pickupBranchName || 'Cửa hàng'}</span>`
+                    : `<span class="badge" style="margin-bottom:4px;">Giao tận nơi</span>`;
+                const receiverLine = (o.receiverName || o.receiverPhone)
+                    ? `<div style="font-size:11px; color:var(--text-secondary); margin-bottom:4px;">KH: <b>${o.receiverName || ''}</b> ${o.receiverPhone ? `(${o.receiverPhone})` : ''}</div>`
+                    : '';
+
                 const itemsSummary = items.length
-                    ? items.map(it => `<div class="admin-item-line">${it.quantity || 1}× ${it.product?.nameProduct || 'Sản phẩm'}</div>`).join('')
+                    ? items.map(it => {
+                        const brTag = it.branchName ? ` <span style="color:var(--brand-green); font-size:11px;">[Kho: ${it.branchName.replace('HK COMPUTER - ', '')}]</span>` : '';
+                        return `<div class="admin-item-line">${it.quantity || 1}× ${it.product?.nameProduct || 'Sản phẩm'}${brTag}</div>`;
+                    }).join('')
                     : '<span style="color: var(--text-muted); font-size: var(--text-xs);">Không có chi tiết</span>';
 
                 return `
                     <tr>
                         <td class="tabular-nums" style="font-weight: 700;">#${o.id}</td>
-                        <td><div class="admin-items-mini">${itemsSummary}</div></td>
+                        <td>
+                            ${fulfillmentBadge}
+                            ${receiverLine}
+                            <div class="admin-items-mini">${itemsSummary}</div>
+                        </td>
                         <td class="tabular-nums" style="font-weight: var(--font-semibold); color: var(--brand-orange);">${formatPrice(o.totalAmount)}</td>
                         <td>${getBadge(o.status)}</td>
                         <td class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">${o.createdAt ? new Date(o.createdAt).toLocaleString('vi-VN') : '-'}</td>

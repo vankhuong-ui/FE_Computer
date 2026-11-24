@@ -210,6 +210,7 @@
         import { CONFIG } from './assets/js/config.js';
         import { initStoreLayout } from './assets/js/layout.js?v=6';
         import { toast } from './assets/js/toast.js';
+        import { formatDate } from './assets/js/utils.js';
         import './assets/js/chat-widget.js?v=6';
 
         const lookupForm = document.getElementById('lookupForm');
@@ -219,10 +220,6 @@
         const myClaimsTableBody = document.getElementById('myClaimsTableBody');
         const claimModal = document.getElementById('claimModal');
         const claimForm = document.getElementById('claimForm');
-
-        function formatDate(d) {
-            return d ? new Date(d).toLocaleDateString('vi-VN') : 'N/A';
-        }
 
         function getClaimStatusBadge(status) {
             const s = (status || '').toUpperCase();

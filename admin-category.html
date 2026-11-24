@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Danh mục — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=8" />
     <style>
         .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 420px; width: 100%; padding: 28px; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 440px; width: 100%; padding: 28px; }
     </style>
 </head>
 <body>
@@ -22,7 +22,7 @@
                 <div class="table-toolbar">
                     <div>
                         <h1 style="font-size: var(--text-2xl);">Danh mục Sản phẩm</h1>
-                        <p style="font-size: var(--text-xs);">Quản lý nhóm sản phẩm (Laptop, PC, CPU, VGA, Phụ kiện...).</p>
+                        <p style="font-size: var(--text-xs);">Quản lý và phân nhóm danh mục theo ngành hàng (Laptop, PC &amp; Màn hình, Phụ kiện &amp; Linh kiện).</p>
                     </div>
                     <button type="button" id="btnAdd" class="btn btn-primary btn-sm">+ Thêm danh mục</button>
                 </div>
@@ -30,10 +30,10 @@
                 <div class="table-container">
                     <table class="table">
                         <thead>
-                            <tr><th>ID</th><th>Tên danh mục</th><th>Slug</th><th>Thao tác</th></tr>
+                            <tr><th>ID</th><th>Tên danh mục</th><th>Nhóm ngành hàng</th><th>Slug</th><th>Thao tác</th></tr>
                         </thead>
                         <tbody id="tableBody">
-                            <tr><td colspan="4" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
+                            <tr><td colspan="5" style="text-align: center; padding: 32px;">Đang tải...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -51,11 +51,19 @@
                 <input type="hidden" id="editId" />
                 <div class="form-group">
                     <label class="form-label" for="catName">Tên danh mục</label>
-                    <input type="text" id="catName" class="input" required />
+                    <input type="text" id="catName" class="input" placeholder="VD: Laptop Gaming, Chuột máy tính..." required />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="catGroupType">Nhóm ngành hàng hiển thị trên trang chủ</label>
+                    <select id="catGroupType" class="select" required>
+                        <option value="LAPTOP">Laptop chính hãng (Đơn vị: máy)</option>
+                        <option value="PC">PC &amp; Màn hình (Đơn vị: máy)</option>
+                        <option value="ACCESSORY">Phụ kiện &amp; Linh kiện (Đơn vị: sản phẩm)</option>
+                    </select>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px;">
                     <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="submit" class="btn btn-primary">Lưu danh mục</button>
                 </div>
             </form>
         </div>
@@ -65,12 +73,19 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=8';
         import { toast } from './assets/js/toast.js';
 
         const modal = document.getElementById('catModal');
         const form = document.getElementById('catForm');
         let cats = [];
+
+        function formatGroupBadge(groupType) {
+            const g = (groupType || 'LAPTOP').toUpperCase();
+            if (g === 'ACCESSORY') return '<span class="badge badge-warning">Phụ kiện &amp; Linh kiện</span>';
+            if (g === 'PC') return '<span class="badge badge-info">PC &amp; Màn hình</span>';
+            return '<span class="badge badge-success">Laptop chính hãng</span>';
+        }
 
         async function loadCategories() {
             if (!auth.requireAdmin()) return;
@@ -79,13 +94,14 @@
                 cats = Array.isArray(res) ? res : [];
                 const tbody = document.getElementById('tableBody');
                 if (!cats.length) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding:32px;">Chưa có danh mục nào.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px;">Chưa có danh mục nào.</td></tr>`;
                     return;
                 }
                 tbody.innerHTML = cats.map(c => `
                     <tr>
                         <td class="tabular-nums">#${c.id}</td>
                         <td style="font-weight: var(--font-semibold);">${c.nameCategories || c.name}</td>
+                        <td>${formatGroupBadge(c.groupType)}</td>
                         <td class="mono-spec" style="font-size: var(--text-xs); color: var(--text-secondary);">${c.slug || '-'}</td>
                         <td>
                             <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${c.id}">Sửa</button>
@@ -101,6 +117,7 @@
                         document.getElementById('modalTitle').textContent = 'Cập nhật danh mục';
                         document.getElementById('editId').value = c.id;
                         document.getElementById('catName').value = c.nameCategories || c.name || '';
+                        document.getElementById('catGroupType').value = (c.groupType || 'LAPTOP').toUpperCase();
                         modal.classList.add('active');
                     });
                 });
@@ -116,7 +133,7 @@
                     });
                 });
             } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" class="text-danger">${err.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="5" class="text-danger">${err.message}</td></tr>`;
             }
         }
 
@@ -124,6 +141,7 @@
             document.getElementById('modalTitle').textContent = 'Thêm danh mục';
             form.reset();
             document.getElementById('editId').value = '';
+            document.getElementById('catGroupType').value = 'LAPTOP';
             modal.classList.add('active');
         });
         document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.remove('active'));
@@ -133,8 +151,9 @@
             e.preventDefault();
             const id = document.getElementById('editId').value;
             const name = document.getElementById('catName').value.trim();
+            const groupType = document.getElementById('catGroupType').value;
             const slug = name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-            const payload = { nameCategories: name, slug };
+            const payload = { nameCategories: name, slug, groupType };
             try {
                 if (id) await api.put(CONFIG.ENDPOINTS.CATEGORIES.UPDATE(id), payload);
                 else await api.post(CONFIG.ENDPOINTS.CATEGORIES.CREATE, payload);

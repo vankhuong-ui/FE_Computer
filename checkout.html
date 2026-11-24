@@ -4,20 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Thanh toán đơn hàng — HK COMPUTER</title>
-    <link rel="stylesheet" href="./assets/css/base.css?v=6" />
-    <link rel="stylesheet" href="./assets/css/components.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/base.css?v=8" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=8" />
     <style>
         .page-header {
-            padding: 36px 0 24px;
+            padding: 28px 0 20px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         .checkout-grid {
             display: grid;
-            grid-template-columns: 1.4fr 1fr;
-            gap: 28px;
+            grid-template-columns: 1.45fr 1fr;
+            gap: 24px;
             margin-bottom: 64px;
+            align-items: start;
         }
 
         @media (max-width: 860px) {
@@ -26,18 +27,61 @@
             }
         }
 
-        .address-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .fulfillment-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 16px;
         }
 
-        .address-option {
+        .fulfillment-tab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface-subtle);
+            cursor: pointer;
+            text-align: left;
+            transition: all 150ms ease;
+        }
+
+        .fulfillment-tab.active {
+            border-color: var(--brand-green);
+            background: var(--brand-green-soft);
+        }
+
+        .fulfillment-tab-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .fulfillment-tab-sub {
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .address-list, .pickup-branch-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .pickup-branch-list {
+            max-height: 290px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .address-option, .pickup-branch-option {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            padding: 16px;
+            gap: 12px;
+            padding: 14px 16px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
@@ -45,13 +89,17 @@
             transition: border-color var(--transition-fast), background-color var(--transition-fast);
         }
 
-        .address-option:hover {
-            border-color: var(--border-hover);
+        .address-option:hover, .pickup-branch-option:hover {
+            border-color: #288AD6;
         }
 
-        .address-option.selected {
-            border-color: var(--text-primary);
-            background: var(--surface-subtle);
+        .address-option.selected, .pickup-branch-option.selected {
+            border-color: var(--brand-green);
+            background: var(--brand-green-soft);
+        }
+
+        .pickup-branch-option.disabled {
+            opacity: 0.6;
         }
 
         .payment-methods {
@@ -77,8 +125,8 @@
         }
 
         .payment-method-card.selected {
-            border-color: var(--text-primary);
-            background: var(--surface-subtle);
+            border-color: var(--brand-green);
+            background: var(--brand-green-soft);
         }
 
         .payment-method-title {
@@ -120,10 +168,6 @@
             font-weight: var(--font-semibold);
             font-size: var(--text-lg);
         }
-
-
-
-
     </style>
 </head>
 <body>
@@ -131,13 +175,13 @@
 
     <main class="container">
         <div class="page-header">
-            <h1 style="font-size: var(--text-2xl);">Xác nhận đặt hàng & Thanh toán</h1>
-            <p style="font-size: var(--text-xs);">Kiểm tra địa chỉ nhận hàng và chọn phương thức thanh toán phù hợp.</p>
+            <h1 style="font-size: var(--text-2xl);">Xác nhận đặt hàng &amp; Thanh toán</h1>
+            <p style="font-size: var(--text-xs);">Chọn giao hàng tận nơi hoặc đến nhận trực tiếp tại cơ sở HK COMPUTER có sẵn hàng.</p>
         </div>
 
         <div id="checkoutContainer">
             <div class="card" style="text-align: center; padding: 48px;">
-                <p>Đang chuẩn bị thông tin đơn hàng...</p>
+                <p>Đang chuẩn bị thông tin đơn hàng &amp; kiểm tra tồn kho tại các cơ sở...</p>
             </div>
         </div>
     </main>
@@ -147,19 +191,42 @@
     <script type="module">
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
-        import { cart } from './assets/js/cart.js';
+        import { cart } from './assets/js/cart.js?v=7';
         import { CONFIG } from './assets/js/config.js';
-        import { initStoreLayout } from './assets/js/layout.js?v=6';
+        import { initStoreLayout } from './assets/js/layout.js?v=9';
         import { toast } from './assets/js/toast.js';
+        import { formatPrice } from './assets/js/utils.js';
 
         const checkoutContainer = document.getElementById('checkoutContainer');
         let selectedItems = [];
         let addresses = [];
-        let selectedAddressId = null;
-        let selectedPaymentMethod = 'SEPAY'; // SEPAY, VNPAY, LATER
+        let branches = [...CONFIG.BRANCHES];
+        let productBranchStocksMap = new Map(); // productId -> Map(branchId -> soluong)
 
-        function formatPrice(p) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(p || 0);
+        let fulfillmentType = 'HOME_DELIVERY'; // HOME_DELIVERY | STORE_PICKUP
+        let selectedAddressId = null;
+        let selectedPickupBranchId = null;
+        let selectedPickupCity = '';
+        let receiverName = '';
+        let receiverPhone = '';
+        let selectedPaymentMethod = 'SEPAY'; // SEPAY, VNPAY, LATER
+        let availableVouchers = [];
+        let appliedVoucherCode = '';
+        let appliedDiscountAmount = 0;
+
+        function checkBranchCanFulfillAll(branchId) {
+            for (const item of selectedItems) {
+                const pId = Number(item.products?.id || item.id);
+                const reqQty = Number(item.quality || item.quantity || 1);
+                const branchMap = productBranchStocksMap.get(pId);
+                if (branchMap) {
+                    const avail = branchMap.get(Number(branchId)) ?? 0;
+                    if (avail < reqQty) {
+                        return { ok: false, avail, reqQty, productName: item.products?.nameProduct || item.name || 'Sản phẩm' };
+                    }
+                }
+            }
+            return { ok: true };
         }
 
         async function loadCheckout() {
@@ -179,12 +246,66 @@
                 }
 
                 selectedItems = JSON.parse(rawSelected) || [];
-                const addrRes = await api.get(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_MY);
-                addresses = Array.isArray(addrRes) ? addrRes : [];
 
+                const [addrRes, branchRes, voucherRes, ...invResults] = await Promise.all([
+                    api.get(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_MY).catch(() => []),
+                    api.get(CONFIG.ENDPOINTS.BRANCHES.LIST).catch(() => []),
+                    api.get(CONFIG.ENDPOINTS.VOUCHERS.AVAILABLE).catch(() => []),
+                    ...selectedItems.map(item => {
+                        const pId = item.products?.id || item.id;
+                        return api.get(CONFIG.ENDPOINTS.INVENTORY.USER_DETAIL(pId)).catch(() => null);
+                    })
+                ]);
+
+                addresses = Array.isArray(addrRes) ? addrRes : [];
+                if (Array.isArray(branchRes) && branchRes.length > 0) {
+                    branches = branchRes;
+                }
+                availableVouchers = Array.isArray(voucherRes) ? voucherRes : [];
+
+                selectedItems.forEach((item, idx) => {
+                    const pId = Number(item.products?.id || item.id);
+                    const inv = invResults[idx];
+                    const bMap = new Map();
+                    if (Array.isArray(inv?.branches)) {
+                        inv.branches.forEach(b => bMap.set(Number(b.branchId), Math.max(0, b.soluong || 0)));
+                    }
+                    productBranchStocksMap.set(pId, bMap);
+                });
+
+                const user = auth.getUser();
                 if (addresses.length > 0) {
                     const def = addresses.find(a => a.defaultaddress === true || a.defaultaddress === 'true');
-                    selectedAddressId = def ? def.id : addresses[0].id;
+                    const picked = def || addresses[0];
+                    selectedAddressId = picked.id;
+                    receiverName = picked.username || user?.accountname || '';
+                    receiverPhone = picked.phone || '';
+                } else {
+                    receiverName = user?.accountname || '';
+                }
+
+                // Check if customer pre-selected a store pickup branch from detail page or header location
+                const loc = CONFIG.getSelectedLocation();
+                const rawPreset = sessionStorage.getItem('hk_checkout_pickup_branch');
+                if (rawPreset) {
+                    try {
+                        const preset = JSON.parse(rawPreset);
+                        sessionStorage.removeItem('hk_checkout_pickup_branch');
+                        if (preset.pickupBranchId) {
+                            fulfillmentType = 'STORE_PICKUP';
+                            selectedPickupBranchId = Number(preset.pickupBranchId);
+                            const found = branches.find(b => Number(b.id) === selectedPickupBranchId);
+                            if (found) selectedPickupCity = found.city || '';
+                        }
+                    } catch (_) {}
+                } else if (loc.branchId) {
+                    selectedPickupBranchId = Number(loc.branchId);
+                    selectedPickupCity = loc.city || '';
+                }
+
+                if (!selectedPickupBranchId && branches.length > 0) {
+                    const firstAvailable = branches.find(b => checkBranchCanFulfillAll(b.id).ok) || branches[0];
+                    selectedPickupBranchId = Number(firstAvailable.id);
                 }
 
                 renderCheckout();
@@ -206,9 +327,14 @@
                 return sum + price * qty;
             }, 0);
 
-            const addressHtml = addresses.length === 0 ? `
-                <div class="card" style="background: var(--surface-subtle); text-align: center;">
-                    <p style="font-size: var(--text-xs); margin-bottom: 12px;">Bạn chưa thiết lập địa chỉ giao hàng.</p>
+            const cities = [...new Set(branches.map(b => b.city).filter(Boolean))];
+            const visibleBranches = selectedPickupCity
+                ? branches.filter(b => b.city === selectedPickupCity)
+                : branches;
+
+            const homeDeliveryHtml = addresses.length === 0 ? `
+                <div class="card" style="background: var(--surface-subtle); text-align: center; padding: 20px;">
+                    <p style="font-size: var(--text-xs); margin-bottom: 12px;">Bạn chưa thiết lập địa chỉ giao tận nơi (hoặc có thể chọn tab <b>Nhận tại cửa hàng</b> bên cạnh).</p>
                     <a href="profile.html" class="btn btn-primary btn-sm">+ Thêm địa chỉ nhận hàng</a>
                 </div>
             ` : `
@@ -218,7 +344,7 @@
                         const isDef = addr.defaultaddress === true || addr.defaultaddress === 'true';
                         return `
                             <div class="address-option ${isSel ? 'selected' : ''}" data-addr-id="${addr.id}">
-                                <input type="radio" name="shippingAddr" value="${addr.id}" ${isSel ? 'checked' : ''} style="margin-top: 4px;" />
+                                <input type="radio" name="shippingAddr" value="${addr.id}" ${isSel ? 'checked' : ''} style="margin-top: 4px; accent-color: var(--brand-green);" />
                                 <div style="flex: 1;">
                                     <div style="display: flex; align-items: center; gap: 8px; font-weight: var(--font-semibold); font-size: var(--text-sm);">
                                         <span>${addr.username}</span>
@@ -236,11 +362,73 @@
                 <a href="profile.html" class="btn btn-outline btn-sm">+ Quản lý sổ địa chỉ</a>
             `;
 
+            const storePickupHtml = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px;">
+                    <div class="form-group" style="margin: 0;">
+                        <label class="form-label" for="pickupReceiverName">Họ và tên người đến nhận</label>
+                        <input type="text" id="pickupReceiverName" class="input" value="${(receiverName || '').replace(/"/g, '&quot;')}" required />
+                    </div>
+                    <div class="form-group" style="margin: 0;">
+                        <label class="form-label" for="pickupReceiverPhone">Số điện thoại liên hệ</label>
+                        <input type="tel" id="pickupReceiverPhone" class="input tabular-nums" value="${(receiverPhone || '').replace(/"/g, '&quot;')}" required />
+                    </div>
+                </div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom: 10px;">
+                    <span class="form-label" style="margin:0;">Chọn cơ sở cửa hàng đến nhận máy:</span>
+                    <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                        <button type="button" class="loc-city-tab ${selectedPickupCity === '' ? 'active' : ''}" data-pickup-city="">Tất cả (${branches.length})</button>
+                        ${cities.map(c => `<button type="button" class="loc-city-tab ${selectedPickupCity === c ? 'active' : ''}" data-pickup-city="${c}">${c}</button>`).join('')}
+                    </div>
+                </div>
+
+                <div class="pickup-branch-list">
+                    ${visibleBranches.map(b => {
+                        const check = checkBranchCanFulfillAll(b.id);
+                        const isSel = Number(b.id) === Number(selectedPickupBranchId);
+                        return `
+                            <div class="pickup-branch-option ${isSel ? 'selected' : ''} ${check.ok ? '' : 'disabled'}" data-pickup-branch-id="${b.id}" data-branch-ok="${check.ok ? '1' : '0'}">
+                                <input type="radio" name="pickupBranchRadio" value="${b.id}" ${isSel ? 'checked' : ''} ${check.ok ? '' : 'disabled'} style="margin-top: 4px; accent-color: var(--brand-green);" />
+                                <div style="flex: 1; min-width: 0;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;">
+                                        <span style="font-weight: 700; font-size: var(--text-sm); color: var(--text-primary);">${b.name} (${b.city})</span>
+                                        <span class="badge ${check.ok ? 'badge-success' : 'badge-danger'}">
+                                            ${check.ok ? 'Sẵn đủ hàng tại cơ sở' : `Tạm thiếu: ${check.productName}`}
+                                        </span>
+                                    </div>
+                                    <div style="font-size: var(--text-xs); color: var(--text-secondary); margin-top: 3px;">${b.address}</div>
+                                    <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" class="tabular-nums">
+                                        Giờ mở cửa: ${b.openingHours || b.hours || '8:00 - 21:00'} · ĐT: ${b.phone || CONFIG.HOTLINE}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+
             checkoutContainer.innerHTML = `
                 <div class="checkout-grid">
                     <div class="card">
-                        <h3 style="font-size: var(--text-lg); margin-bottom: 16px;">1. Địa chỉ giao nhận</h3>
-                        ${addressHtml}
+                        <h3 style="font-size: var(--text-lg); margin-bottom: 12px;">1. Hình thức nhận hàng</h3>
+                        <div class="fulfillment-tabs">
+                            <button type="button" class="fulfillment-tab ${fulfillmentType === 'HOME_DELIVERY' ? 'active' : ''}" data-fulfillment="HOME_DELIVERY">
+                                <input type="radio" name="fulfillmentMode" ${fulfillmentType === 'HOME_DELIVERY' ? 'checked' : ''} style="accent-color: var(--brand-green);" />
+                                <div>
+                                    <div class="fulfillment-tab-title">Giao hàng tận nơi</div>
+                                    <div class="fulfillment-tab-sub">Xuất kho từ cơ sở gần bạn nhất</div>
+                                </div>
+                            </button>
+                            <button type="button" class="fulfillment-tab ${fulfillmentType === 'STORE_PICKUP' ? 'active' : ''}" data-fulfillment="STORE_PICKUP">
+                                <input type="radio" name="fulfillmentMode" ${fulfillmentType === 'STORE_PICKUP' ? 'checked' : ''} style="accent-color: var(--brand-green);" />
+                                <div>
+                                    <div class="fulfillment-tab-title">Nhận tại cửa hàng</div>
+                                    <div class="fulfillment-tab-sub">Giữ hàng tại cơ sở để bạn đến lấy</div>
+                                </div>
+                            </button>
+                        </div>
+
+                        ${fulfillmentType === 'STORE_PICKUP' ? storePickupHtml : homeDeliveryHtml}
 
                         <h3 style="font-size: var(--text-lg); margin: 28px 0 12px;">2. Phương thức thanh toán</h3>
                         <div class="payment-methods">
@@ -254,17 +442,17 @@
                             </div>
                             <div class="payment-method-card ${selectedPaymentMethod === 'LATER' ? 'selected' : ''}" data-method="LATER">
                                 <div class="payment-method-title">Đặt giữ hàng (Thanh toán sau)</div>
-                                <div class="payment-method-desc">Giữ sản phẩm và thanh toán trực tiếp trong mục Đơn hàng của tôi.</div>
+                                <div class="payment-method-desc">Giữ sản phẩm tại kho cơ sở và thanh toán trong mục Đơn hàng của tôi.</div>
                             </div>
                         </div>
 
                         <div class="form-group" style="margin-top: 24px;">
                             <label class="form-label" for="orderNote">Ghi chú giao hàng &amp; lắp ráp (Tùy chọn)</label>
-                            <textarea id="orderNote" class="textarea" rows="3"></textarea>
+                            <textarea id="orderNote" class="textarea" rows="2"></textarea>
                         </div>
 
                         <button type="button" id="btnPlaceOrder" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 12px;">
-                            Xác nhận đặt hàng (${formatPrice(totalAmount)})
+                            Xác nhận đặt hàng (${formatPrice(Math.max(0, totalAmount - appliedDiscountAmount))})
                         </button>
                     </div>
 
@@ -291,18 +479,100 @@
                                 `;
                             }).join('')}
                         </div>
-                        <div class="summary-total">
-                            <span>Tổng cộng</span>
+
+                        <!-- Voucher Box -->
+                        <div style="margin-top: 16px; padding: 12px; border-radius: 8px; background: var(--surface-subtle); border: 1px solid var(--border);">
+                            <div style="font-size: 12.5px; font-weight: 700; margin-bottom: 8px; display:flex; align-items:center; justify-content:space-between;">
+                                <span>Mã giảm giá &amp; Ưu đãi đơn đầu tiên</span>
+                                ${appliedVoucherCode ? `<button type="button" id="btnRemoveVoucher" style="background:none; border:none; color:#EF4444; font-size:11.5px; font-weight:600; cursor:pointer;">Gỡ mã</button>` : ''}
+                            </div>
+                            <div style="display:flex; gap:6px; margin-bottom: 8px;">
+                                <input type="text" id="voucherInput" class="input mono-spec" style="height: 36px; text-transform: uppercase; font-size: 12.5px;" placeholder="Nhập mã giảm giá..." value="${appliedVoucherCode}" />
+                                <button type="button" id="btnApplyVoucher" class="btn btn-secondary btn-sm" style="height: 36px; white-space: nowrap;">Áp dụng</button>
+                            </div>
+                            ${availableVouchers.length ? `
+                                <div style="display:flex; flex-direction:column; gap:6px;">
+                                    ${availableVouchers.map(v => {
+                                        const isApplied = appliedVoucherCode === v.code;
+                                        return `
+                                            <button type="button" class="btn-pick-voucher" data-code="${v.code}"
+                                                style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 10px; border-radius:6px; border:1px solid ${isApplied ? 'var(--brand-green)' : 'var(--border)'}; background:${isApplied ? 'var(--brand-green-soft)' : 'var(--surface)'}; cursor:pointer; text-align:left;">
+                                                <div style="min-width:0;">
+                                                    <div style="font-size:12px; font-weight:700; color:var(--text-primary);">
+                                                        <span class="mono-spec" style="color:var(--brand-green);">${v.code}</span>
+                                                        ${v.firstOrderOnly ? '<span class="badge badge-warning" style="margin-left:4px; font-size:10px;">Đơn đầu</span>' : ''}
+                                                    </div>
+                                                    <div style="font-size:11px; color:var(--text-secondary);">${v.title}</div>
+                                                </div>
+                                                <span style="font-size:11.5px; font-weight:700; color:${isApplied ? 'var(--brand-green)' : '#288AD6'}; flex-shrink:0;">
+                                                    ${isApplied ? 'Đã áp dụng' : 'Chọn'}
+                                                </span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-secondary); margin-top:14px;">
+                            <span>Tạm tính</span>
                             <span class="tabular-nums">${formatPrice(totalAmount)}</span>
                         </div>
+                        ${appliedDiscountAmount > 0 ? `
+                            <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--brand-green); font-weight:600; margin-top:6px;">
+                                <span>Giảm giá (${appliedVoucherCode})</span>
+                                <span class="tabular-nums">-${formatPrice(appliedDiscountAmount)}</span>
+                            </div>
+                        ` : ''}
+
+                        <div class="summary-total">
+                            <span>Tổng thanh toán</span>
+                            <span class="tabular-nums" style="color: #D0021C;">${formatPrice(Math.max(0, totalAmount - appliedDiscountAmount))}</span>
+                        </div>
                         <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-top: 12px;">
-                            Phiếu bảo hành điện tử (12 - 36 tháng) sẽ tự động kích hoạt theo tài khoản của bạn sau khi hoàn tất thanh toán.
+                            Phiếu bảo hành điện tử (12 - 36 tháng) sẽ tự động kích hoạt theo tài khoản của bạn ngay sau khi hoàn tất thanh toán.
                         </p>
                     </div>
                 </div>
             `;
 
-            // Bind address click
+            document.querySelectorAll('[data-fulfillment]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const nameEl = document.getElementById('pickupReceiverName');
+                    const phoneEl = document.getElementById('pickupReceiverPhone');
+                    if (nameEl) receiverName = nameEl.value.trim();
+                    if (phoneEl) receiverPhone = phoneEl.value.trim();
+                    fulfillmentType = btn.dataset.fulfillment;
+                    renderCheckout();
+                });
+            });
+
+            document.querySelectorAll('[data-pickup-city]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const nameEl = document.getElementById('pickupReceiverName');
+                    const phoneEl = document.getElementById('pickupReceiverPhone');
+                    if (nameEl) receiverName = nameEl.value.trim();
+                    if (phoneEl) receiverPhone = phoneEl.value.trim();
+                    selectedPickupCity = btn.dataset.pickupCity || '';
+                    renderCheckout();
+                });
+            });
+
+            document.querySelectorAll('.pickup-branch-option').forEach(el => {
+                el.addEventListener('click', () => {
+                    if (el.dataset.branchOk !== '1') {
+                        toast.warning('Cơ sở này hiện không đủ số lượng cho toàn bộ sản phẩm trong giỏ. Vui lòng chọn cơ sở khác hoặc chọn Giao tận nơi.');
+                        return;
+                    }
+                    const nameEl = document.getElementById('pickupReceiverName');
+                    const phoneEl = document.getElementById('pickupReceiverPhone');
+                    if (nameEl) receiverName = nameEl.value.trim();
+                    if (phoneEl) receiverPhone = phoneEl.value.trim();
+                    selectedPickupBranchId = Number(el.dataset.pickupBranchId);
+                    renderCheckout();
+                });
+            });
+
             document.querySelectorAll('.address-option').forEach(el => {
                 el.addEventListener('click', () => {
                     selectedAddressId = Number(el.dataset.addrId);
@@ -310,7 +580,6 @@
                 });
             });
 
-            // Bind payment method click
             document.querySelectorAll('.payment-method-card').forEach(el => {
                 el.addEventListener('click', () => {
                     selectedPaymentMethod = el.dataset.method;
@@ -318,21 +587,78 @@
                 });
             });
 
-            // Bind Place Order
+            async function applyVoucherCode(code) {
+                const clean = (code || '').trim().toUpperCase();
+                if (!clean) {
+                    toast.warning('Vui lòng nhập mã giảm giá.');
+                    return;
+                }
+                try {
+                    const res = await api.get(CONFIG.ENDPOINTS.VOUCHERS.PREVIEW, {
+                        code: clean,
+                        orderAmount: totalAmount
+                    });
+                    appliedVoucherCode = res?.voucher?.code || clean;
+                    appliedDiscountAmount = Number(res?.discountAmount) || 0;
+                    toast.success(`Đã áp dụng mã ${appliedVoucherCode} (Giảm ${formatPrice(appliedDiscountAmount)})!`);
+                    renderCheckout();
+                } catch (err) {
+                    toast.error(err.message || 'Không thể áp dụng mã giảm giá này.');
+                }
+            }
+
+            document.getElementById('btnApplyVoucher')?.addEventListener('click', () => {
+                applyVoucherCode(document.getElementById('voucherInput')?.value);
+            });
+
+            document.getElementById('btnRemoveVoucher')?.addEventListener('click', () => {
+                appliedVoucherCode = '';
+                appliedDiscountAmount = 0;
+                toast.info('Đã gỡ mã giảm giá.');
+                renderCheckout();
+            });
+
+            document.querySelectorAll('.btn-pick-voucher').forEach(btn => {
+                btn.addEventListener('click', () => applyVoucherCode(btn.dataset.code));
+            });
+
             document.getElementById('btnPlaceOrder')?.addEventListener('click', handlePlaceOrder);
         }
 
         async function handlePlaceOrder() {
-            if (!selectedAddressId) {
-                toast.warning('Vui lòng chọn hoặc thêm địa chỉ nhận hàng trước khi đặt hàng.');
+            const isPickup = fulfillmentType === 'STORE_PICKUP';
+
+            if (!isPickup && !selectedAddressId) {
+                toast.warning('Vui lòng chọn địa chỉ giao hàng (hoặc chuyển sang tab Nhận tại cửa hàng).');
                 return;
+            }
+
+            if (isPickup) {
+                const nameVal = document.getElementById('pickupReceiverName')?.value.trim() || '';
+                const phoneVal = document.getElementById('pickupReceiverPhone')?.value.trim() || '';
+                if (!nameVal || !phoneVal) {
+                    toast.warning('Vui lòng nhập Họ tên và Số điện thoại người đến nhận hàng.');
+                    return;
+                }
+                if (!selectedPickupBranchId) {
+                    toast.warning('Vui lòng chọn cơ sở cửa hàng để đến nhận máy.');
+                    return;
+                }
+                const check = checkBranchCanFulfillAll(selectedPickupBranchId);
+                if (!check.ok) {
+                    toast.error(`Cơ sở bạn chọn hiện không đủ số lượng cho sản phẩm "${check.productName}". Vui lòng chọn cơ sở khác.`);
+                    return;
+                }
+                receiverName = nameVal;
+                receiverPhone = phoneVal;
             }
 
             const btn = document.getElementById('btnPlaceOrder');
             btn.disabled = true;
-            btn.textContent = 'Đang khởi tạo đơn hàng...';
+            btn.textContent = 'Đang khởi tạo đơn hàng & giữ kho...';
 
             try {
+                const loc = CONFIG.getSelectedLocation();
                 const orderItems = selectedItems.map(item => ({
                     productId: item.products?.id || item.id,
                     quantity: item.quality || item.quantity || 1
@@ -340,10 +666,16 @@
 
                 await api.post(CONFIG.ENDPOINTS.ORDERS.CREATE, {
                     AddressesId: selectedAddressId,
+                    fulfillmentType: isPickup ? 'STORE_PICKUP' : 'HOME_DELIVERY',
+                    pickupBranchId: isPickup ? selectedPickupBranchId : null,
+                    preferredBranchId: !isPickup ? (loc.branchId || null) : null,
+                    preferredCity: !isPickup ? (loc.city || null) : null,
+                    receiverName: receiverName || null,
+                    receiverPhone: receiverPhone || null,
+                    voucherCode: appliedVoucherCode || null,
                     orderItems
                 });
 
-                // Remove ordered items from server cart
                 for (const item of selectedItems) {
                     if (item.id && !isNaN(item.id)) {
                         try {
