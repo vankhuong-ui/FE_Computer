@@ -10,62 +10,107 @@
         .breadcrumb-bar {
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: space-between;
+            gap: 12px;
             flex-wrap: wrap;
-            padding: 20px 0 4px;
+            padding: 20px 0 6px;
             font-size: var(--text-xs);
             color: var(--text-secondary);
         }
 
-        .breadcrumb-bar a {
-            color: var(--text-secondary);
-            transition: color var(--transition-fast);
+        .breadcrumb-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .breadcrumb-bar a:hover {
-            color: var(--brand-green);
-        }
-
-        .breadcrumb-sep {
-            color: var(--text-muted);
-        }
-
-        .breadcrumb-current {
-            color: var(--text-primary);
-            font-weight: 600;
-            max-width: 360px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .breadcrumb-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: var(--font-mono);
+            font-size: 11.5px;
         }
 
         .product-detail-grid {
             display: grid;
-            grid-template-columns: 1fr 1.15fr;
-            gap: 28px;
-            margin: 18px 0 40px;
+            grid-template-columns: 1.25fr 1fr;
+            gap: 24px;
+            margin: 14px 0 36px;
             align-items: start;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 920px) {
             .product-detail-grid {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Left visual column */
+        /* Left visual + spec column */
         .detail-media-col {
-            position: sticky;
-            top: calc(var(--header-height) + 20px);
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 18px;
         }
 
-        @media (max-width: 900px) {
-            .detail-media-col {
+        /* Right sticky buy box */
+        .detail-buy-card {
+            position: sticky;
+            top: 90px;
+            padding: 26px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        @media (max-width: 920px) {
+            .detail-buy-card {
                 position: static;
             }
+        }
+
+        .branch-avail-box {
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            font-size: var(--text-xs);
+        }
+
+        .branch-avail-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .branch-avail-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 4px 0;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .buy-footer-hotline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 11.5px;
+            color: var(--text-secondary);
         }
 
         .detail-image-card {
@@ -438,11 +483,14 @@
 
     <main class="container">
         <nav class="breadcrumb-bar" aria-label="Breadcrumb">
-            <a href="index.html">Trang chủ</a>
-            <span class="breadcrumb-sep">/</span>
-            <a href="index.html#catalog">Danh mục sản phẩm</a>
-            <span class="breadcrumb-sep">/</span>
-            <span id="breadcrumbProductName" class="breadcrumb-current">Chi tiết sản phẩm</span>
+            <div class="breadcrumb-left">
+                <a href="index.html">Trang chủ</a>
+                <span class="breadcrumb-sep">/</span>
+                <a href="index.html#catalog">Danh mục sản phẩm</a>
+                <span class="breadcrumb-sep">/</span>
+                <span id="breadcrumbProductName" class="breadcrumb-current">Chi tiết sản phẩm</span>
+            </div>
+            <div class="breadcrumb-right" id="breadcrumbRightMeta"></div>
         </nav>
 
         <div id="productDetailContainer">
@@ -534,10 +582,21 @@
 
                 document.title = `${product.nameProduct || 'Chi tiết sản phẩm'} — HK COMPUTER`;
                 if (breadcrumbProductName) breadcrumbProductName.textContent = product.nameProduct || 'Chi tiết sản phẩm';
+                const rightMeta = document.getElementById('breadcrumbRightMeta');
+                if (rightMeta) {
+                    rightMeta.innerHTML = `
+                        <span class="badge">SKU: #HK-${product.id}</span>
+                        <span style="color: ${inStock ? 'var(--brand-green)' : '#EF4444'}; font-weight: 600;">
+                            ● ${inStock ? 'Sẵn hàng giao ngay' : 'Tạm hết hàng'}
+                        </span>
+                    `;
+                }
+
+                const previewBranches = CONFIG.BRANCHES.slice(0, 3);
 
                 detailContainer.innerHTML = `
                     <div class="product-detail-grid">
-                        <!-- Left: Visual Showcase & Quick Highlights -->
+                        <!-- Left Column: Visual Showcase, Trust Chips & Striped Technical Spec Table -->
                         <div class="detail-media-col">
                             <div class="detail-image-card">
                                 <img src="${img}" alt="${safeTitle}" />
@@ -563,53 +622,61 @@
                                     <span>Hỗ trợ cài đặt &amp; nâng cấp</span>
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- Right: Buy Box -->
-                        <div class="card detail-buy-card">
-                            <div class="detail-meta-row">
-                                <span class="badge badge-info">SKU #${product.id}</span>
-                                <span id="stockBadge" class="badge ${inStock ? 'badge-success' : 'badge-danger'}">
-                                    ${inStock ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng'}
-                                </span>
-                            </div>
-
-                            <h1 class="detail-title">${product.nameProduct}</h1>
-
-                            <div class="price-banner">
-                                <div>
-                                    <div class="price-main tabular-nums">${formatPrice(product.price)}</div>
-                                    <div class="price-sub">Đã bao gồm VAT · Xuất hóa đơn điện tử</div>
-                                </div>
-                                <span class="badge badge-success">Chính hãng 100%</span>
-                            </div>
 
                             ${renderSpecsHtml(product.specs)}
 
                             ${product.description ? `
-                                <p class="detail-description">${product.description}</p>
+                                <div class="card" style="padding: 18px 20px;">
+                                    <div style="font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); margin-bottom: 8px;">Mô tả &amp; Đánh giá chi tiết</div>
+                                    <p class="detail-description">${product.description}</p>
+                                </div>
                             ` : ''}
+                        </div>
+
+                        <!-- Right Column: Sticky Buy Box & Branch Availability -->
+                        <div class="card detail-buy-card">
+                            <div class="detail-meta-row">
+                                <span class="badge badge-info">SKU #${product.id}</span>
+                                <span id="stockBadge" class="badge ${inStock ? 'badge-success' : 'badge-danger'}">
+                                    ${inStock ? `Còn ${currentStock} sản phẩm trong kho` : 'Tạm hết hàng'}
+                                </span>
+                            </div>
+
+                            <div>
+                                <h1 class="detail-title">${product.nameProduct}</h1>
+                                ${product.specs ? `<div class="mono-spec" style="font-size: 11.5px; color: var(--text-secondary); margin-top: 6px;">${product.specs}</div>` : ''}
+                            </div>
+
+                            <div class="price-banner">
+                                <div>
+                                    <div class="price-main tabular-nums">${formatPrice(product.price)}</div>
+                                    <div class="price-sub">Đã bao gồm VAT 10% · Xuất hóa đơn điện tử</div>
+                                </div>
+                                <span class="badge badge-success">Chính hãng 100%</span>
+                            </div>
 
                             <div class="perks-box">
-                                <div class="perks-box-title">Quyền lợi &amp; Dịch vụ đi kèm tại HK COMPUTER</div>
+                                <div class="perks-box-title">Quyền lợi &amp; Dịch vụ kỹ thuật tại HK COMPUTER</div>
                                 <ul class="perks-list">
-                                    <li><span class="perks-check">✓</span><span>Kích hoạt bảo hành điện tử chính hãng 12–36 tháng theo mã đơn hàng</span></li>
-                                    <li><span class="perks-check">✓</span><span>Miễn phí công lắp đặt khi nâng cấp thêm RAM hoặc ổ cứng SSD tại 10 chi nhánh</span></li>
-                                    <li><span class="perks-check">✓</span><span>Giảm 20.000đ dịch vụ vệ sinh, tra keo tản nhiệt khi đặt lịch hẹn trước</span></li>
+                                    <li><span class="perks-check">✓</span><span>Kích hoạt <b>bảo hành điện tử chính hãng 12–36 tháng</b> theo mã đơn hàng</span></li>
+                                    <li><span class="perks-check">✓</span><span><b>Miễn phí công lắp đặt</b> khi nâng cấp thêm RAM hoặc SSD NVMe tại 10 chi nhánh</span></li>
+                                    <li><span class="perks-check">✓</span><span><b>Giảm 20.000đ</b> dịch vụ vệ sinh máy &amp; tra keo tản nhiệt khi đặt lịch trước</span></li>
                                 </ul>
                             </div>
 
                             <div class="buy-actions-section">
                                 <div id="buyControlsWrap" style="display: ${inStock ? 'flex' : 'none'}; flex-direction: column; gap: 14px;">
-                                    <div class="qty-row">
-                                        <span class="qty-label">Số lượng</span>
-                                        <div class="qty-control">
-                                            <button type="button" id="btnQtyDec" aria-label="Giảm số lượng">−</button>
-                                            <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
-                                            <button type="button" id="btnQtyInc" aria-label="Tăng số lượng">+</button>
+                                    <div class="qty-row" style="justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; gap: 12px;">
+                                            <span class="qty-label">Số lượng:</span>
+                                            <div class="qty-control">
+                                                <button type="button" id="btnQtyDec" aria-label="Giảm số lượng">−</button>
+                                                <input type="number" id="qtyInput" value="1" min="1" max="${currentStock > 0 ? currentStock : 99}" />
+                                                <button type="button" id="btnQtyInc" aria-label="Tăng số lượng">+</button>
+                                            </div>
                                         </div>
-                                        <span id="stockHint" style="font-size: var(--text-xs); color: var(--text-muted);" class="tabular-nums">
-                                            ${inStock ? `${currentStock} sản phẩm có sẵn` : ''}
+                                        <span id="stockHint" style="font-size: var(--text-xs); color: var(--brand-green); font-weight: 600;" class="tabular-nums">
+                                            ${inStock ? `${currentStock} máy có sẵn tại kho` : ''}
                                         </span>
                                     </div>
 
@@ -625,8 +692,26 @@
                                 </div>
 
                                 <div id="outOfStockNotice" class="out-of-stock-notice" style="display: ${inStock ? 'none' : 'block'};">
-                                    Sản phẩm hiện tạm hết hàng. Bạn vẫn có thể xem đầy đủ thông số kỹ thuật bên trên hoặc liên hệ cửa hàng để được tư vấn mẫu tương đương.
+                                    Sản phẩm hiện tạm hết hàng. Bạn vẫn có thể xem đầy đủ bảng thông số kỹ thuật bên trái hoặc liên hệ cửa hàng để được tư vấn mẫu tương đương.
                                 </div>
+                            </div>
+
+                            <div class="branch-avail-box">
+                                <div class="branch-avail-title">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--brand-green)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                                    <span>Hệ thống cửa hàng trải nghiệm &amp; nhận máy:</span>
+                                </div>
+                                ${previewBranches.map(b => `
+                                    <div class="branch-avail-row">
+                                        <span>• ${b.name} (${b.city})</span>
+                                        <span style="color: ${inStock ? 'var(--brand-green)' : 'var(--text-muted)'}; font-weight: 600;">${inStock ? 'Sẵn hàng' : 'Liên hệ'}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+
+                            <div class="buy-footer-hotline">
+                                <span>Tư vấn kỹ thuật: <strong style="color: var(--text-primary);">${CONFIG.HOTLINE}</strong></span>
+                                <a href="warranty.html" style="color: var(--brand-green); font-weight: 600;">Tra cứu phiếu bảo hành →</a>
                             </div>
                         </div>
                     </div>

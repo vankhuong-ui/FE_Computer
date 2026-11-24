@@ -6,13 +6,14 @@
 @import url('./tokens.css?v=6');
 
 /* ==========================================================================
-   Header & Navigation (2-Tier Retail Header)
+   Header & Navigation (Stitch Technical Precision Retail 2-Tier Header)
    ========================================================================== */
 .top-utility-bar {
-    background-color: var(--surface-subtle);
-    border-bottom: 1px solid var(--border);
-    font-size: 11.5px;
-    color: var(--text-secondary);
+    background-color: #0F172A;
+    border-bottom: 1px solid #1E293B;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #CBD5E1;
     height: 32px;
     display: flex;
     align-items: center;
@@ -29,18 +30,30 @@
 .utility-group {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 14px;
 }
 
 .utility-item {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     white-space: nowrap;
 }
 
+.utility-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10B981;
+    flex-shrink: 0;
+}
+
+.utility-item a {
+    color: #CBD5E1;
+}
+
 .utility-item a:hover {
-    color: var(--brand-green);
+    color: #34D399;
 }
 
 @media (max-width: 760px) {
@@ -50,11 +63,12 @@
 }
 
 .header {
-    height: var(--header-height);
+    height: 74px;
     background-color: var(--surface-glass);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
+    box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.04);
     position: sticky;
     top: 0;
     z-index: var(--z-sticky);
@@ -71,55 +85,57 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 18px;
     height: 100%;
 }
 
 .header-search-form {
     position: relative;
     flex: 1;
-    max-width: 340px;
+    max-width: 390px;
     display: flex;
     align-items: center;
 }
 
+.header-search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--text-muted);
+    pointer-events: none;
+    display: inline-flex;
+}
+
 .header-search-input {
     width: 100%;
-    height: 36px;
-    padding: 0 36px 0 12px;
-    border-radius: var(--radius-sm);
+    height: 40px;
+    padding: 0 58px 0 36px;
+    border-radius: 10px;
     border: 1px solid var(--border);
-    background: var(--surface-subtle);
+    background: var(--surface);
     color: var(--text-primary);
     font-family: var(--font-sans);
     font-size: var(--text-xs);
     outline: none;
-    transition: border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .header-search-input:focus {
-    background: var(--surface);
     border-color: var(--brand-green);
     box-shadow: 0 0 0 3px var(--brand-green-ring);
 }
 
-.header-search-btn {
+.header-search-kbd {
     position: absolute;
-    right: 4px;
-    width: 28px;
-    height: 28px;
-    border: none;
-    border-radius: var(--radius-xs);
-    background: transparent;
-    color: var(--text-secondary);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-}
-
-.header-search-btn:hover {
-    color: var(--brand-green);
+    right: 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    pointer-events: none;
 }
 
 @media (max-width: 680px) {
@@ -130,22 +146,47 @@
 
 .brand-logo {
     display: inline-flex;
-    align-items: baseline;
-    gap: 5px;
-    font-weight: 800;
-    font-size: 1.15rem;
-    letter-spacing: -0.02em;
+    align-items: center;
+    gap: 10px;
     color: var(--text-primary);
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.brand-logo .brand-hk {
-    color: var(--brand-green);
+.brand-chip-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    color: #34D399;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
-.brand-logo .brand-computer {
+.brand-text-col {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.brand-title-line {
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.025em;
     color: var(--text-primary);
+}
+
+.brand-sub-line {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
     font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-green);
+    margin-top: 2px;
 }
 
 .theme-toggle-btn {
@@ -328,8 +369,8 @@
 
 .footer-grid {
     display: grid;
-    grid-template-columns: 1.4fr 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: 1.3fr 1fr 1fr 1fr;
+    gap: 28px;
     padding-bottom: 24px;
     border-bottom: 1px solid var(--border);
 }

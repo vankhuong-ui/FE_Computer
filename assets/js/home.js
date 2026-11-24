@@ -27,7 +27,7 @@ const categoryFilter = document.getElementById('categoryFilter');
 const brandFilter = document.getElementById('brandFilter');
 const categoryPills = document.getElementById('categoryPills');
 const brandPills = document.getElementById('brandPills');
-const sortPills = document.getElementById('sortPills');
+const sortSelect = document.getElementById('sortSelect');
 const searchInput = document.getElementById('searchInput');
 const btnResetFilter = document.getElementById('btnResetFilter');
 const catalogStatus = document.getElementById('catalogStatus');
@@ -60,9 +60,9 @@ function syncFilterPillStates() {
     brandPills?.querySelectorAll('[data-brand]').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.brand === String(selectedBrand));
     });
-    sortPills?.querySelectorAll('[data-sort]').forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.sort === sortMode);
-    });
+    if (sortSelect) {
+        sortSelect.value = sortMode;
+    }
 }
 
 async function loadFilters() {
@@ -95,7 +95,7 @@ async function loadFilters() {
                     brands.map(b => `<option value="${b.id}">${b.nameBrands || b.name}</option>`).join('');
             }
             if (brandPills) {
-                brandPills.innerHTML = `<button type="button" class="filter-pill brand-chip ${!selectedBrand ? 'active' : ''}" data-brand="">Tất cả hãng</button>` +
+                brandPills.innerHTML = `<span style="font-size: 11.5px; color: var(--text-muted); margin-right: 2px;">Hãng:</span><button type="button" class="filter-pill brand-chip ${!selectedBrand ? 'active' : ''}" data-brand="">Tất cả</button>` +
                     brands.map(b => `<button type="button" class="filter-pill brand-chip ${String(selectedBrand) === String(b.id) ? 'active' : ''}" data-brand="${b.id}">${b.nameBrands || b.name}</button>`).join('');
                 brandPills.querySelectorAll('[data-brand]').forEach(btn => {
                     btn.addEventListener('click', () => {
@@ -183,11 +183,14 @@ async function loadProducts(page = 0) {
             const inStock = stock > 0;
             return `
                 <article class="card product-card">
-                    <a href="detailproductuser.html?id=${p.id}" class="product-image-box">
-                        <span class="product-stock-pill">
+                    <div class="product-card-top">
+                        <span class="product-stock-tag ${inStock ? '' : 'out'}">
                             <span class="stock-dot ${inStock ? '' : 'out'}"></span>
                             ${inStock ? 'Sẵn hàng' : 'Hết hàng'}
                         </span>
+                        <span class="product-sku-code">#HK-${p.id}</span>
+                    </div>
+                    <a href="detailproductuser.html?id=${p.id}" class="product-image-box ${inStock ? '' : 'out-dim'}">
                         <img src="${img}" alt="${safeName}" loading="lazy" />
                     </a>
                     <a href="detailproductuser.html?id=${p.id}" class="product-title" title="${safeName}">${name}</a>
@@ -195,7 +198,7 @@ async function loadProducts(page = 0) {
                         ${hwTags.map(t => `<span class="hw-tag" title="${t.replace(/"/g, '&quot;')}">${t}</span>`).join('')}
                     </div>
                     <div class="product-price-row">
-                        <span class="product-price tabular-nums">${formatVnd(p.price)}</span>
+                        <span class="product-price tabular-nums ${inStock ? '' : 'out-price'}">${formatVnd(p.price)}</span>
                         <span class="product-vat-tag">Đã gồm VAT</span>
                     </div>
                     ${inStock ? `
@@ -218,7 +221,7 @@ async function loadProducts(page = 0) {
                             </button>
                         </div>
                     ` : `
-                        <a href="detailproductuser.html?id=${p.id}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 600;">
+                        <a href="detailproductuser.html?id=${p.id}" class="btn btn-secondary btn-sm" style="width: 100%; font-weight: 600; border-radius: 8px; padding: 9px 10px;">
                             Xem thông số
                         </a>
                     `}
@@ -284,22 +287,29 @@ function renderBranches() {
     branchListEl.innerHTML = filtered.map(b => {
         const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(b.address)}`;
         return `
-            <div class="store-row">
-                <div style="flex: 1; min-width: 220px;">
-                    <div style="font-weight: 600; font-size: var(--text-sm); color: var(--text-primary); margin-bottom: 4px;">
-                        ${b.name}
+            <div class="store-card">
+                <div class="store-card-head">
+                    <div style="font-weight: 700; font-size: var(--text-sm); color: var(--text-primary);">${b.name}</div>
+                    <span class="badge badge-success">Đang mở cửa</span>
+                </div>
+                <div class="store-meta-list">
+                    <div class="store-meta-line">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                        <span>${b.address}</span>
                     </div>
-                    <div style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 4px;">
-                        ${b.address}
+                    <div class="store-meta-line tabular-nums">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span>${b.hours} · ${b.services}</span>
                     </div>
-                    <div style="font-size: 11px; color: var(--text-muted);" class="tabular-nums">
-                        ${b.hours} · ${b.phone} · ${b.services}
+                    <div class="store-meta-line tabular-nums" style="color: var(--text-primary); font-weight: 600;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span>${b.phone}</span>
                     </div>
                 </div>
-                <div style="display: flex; gap: 8px; align-items: center; shrink: 0;">
-                    <a href="${mapUrl}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">Chỉ đường</a>
-                    <button type="button" class="btn btn-secondary btn-sm btn-pick-branch" data-branch="${b.name} — ${b.address}">
-                        Chọn cơ sở
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <a href="${mapUrl}" target="_blank" rel="noopener" class="btn btn-secondary btn-sm">Chỉ đường</a>
+                    <button type="button" class="btn btn-sm btn-pick-branch" style="background: var(--brand-green-soft); color: var(--brand-green); font-weight: 600;" data-branch="${b.name} — ${b.address}">
+                        Chọn cơ sở này
                     </button>
                 </div>
             </div>
@@ -433,12 +443,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     loadProducts(0);
 
-    sortPills?.querySelectorAll('[data-sort]').forEach(btn => {
-        btn.addEventListener('click', () => {
-            sortMode = btn.dataset.sort;
-            syncFilterPillStates();
-            loadProducts(0);
-        });
+    sortSelect?.addEventListener('change', () => {
+        sortMode = sortSelect.value;
+        syncFilterPillStates();
+        loadProducts(0);
     });
 
     document.getElementById('btnSearch')?.addEventListener('click', () => {

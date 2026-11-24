@@ -203,13 +203,14 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
             topBar.innerHTML = `
                 <div class="container top-utility-inner">
                     <div class="utility-group">
-                        <span class="utility-item"><a href="index.html#repair-center">Hệ thống 10 chi nhánh toàn quốc</a></span>
-                        <span style="color: var(--border-hover);">|</span>
-                        <span class="utility-item tabular-nums">Mở cửa: ${CONFIG.OPEN_HOURS}</span>
+                        <span class="utility-item">
+                            <span class="utility-dot"></span>
+                            <a href="index.html#repair-center">Hệ thống 10 chi nhánh toàn quốc · Mở cửa: ${CONFIG.OPEN_HOURS}</a>
+                        </span>
                     </div>
                     <div class="utility-group">
-                        <span class="utility-item">Mua hàng &amp; Kỹ thuật: <a href="tel:18006889" class="tabular-nums" style="font-weight: 700; color: var(--brand-green);">${CONFIG.HOTLINE}</a></span>
-                        <span style="color: var(--border-hover);">|</span>
+                        <span class="utility-item">Mua hàng &amp; Kỹ thuật: <a href="tel:18006889" style="font-weight: 700; color: #FFFFFF;">${CONFIG.HOTLINE}</a></span>
+                        <span style="color: #475569;">|</span>
                         <span class="utility-item"><a href="warranty.html">Tra cứu bảo hành điện tử</a></span>
                     </div>
                 </div>
@@ -221,15 +222,21 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
         headerHost.innerHTML = `
             <div class="container header-inner">
                 <a href="index.html" class="brand-logo" aria-label="HK COMPUTER">
-                    <span class="brand-hk">HK</span>
-                    <span class="brand-computer">COMPUTER</span>
+                    <span class="brand-chip-icon">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></svg>
+                    </span>
+                    <span class="brand-text-col">
+                        <span class="brand-title-line">HK COMPUTER</span>
+                        <span class="brand-sub-line">Chính hãng &amp; Kỹ thuật</span>
+                    </span>
                 </a>
 
                 <form id="headerSearchForm" class="header-search-form" role="search">
-                    <input type="search" id="headerSearchInput" class="header-search-input" placeholder="Tìm laptop, PC, linh kiện, mã máy..." value="${initialQ.replace(/"/g, '&quot;')}" />
-                    <button type="submit" class="header-search-btn" aria-label="Tìm kiếm">
+                    <span class="header-search-icon">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    </button>
+                    </span>
+                    <input type="search" id="headerSearchInput" class="header-search-input" placeholder="Tìm laptop, PC, linh kiện, mã máy..." value="${initialQ.replace(/"/g, '&quot;')}" />
+                    <span class="header-search-kbd">Ctrl+K</span>
                 </form>
 
                 <nav aria-label="Điều hướng chính">
@@ -242,17 +249,17 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 </nav>
 
                 <div class="header-actions">
-                    <button type="button" id="btnHeaderQuickRepair" class="btn btn-accent btn-sm">
+                    <button type="button" id="btnHeaderQuickRepair" class="btn btn-accent btn-sm" style="height: 38px; border-radius: 10px; font-weight: 600;">
                         Đặt lịch sửa chữa
                     </button>
 
-                    <button type="button" class="theme-toggle-btn" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
+                    <button type="button" class="theme-toggle-btn" style="width: 38px; height: 38px; border-radius: 10px;" data-theme-toggle aria-label="Chuyển giao diện Sáng/Tối"></button>
 
-                    <a href="cart.html" class="cart-icon-btn" id="headerCartBtn" aria-label="Giỏ hàng" title="Giỏ hàng của bạn">
+                    <a href="cart.html" class="cart-icon-btn" style="width: 38px; height: 38px; border-radius: 10px;" id="headerCartBtn" aria-label="Giỏ hàng" title="Giỏ hàng của bạn">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
                         <span class="cart-icon-badge" id="cartBadgeCount">0</span>
                     </a>
@@ -261,6 +268,14 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
                 </div>
             </div>
         `;
+
+        // Global Ctrl+K shortcut to focus header search input
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                document.getElementById('headerSearchInput')?.focus();
+            }
+        });
 
         document.getElementById('headerSearchForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -283,41 +298,54 @@ export function initStoreLayout({ activeNav = 'home' } = {}) {
             <div class="container">
                 <div class="footer-grid">
                     <div>
-                        <a href="index.html" class="brand-logo" style="margin-bottom: 10px;">
-                            <span class="brand-hk">HK</span>
-                            <span class="brand-computer">COMPUTER</span>
+                        <a href="index.html" class="brand-logo" style="margin-bottom: 12px;">
+                            <span class="brand-chip-icon" style="width: 30px; height: 30px; border-radius: 8px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"></rect><rect x="9" y="9" width="6" height="6"></rect></svg>
+                            </span>
+                            <span class="brand-title-line" style="font-size: 1rem;">HK COMPUTER</span>
                         </a>
                         <p style="font-size: var(--text-xs); margin-bottom: 8px;">
-                            Hệ thống bán lẻ Laptop, PC, Linh kiện chính hãng và Trung tâm dịch vụ sửa chữa, nâng cấp phần cứng chuyên nghiệp.
+                            Trung tâm dịch vụ bảo hành, sửa chữa phần cứng và phân phối Laptop &amp; PC chính hãng trên toàn quốc.
                         </p>
-                        <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">
-                            Giờ mở cửa: ${CONFIG.OPEN_HOURS}
+                    </div>
+
+                    <div>
+                        <div class="footer-title">Dịch vụ kỹ thuật</div>
+                        <ul class="footer-links">
+                            <li><a href="index.html#repair-center">Sửa chữa mainboard &amp; phần cứng</a></li>
+                            <li><a href="index.html#repair-center">Vệ sinh &amp; tra keo tản nhiệt</a></li>
+                            <li><a href="index.html#repair-center">Nâng cấp RAM &amp; SSD NVMe</a></li>
+                            <li><a href="index.html#repair-center">Cài đặt hệ điều hành &amp; phần mềm</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div class="footer-title">Chính sách &amp; Hỗ trợ</div>
+                        <ul class="footer-links">
+                            <li><a href="warranty.html">Tra cứu bảo hành điện tử</a></li>
+                            <li><a href="order.html">Theo dõi &amp; thanh toán đơn hàng</a></li>
+                            <li><a href="profile.html">Sổ địa chỉ &amp; lịch hẹn của tôi</a></li>
+                            <li><a href="support.html">Gửi yêu cầu tư vấn kỹ thuật</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <div class="footer-title">Tổng đài trực tuyến</div>
+                        <div class="tabular-nums" style="font-size: var(--text-base); font-weight: 800; color: var(--brand-orange); margin-bottom: 4px;">
+                            <a href="tel:18006889">${CONFIG.HOTLINE}</a>
                         </div>
-                    </div>
-
-                    <div>
-                        <div class="footer-title">Dịch vụ khách hàng</div>
-                        <ul class="footer-links">
-                            <li><a href="index.html#repair-center">Hệ thống cửa hàng &amp; Đặt lịch sửa chữa</a></li>
-                            <li><a href="warranty.html">Tra cứu bảo hành điện tử chính hãng</a></li>
-                            <li><a href="order.html">Theo dõi &amp; Thanh toán đơn hàng</a></li>
-                            <li><a href="profile.html">Sổ địa chỉ &amp; Lịch hẹn của tôi</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <div class="footer-title">Tổng đài &amp; Hỗ trợ thanh toán</div>
-                        <ul class="footer-links">
-                            <li>Hotline miễn phí: <a href="tel:18006889" class="tabular-nums" style="font-weight: 700; color: var(--brand-green);">${CONFIG.HOTLINE}</a></li>
-                            <li>Thanh toán: Chuyển khoản VietQR · Thẻ ATM / VNPay · Tiền mặt</li>
-                            <li><a href="support.html">Gửi yêu cầu tư vấn cấu hình &amp; hỗ trợ kỹ thuật</a></li>
-                        </ul>
+                        <div style="font-size: var(--text-xs); color: var(--text-secondary); margin-bottom: 6px;">
+                            Mở cửa: ${CONFIG.OPEN_HOURS}
+                        </div>
+                        <div class="mono-spec" style="font-size: 11px; color: var(--text-muted);">
+                            Chuyển khoản VietQR · Thẻ ATM / VNPay
+                        </div>
                     </div>
                 </div>
 
                 <div class="footer-bottom">
-                    <span>© 2026 HK COMPUTER. Hệ thống bán lẻ máy tính &amp; dịch vụ kỹ thuật.</span>
-                    <span>Bảo hành điện tử chính hãng 12 – 36 tháng</span>
+                    <span>© 2026 HK COMPUTER Service &amp; Technology. All rights reserved.</span>
+                    <span class="mono-spec">Bảo hành điện tử chính hãng 12 – 36 tháng</span>
                 </div>
             </div>
         `;
