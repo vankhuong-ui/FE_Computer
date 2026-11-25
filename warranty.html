@@ -4,78 +4,220 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Trung tâm Bảo hành Điện tử — HK COMPUTER</title>
-    <link rel="stylesheet" href="./assets/css/base.css?v=6" />
-    <link rel="stylesheet" href="./assets/css/components.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/base.css?v=10" />
+    <link rel="stylesheet" href="./assets/css/components.css?v=10" />
     <style>
         .page-header {
-            padding: 36px 0 24px;
+            padding: 30px 0 20px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
+            margin-bottom: 26px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 16px;
+            gap: 14px;
         }
 
         .lookup-banner {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 28px;
-            margin-bottom: 32px;
+            padding: 24px;
+            margin-bottom: 28px;
         }
 
         .lookup-form {
             display: flex;
-            gap: 12px;
-            margin-top: 16px;
+            gap: 10px;
+            margin-top: 14px;
             flex-wrap: wrap;
         }
 
         .lookup-form input {
             flex: 1;
-            min-width: 240px;
+            min-width: 220px;
         }
 
         .warranty-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
             gap: 16px;
-            margin-bottom: 40px;
+            margin-bottom: 36px;
+        }
+
+        @media (max-width: 480px) {
+            .warranty-cards-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .warranty-card {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 20px;
+            border-radius: 14px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             gap: 14px;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+        }
+
+        .warranty-card-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .warranty-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #FFFFFF;
+            object-fit: contain;
+            padding: 4px;
+            flex-shrink: 0;
         }
 
         .warranty-serial {
+            display: inline-block;
             font-family: var(--font-mono);
-            font-size: var(--text-xs);
-            padding: 4px 8px;
+            font-size: 11.5px;
+            padding: 3px 8px;
             background: var(--surface-subtle);
             border: 1px solid var(--border);
-            border-radius: var(--radius-xs);
-            font-weight: var(--font-semibold);
+            border-radius: 6px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .warranty-progress-wrap {
+            background: var(--surface-subtle);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .warranty-progress-head {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11.5px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .warranty-progress-track {
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.25);
+            overflow: hidden;
+        }
+
+        .warranty-progress-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 300ms ease;
+        }
+
+        /* Claim Progress Cards + 4-Step Visual Timeline */
+        .claims-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .claim-track-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .claim-track-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .step-timeline {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        @media (max-width: 560px) {
+            .step-timeline {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        .step-node {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 10px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            background: var(--surface-subtle);
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .step-node.done {
+            border-color: rgba(0, 139, 69, 0.35);
+            background: var(--brand-green-soft);
+            color: var(--brand-green);
+        }
+
+        .step-node.current {
+            border-color: #288AD6;
+            background: rgba(40, 138, 214, 0.1);
+            color: #288AD6;
+        }
+
+        .step-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 1.5px solid currentColor;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .tech-note-box {
+            padding: 10px 13px;
+            border-radius: 9px;
+            background: rgba(40, 138, 214, 0.06);
+            border-left: 3px solid #288AD6;
+            font-size: 12.5px;
+            color: var(--text-primary);
+        }
+
+        .tech-note-box.rejected {
+            background: rgba(239, 68, 68, 0.08);
+            border-left-color: #EF4444;
         }
 
         .modal-backdrop {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.48);
             backdrop-filter: blur(2px);
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
 
         .modal-backdrop.active {
@@ -88,7 +230,9 @@
             border-radius: var(--radius-lg);
             max-width: 500px;
             width: 100%;
-            padding: 28px;
+            max-height: 90dvh;
+            overflow-y: auto;
+            padding: 24px;
         }
     </style>
 </head>
@@ -99,27 +243,27 @@
         <div class="page-header">
             <div>
                 <h1 style="font-size: var(--text-2xl);">Trung tâm Bảo hành Điện tử</h1>
-                <p style="font-size: var(--text-xs);">Tra cứu thời hạn bảo hành chính hãng theo mã bảo hành hoặc mã đơn hàng và gửi yêu cầu hỗ trợ bảo hành trực tuyến.</p>
+                <p style="font-size: var(--text-xs);">Tra cứu thời hạn bảo hành chính hãng theo mã Serial hoặc mã đơn hàng và theo dõi tiến độ xử lý trực tuyến.</p>
             </div>
             <a href="order.html" class="btn btn-secondary btn-sm">Xem đơn hàng đã mua</a>
         </div>
 
-        <!-- Public Lookup Box -->
+        <!-- Lookup Box -->
         <section class="lookup-banner">
             <h3 style="font-size: var(--text-lg); margin-bottom: 4px;">Tra cứu nhanh thời hạn bảo hành</h3>
-            <p style="font-size: var(--text-xs); color: var(--text-secondary);">Nhập mã bảo hành điện tử (ví dụ: <code>BH-12-5</code>) hoặc mã đơn hàng (ví dụ: <code>12</code>).</p>
+            <p style="font-size: var(--text-xs); color: var(--text-secondary);">Nhập mã bảo hành điện tử (ví dụ: <code>BH-1-1-1</code>) hoặc mã đơn hàng (ví dụ: <code>DH1</code> hoặc <code>1</code>).</p>
             <form id="lookupForm" class="lookup-form">
-                <input type="text" id="lookupKeyword" class="input tabular-nums" placeholder="Nhập mã bảo hành hoặc mã đơn hàng..." required />
+                <input type="text" id="lookupKeyword" class="input tabular-nums" placeholder="Nhập mã Serial bảo hành hoặc mã đơn hàng..." required />
                 <button type="submit" class="btn btn-primary">Tra cứu ngay</button>
             </form>
-            <div id="lookupResultBox" style="margin-top: 20px;"></div>
+            <div id="lookupResultBox" style="margin-top: 18px;"></div>
         </section>
 
         <!-- User's Active Warranty Cards -->
-        <section style="margin-bottom: 48px;">
+        <section style="margin-bottom: 42px;">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
                 <h3 style="font-size: var(--text-xl);">Thiết bị được bảo hành của tôi</h3>
-                <span style="font-size: var(--text-xs); color: var(--text-secondary);">Tự động kích hoạt khi đơn hàng hoàn tất thanh toán</span>
+                <span style="font-size: var(--text-xs); color: var(--text-secondary);">Tự động kích hoạt 12–36 tháng ngay khi đơn hàng thanh toán thành công</span>
             </div>
             <div id="myCardsContainer" class="warranty-cards-grid">
                 <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 36px;">
@@ -128,30 +272,16 @@
             </div>
         </section>
 
-        <!-- User's Warranty Claims History -->
+        <!-- User's Warranty Claims Timeline -->
         <section style="margin-bottom: 64px;">
-            <h3 style="font-size: var(--text-xl); margin-bottom: 16px;">Lịch sử yêu cầu gửi bảo hành &amp; Tiến độ xử lý</h3>
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Mã phiếu</th>
-                            <th>Mã Serial</th>
-                            <th>Thiết bị</th>
-                            <th>Loại sự cố & Mô tả</th>
-                            <th>Trạng thái xử lý</th>
-                            <th>Phản hồi kỹ thuật viên</th>
-                            <th>Ngày gửi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="myClaimsTableBody">
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 24px; color: var(--text-secondary);">
-                                Đang tải lịch sử yêu cầu bảo hành...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                <h3 style="font-size: var(--text-xl);">Tiến độ yêu cầu bảo hành của tôi</h3>
+                <span style="font-size: var(--text-xs); color: var(--text-secondary);">Cập nhật trực tiếp từ Kỹ thuật viên HK COMPUTER</span>
+            </div>
+            <div id="myClaimsList" class="claims-list">
+                <div class="card" style="text-align: center; padding: 28px; color: var(--text-secondary);">
+                    Đang tải lịch sử yêu cầu bảo hành...
+                </div>
             </div>
         </section>
     </main>
@@ -161,14 +291,15 @@
         <div class="modal-box">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <h3 style="font-size: var(--text-lg);">Đăng ký yêu cầu bảo hành</h3>
-                <button type="button" id="btnCloseClaimModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+                <button type="button" id="btnCloseClaimModal" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-primary);">×</button>
             </div>
             <form id="claimForm">
                 <input type="hidden" id="claimOrderId" />
                 <input type="hidden" id="claimProductId" />
+                <input type="hidden" id="claimUnitNumber" />
 
                 <div class="form-group">
-                    <label class="form-label">Thiết bị & Mã bảo hành</label>
+                    <label class="form-label">Thiết bị &amp; Mã bảo hành</label>
                     <input type="text" id="claimDeviceDisplay" class="input" readonly style="background: var(--surface-subtle);" />
                 </div>
 
@@ -177,23 +308,23 @@
                     <select id="claimIssueType" class="select">
                         <option value="Lỗi phần cứng / Không lên nguồn">Lỗi phần cứng / Không lên nguồn</option>
                         <option value="Quá nhiệt / Quạt kêu to / Sập nguồn">Quá nhiệt / Quạt kêu to / Sập nguồn</option>
-                        <option value="Lỗi hiển thị / Màn hình xanh">Lỗi hiển thị / Màn hình</option>
+                        <option value="Lỗi hiển thị / Màn hình">Lỗi hiển thị / Màn hình</option>
                         <option value="Lỗi cổng kết nối / Ngoại vi">Lỗi cổng kết nối / Ngoại vi</option>
                         <option value="Khác (Mô tả chi tiết bên dưới)">Khác (Mô tả chi tiết bên dưới)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="claimPhone">Số điện thoại liên hệ nhận máy</label>
-                    <input type="text" id="claimPhone" class="input tabular-nums" required />
+                    <label class="form-label" for="claimPhone">Số điện thoại liên hệ (10 số bắt đầu bằng 0)</label>
+                    <input type="tel" id="claimPhone" class="input tabular-nums" placeholder="Ví dụ: 0912345678" required />
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="claimDescription">Mô tả chi tiết tình trạng lỗi</label>
-                    <textarea id="claimDescription" class="textarea" rows="4" required></textarea>
+                    <textarea id="claimDescription" class="textarea" rows="3" placeholder="Mô tả hiện tượng gặp phải, thời điểm xảy ra..." required></textarea>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px;">
                     <button type="button" id="btnCancelClaim" class="btn btn-secondary">Hủy</button>
                     <button type="submit" id="btnSubmitClaim" class="btn btn-primary">Gửi yêu cầu bảo hành</button>
                 </div>
@@ -208,74 +339,129 @@
         import { auth } from './assets/js/auth.js';
         import { cart } from './assets/js/cart.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initStoreLayout } from './assets/js/layout.js?v=6';
+        import { initStoreLayout } from './assets/js/layout.js?v=12';
         import { toast } from './assets/js/toast.js';
-        import { formatDate } from './assets/js/utils.js';
-        import './assets/js/chat-widget.js?v=6';
+        import { formatDate, escapeHtml, isValidVietnamPhone } from './assets/js/utils.js';
+        import './assets/js/chat-widget.js?v=8';
 
         const lookupForm = document.getElementById('lookupForm');
         const lookupKeyword = document.getElementById('lookupKeyword');
         const lookupResultBox = document.getElementById('lookupResultBox');
         const myCardsContainer = document.getElementById('myCardsContainer');
-        const myClaimsTableBody = document.getElementById('myClaimsTableBody');
+        const myClaimsList = document.getElementById('myClaimsList');
         const claimModal = document.getElementById('claimModal');
         const claimForm = document.getElementById('claimForm');
 
+        const CLAIM_STEPS = [
+            { key: 'PENDING', label: '1. Đã gửi yêu cầu' },
+            { key: 'RECEIVED', label: '2. Đã nhận máy' },
+            { key: 'REPAIRING', label: '3. Đang bảo hành' },
+            { key: 'COMPLETED', label: '4. Hoàn tất trả máy' }
+        ];
+
         function getClaimStatusBadge(status) {
             const s = (status || '').toUpperCase();
-            if (s === 'PENDING') return `<span class="badge badge-warning">Chờ tiếp nhận</span>`;
-            if (s === 'RECEIVED') return `<span class="badge badge-info">Đã nhận thiết bị</span>`;
-            if (s === 'REPAIRING') return `<span class="badge badge-info">Đang kiểm tra / Bảo hành</span>`;
-            if (s === 'COMPLETED') return `<span class="badge badge-success">Đã hoàn tất trả máy</span>`;
-            if (s === 'REJECTED') return `<span class="badge badge-danger">Từ chối bảo hành</span>`;
-            return `<span class="badge">${status}</span>`;
+            if (s === 'PENDING') return '<span class="badge badge-warning">Chờ tiếp nhận</span>';
+            if (s === 'RECEIVED') return '<span class="badge badge-info">Đã nhận thiết bị</span>';
+            if (s === 'REPAIRING') return '<span class="badge badge-info">Đang kiểm tra / Bảo hành</span>';
+            if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn tất trả máy</span>';
+            if (s === 'REJECTED') return '<span class="badge badge-danger">Từ chối bảo hành</span>';
+            return `<span class="badge">${escapeHtml(status)}</span>`;
+        }
+
+        function renderClaimTimeline(status) {
+            const s = (status || 'PENDING').toUpperCase();
+            if (s === 'REJECTED') {
+                return `<div class="badge badge-danger" style="align-self:flex-start; padding:6px 12px;">Yêu cầu không đủ điều kiện bảo hành — Vui lòng xem ghi chú kỹ thuật bên dưới</div>`;
+            }
+            const currentIdx = Math.max(0, CLAIM_STEPS.findIndex(st => st.key === s));
+            return `
+                <div class="step-timeline">
+                    ${CLAIM_STEPS.map((st, idx) => {
+                        const isDone = idx < currentIdx || (s === 'COMPLETED' && idx === 3);
+                        const isCurrent = idx === currentIdx && s !== 'COMPLETED';
+                        const cls = isDone ? 'done' : (isCurrent ? 'current' : '');
+                        const mark = isDone ? '✓' : (idx + 1);
+                        return `
+                            <div class="step-node ${cls}">
+                                <span class="step-dot">${mark}</span>
+                                <span>${st.label.replace(/^\d+\.\s*/, '')}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
         }
 
         function renderCardItem(card, allowClaimButton = true) {
             const isActive = card.warrantyStatus === 'ACTIVE';
+            const totalDays = Math.max(1, (Number(card.warrantyMonths) || 12) * 30);
+            const remDays = Math.max(0, Number(card.remainingDays) || 0);
+            const pct = isActive ? Math.min(100, Math.max(4, Math.round((remDays / totalDays) * 100))) : 0;
+            const barColor = !isActive ? '#EF4444' : (pct > 30 ? '#008B45' : '#F59E0B');
+            const img = card.productImage || 'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=240&q=80';
+            const unitNum = card.unitNumber || 1;
+
             const badge = isActive
-                ? `<span class="badge badge-success">Còn hạn (${card.remainingDays} ngày)</span>`
-                : `<span class="badge badge-danger">Hết hạn bảo hành</span>`;
+                ? `<span class="badge badge-success">Còn ${remDays} ngày</span>`
+                : `<span class="badge badge-danger">Đã hết hạn</span>`;
 
             return `
                 <div class="warranty-card">
-                    <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <span class="warranty-serial">${card.serialCode}</span>
+                    <div style="display:flex; flex-direction:column; gap:12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span class="warranty-serial">${escapeHtml(card.serialCode)}</span>
                             ${badge}
                         </div>
-                        <h4 style="font-size: var(--text-base); margin-bottom: 6px;">${card.productName}</h4>
-                        <div style="font-size: var(--text-xs); color: var(--text-secondary);">
-                            <div>Đơn hàng: <b class="tabular-nums">#${card.orderId}</b> • Số lượng: ${card.quantity}</div>
-                            <div>Thời hạn: <b>${card.warrantyMonths} tháng</b> (${formatDate(card.purchaseDate)} → ${formatDate(card.expireDate)})</div>
+
+                        <div class="warranty-card-top">
+                            <img class="warranty-thumb" src="${escapeHtml(img)}" alt="${escapeHtml(card.productName)}" loading="lazy" />
+                            <div style="min-width:0; flex:1;">
+                                <h4 style="font-size: 14px; line-height: 1.35; margin: 0 0 4px;">${escapeHtml(card.productName)}</h4>
+                                <div style="font-size: 12px; color: var(--text-secondary);">
+                                    Đơn <b class="tabular-nums">#DH${card.orderId}</b> · Máy số <b>#${unitNum}</b>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="warranty-progress-wrap">
+                            <div class="warranty-progress-head tabular-nums">
+                                <span>Gói bảo hành <b>${card.warrantyMonths} tháng</b></span>
+                                <span>${formatDate(card.purchaseDate)} → ${formatDate(card.expireDate)}</span>
+                            </div>
+                            <div class="warranty-progress-track">
+                                <div class="warranty-progress-fill" style="width:${pct}%; background:${barColor};"></div>
+                            </div>
                         </div>
                     </div>
+
                     ${allowClaimButton && isActive ? `
-                        <button type="button" class="btn btn-primary btn-sm btn-open-claim"
+                        <button type="button" class="btn btn-primary btn-sm btn-open-claim" style="width:100%;"
                             data-order-id="${card.orderId}"
                             data-product-id="${card.productId}"
-                            data-product-name="${card.productName}"
-                            data-serial="${card.serialCode}">
-                            Gửi yêu cầu bảo hành
+                            data-unit-number="${unitNum}"
+                            data-product-name="${escapeHtml(card.productName)}"
+                            data-serial="${escapeHtml(card.serialCode)}">
+                            Gửi yêu cầu bảo hành điện tử
                         </button>
                     ` : ''}
                 </div>
             `;
         }
 
-        // 1. Public Lookup
+        // 1. Lookup
         lookupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const kw = lookupKeyword.value.trim();
             if (!kw) return;
 
-            lookupResultBox.innerHTML = `<p style="font-size: var(--text-xs);">Đang tra cứu dữ liệu...</p>`;
+            lookupResultBox.innerHTML = `<p style="font-size: var(--text-xs);">Đang tra cứu dữ liệu bảo hành...</p>`;
             try {
                 const results = await api.get(CONFIG.ENDPOINTS.WARRANTY.LOOKUP, { keyword: kw });
                 if (!Array.isArray(results) || results.length === 0) {
                     lookupResultBox.innerHTML = `
                         <div class="card" style="background: var(--surface-subtle); padding: 16px;">
-                            <p style="font-size: var(--text-xs); color: var(--text-primary);">Không tìm thấy phiếu bảo hành điện tử nào khớp với mã <b>${kw}</b> (hoặc đơn hàng chưa thanh toán).</p>
+                            <p style="font-size: var(--text-xs); color: var(--text-primary); margin:0;">Không tìm thấy thẻ bảo hành nào khớp với mã <b>${escapeHtml(kw)}</b> (hoặc đơn hàng chưa thanh toán).</p>
                         </div>
                     `;
                     return;
@@ -287,7 +473,7 @@
                 `;
                 bindClaimButtons();
             } catch (err) {
-                lookupResultBox.innerHTML = `<p class="text-danger" style="font-size: var(--text-xs);">${err.message}</p>`;
+                lookupResultBox.innerHTML = `<p class="text-danger" style="font-size: var(--text-xs);">${escapeHtml(err.message)}</p>`;
             }
         });
 
@@ -296,12 +482,12 @@
             if (!auth.isAuthenticated()) {
                 myCardsContainer.innerHTML = `
                     <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 36px;">
-                        <p style="font-size: var(--text-sm); margin-bottom: 12px;">Vui lòng đăng nhập để xem danh sách thiết bị bảo hành của bạn và gửi yêu cầu sửa chữa trực tuyến.</p>
+                        <p style="font-size: var(--text-sm); margin-bottom: 12px;">Vui lòng đăng nhập để xem thiết bị bảo hành điện tử và gửi yêu cầu xử lý trực tuyến.</p>
                         <a href="dang-nhap.html" class="btn btn-primary btn-sm">Đăng nhập ngay</a>
                     </div>
                 `;
-                myClaimsTableBody.innerHTML = `
-                    <tr><td colspan="7" style="text-align: center; padding: 24px;">Đăng nhập để xem lịch sử bảo hành.</td></tr>
+                myClaimsList.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 24px; color: var(--text-secondary);">Đăng nhập để theo dõi tiến độ bảo hành của bạn.</div>
                 `;
                 return;
             }
@@ -315,7 +501,7 @@
                 if (!Array.isArray(cards) || cards.length === 0) {
                     myCardsContainer.innerHTML = `
                         <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 36px;">
-                            <p style="font-size: var(--text-sm);">Bạn chưa có thiết bị nào được kích hoạt bảo hành (Phiếu bảo hành tự động tạo sau khi đơn hàng thanh toán thành công).</p>
+                            <p style="font-size: var(--text-sm); margin:0;">Bạn chưa có thiết bị nào được kích hoạt bảo hành (thẻ tự động mở sau khi đơn hàng thanh toán thành công).</p>
                         </div>
                     `;
                 } else {
@@ -325,25 +511,37 @@
 
                 const claims = claimsPage?.content || [];
                 if (claims.length === 0) {
-                    myClaimsTableBody.innerHTML = `
-                        <tr><td colspan="7" style="text-align: center; padding: 24px; color: var(--text-secondary);">Bạn chưa gửi yêu cầu bảo hành nào.</td></tr>
+                    myClaimsList.innerHTML = `
+                        <div class="card" style="text-align: center; padding: 28px; color: var(--text-secondary);">Bạn chưa gửi yêu cầu bảo hành nào.</div>
                     `;
                 } else {
-                    myClaimsTableBody.innerHTML = claims.map(item => `
-                        <tr>
-                            <td class="tabular-nums">#${item.id}</td>
-                            <td><span class="warranty-serial">${item.serialCode}</span></td>
-                            <td style="font-weight: var(--font-medium);">${item.productName || 'Sản phẩm #' + item.productId}</td>
-                            <td>
-                                <div style="font-weight: var(--font-medium); font-size: var(--text-xs);">${item.issueType}</div>
-                                <div style="font-size: var(--text-xs); color: var(--text-secondary);">${item.description}</div>
-                            </td>
-                            <td>${getClaimStatusBadge(item.status)}</td>
-                            <td style="font-size: var(--text-xs); color: var(--text-secondary);">
-                                ${item.adminNote || '<i>Đang chờ kỹ thuật viên phản hồi</i>'}
-                            </td>
-                            <td class="tabular-nums" style="font-size: var(--text-xs);">${formatDate(item.createdAt)}</td>
-                        </tr>
+                    myClaimsList.innerHTML = claims.map(item => `
+                        <article class="claim-track-card">
+                            <div class="claim-track-head">
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:5px;">
+                                        <span class="warranty-serial">${escapeHtml(item.serialCode)}</span>
+                                        <strong style="font-size:14px;">${escapeHtml(item.productName || 'Sản phẩm #' + item.productId)}</strong>
+                                    </div>
+                                    <div style="font-size:12px; color:var(--text-secondary);">
+                                        Phiếu <b>#${item.id}</b> · Gửi ngày <span class="tabular-nums">${formatDate(item.createdAt)}</span> · SĐT: <span class="tabular-nums">${escapeHtml(item.contactPhone || '-')}</span>
+                                    </div>
+                                </div>
+                                ${getClaimStatusBadge(item.status)}
+                            </div>
+
+                            ${renderClaimTimeline(item.status)}
+
+                            <div style="font-size:13px;">
+                                <div style="font-weight:600; margin-bottom:2px;">Sự cố: ${escapeHtml(item.issueType)}</div>
+                                <div style="color:var(--text-secondary);">${escapeHtml(item.description)}</div>
+                            </div>
+
+                            <div class="tech-note-box ${(item.status || '').toUpperCase() === 'REJECTED' ? 'rejected' : ''}">
+                                <strong>Phản hồi Kỹ thuật viên:</strong>
+                                ${item.adminNote ? escapeHtml(item.adminNote) : '<span style="color:var(--text-secondary);">Đã ghi nhận phiếu, kỹ thuật viên HK COMPUTER sẽ liên hệ xác nhận trong giờ làm việc.</span>'}
+                            </div>
+                        </article>
                     `).join('');
                 }
             } catch (err) {
@@ -354,33 +552,32 @@
         function bindClaimButtons() {
             document.querySelectorAll('.btn-open-claim').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    openClaimModal(
-                        btn.dataset.orderId,
-                        btn.dataset.productId,
-                        btn.dataset.productName,
-                        btn.dataset.serial
-                    );
+                    document.getElementById('claimOrderId').value = btn.dataset.orderId;
+                    document.getElementById('claimProductId').value = btn.dataset.productId;
+                    document.getElementById('claimUnitNumber').value = btn.dataset.unitNumber || '1';
+                    document.getElementById('claimDeviceDisplay').value = `${btn.dataset.serial} — ${btn.dataset.productName}`;
+                    claimModal.classList.add('active');
                 });
             });
         }
 
-        function openClaimModal(orderId, productId, productName, serial) {
-            document.getElementById('claimOrderId').value = orderId;
-            document.getElementById('claimProductId').value = productId;
-            document.getElementById('claimDeviceDisplay').value = `${serial} — ${productName || 'Thiết bị #' + productId}`;
-            claimModal.classList.add('active');
-        }
-
         document.getElementById('btnCloseClaimModal').addEventListener('click', () => claimModal.classList.remove('active'));
         document.getElementById('btnCancelClaim').addEventListener('click', () => claimModal.classList.remove('active'));
+        claimModal.addEventListener('click', (e) => { if (e.target === claimModal) claimModal.classList.remove('active'); });
 
         claimForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const orderId = Number(document.getElementById('claimOrderId').value);
             const productId = Number(document.getElementById('claimProductId').value);
+            const unitNumber = Number(document.getElementById('claimUnitNumber').value) || 1;
             const issueType = document.getElementById('claimIssueType').value;
             const contactPhone = document.getElementById('claimPhone').value.trim();
             const description = document.getElementById('claimDescription').value.trim();
+
+            if (!isValidVietnamPhone(contactPhone)) {
+                toast.warning('Số điện thoại phải gồm đúng 10 chữ số và bắt đầu bằng số 0.');
+                return;
+            }
 
             const btn = document.getElementById('btnSubmitClaim');
             btn.disabled = true;
@@ -390,6 +587,7 @@
                 await api.post(CONFIG.ENDPOINTS.WARRANTY.CREATE_CLAIM, {
                     orderId,
                     productId,
+                    unitNumber,
                     issueType,
                     contactPhone,
                     description
@@ -411,7 +609,6 @@
             cart.updateHeaderBadge();
             await loadUserWarrantyData();
 
-            // Check query params for direct lookup/claim from order.html
             const params = new URLSearchParams(window.location.search);
             const serialParam = params.get('serial');
             if (serialParam) {

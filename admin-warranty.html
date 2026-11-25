@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Bảo hành Điện tử — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=7" />
     <style>
         .serial-badge {
             font-family: var(--font-mono);
@@ -16,6 +16,54 @@
             font-weight: var(--font-semibold);
         }
 
+        .filter-pills {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .filter-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 140ms ease;
+        }
+
+        .filter-pill.active,
+        .filter-pill:hover {
+            border-color: var(--paper-accent-coral);
+            background: rgba(239, 129, 87, 0.12);
+            color: var(--paper-accent-coral);
+        }
+
+        .note-presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .note-preset-btn {
+            font-size: 11px;
+            padding: 4px 9px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface-subtle);
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .note-preset-btn:hover {
+            border-color: var(--brand-green);
+            color: var(--brand-green);
+        }
+
         .modal-backdrop {
             display: none;
             position: fixed;
@@ -25,7 +73,7 @@
             z-index: 1000;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 16px;
         }
 
         .modal-backdrop.active {
@@ -36,9 +84,9 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            max-width: 480px;
+            max-width: 500px;
             width: 100%;
-            padding: 28px;
+            padding: 24px;
         }
 
         .pagination-bar {
@@ -51,19 +99,18 @@
 </head>
 <body>
     <div class="admin-layout">
-        <!-- Sidebar -->
         <aside id="adminSidebar"></aside>
 
-        <!-- Main Content -->
         <div class="admin-main">
             <header id="adminTopbar"></header>
 
             <main class="admin-content-body">
                 <div class="table-toolbar">
                     <div>
-                        <h1 style="font-size: var(--text-2xl);">Phiếu Yêu cầu Bảo hành</h1>
-                        <p style="font-size: var(--text-xs);">Tiếp nhận thiết bị, cập nhật tiến độ sửa chữa và ghi chú kỹ thuật cho khách hàng.</p>
+                        <h1 style="font-size: var(--text-2xl); margin-bottom: 3px;">Phiếu Yêu cầu Bảo hành</h1>
+                        <p style="font-size: var(--text-xs); margin: 0;">Tiếp nhận thiết bị, chuyển đúng bước xử lý và gửi phản hồi kỹ thuật tới khách hàng.</p>
                     </div>
+                    <input type="search" id="searchWarrantyInput" class="input" style="max-width: 280px;" placeholder="Tìm mã Serial, SĐT, tên máy..." />
                 </div>
 
                 <!-- Metrics Row -->
@@ -77,12 +124,24 @@
                         <div class="metric-value" id="metricPending">0</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Đang kiểm tra / sửa chữa</div>
+                        <div class="metric-label">Đang kiểm tra / sửa</div>
                         <div class="metric-value" id="metricRepairing">0</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Đã hoàn tất trả máy</div>
+                        <div class="metric-label">Hoàn tất trả máy</div>
                         <div class="metric-value" id="metricCompleted">0</div>
+                    </div>
+                </div>
+
+                <!-- Status Filter Pills -->
+                <div class="table-toolbar" style="padding: 10px 16px;">
+                    <div class="filter-pills" id="statusFilterPills">
+                        <button type="button" class="filter-pill active" data-status="ALL">Tất cả</button>
+                        <button type="button" class="filter-pill" data-status="PENDING">Chờ tiếp nhận</button>
+                        <button type="button" class="filter-pill" data-status="RECEIVED">Đã nhận máy</button>
+                        <button type="button" class="filter-pill" data-status="REPAIRING">Đang bảo hành</button>
+                        <button type="button" class="filter-pill" data-status="COMPLETED">Hoàn tất</button>
+                        <button type="button" class="filter-pill" data-status="REJECTED">Từ chối</button>
                     </div>
                 </div>
 
@@ -93,7 +152,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Mã Serial</th>
-                                <th>Khách hàng & SĐT</th>
+                                <th>Khách hàng &amp; SĐT</th>
                                 <th>Thiết bị</th>
                                 <th>Mô tả lỗi</th>
                                 <th>Trạng thái</th>
@@ -118,30 +177,36 @@
     <!-- Update Warranty Status Modal -->
     <div class="modal-backdrop" id="updateModal">
         <div class="modal-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <h3 style="font-size: var(--text-lg);">Cập nhật tiến độ bảo hành</h3>
-                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer;">×</button>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-primary);">×</button>
             </div>
+            <div id="editClaimMeta" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; padding: 10px 12px; background: var(--surface-subtle); border-radius: 8px;"></div>
             <form id="updateForm">
                 <input type="hidden" id="editClaimId" />
 
                 <div class="form-group">
-                    <label class="form-label" for="editStatus">Trạng thái xử lý</label>
+                    <label class="form-label" for="editStatus">Bước xử lý tiếp theo</label>
                     <select id="editStatus" class="select">
-                        <option value="PENDING">Chờ tiếp nhận</option>
-                        <option value="RECEIVED">Đã tiếp nhận thiết bị tại trung tâm</option>
-                        <option value="REPAIRING">Đang kiểm tra &amp; xử lý bảo hành</option>
-                        <option value="COMPLETED">Đã hoàn tất bảo hành &amp; bàn giao</option>
+                        <option value="PENDING">1. Chờ tiếp nhận</option>
+                        <option value="RECEIVED">2. Đã tiếp nhận thiết bị tại trung tâm</option>
+                        <option value="REPAIRING">3. Đang kiểm tra &amp; xử lý bảo hành</option>
+                        <option value="COMPLETED">4. Đã hoàn tất bảo hành &amp; bàn giao</option>
                         <option value="REJECTED">Từ chối bảo hành (Không đủ điều kiện)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label" for="editAdminNote">Phản hồi / Ghi chú của kỹ thuật viên</label>
-                    <textarea id="editAdminNote" class="textarea" rows="4"></textarea>
+                    <textarea id="editAdminNote" class="textarea" rows="3" placeholder="Nhập tình trạng kiểm tra, linh kiện thay thế hoặc thời gian hẹn nhận máy..."></textarea>
+                    <div class="note-presets">
+                        <button type="button" class="note-preset-btn" data-note="Đã tiếp nhận thiết bị tại trung tâm, kỹ thuật viên đang kiểm tra chi tiết.">+ Đã tiếp nhận</button>
+                        <button type="button" class="note-preset-btn" data-note="Đang tiến hành thay thế linh kiện bảo hành chính hãng và kiểm thử độ ổn định.">+ Đang xử lý</button>
+                        <button type="button" class="note-preset-btn" data-note="Đã hoàn tất bảo hành, test ổn định 100%. Mời quý khách đến nhận máy hoặc xác nhận giao tận nơi.">+ Hoàn tất trả máy</button>
+                    </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px;">
                     <button type="button" id="btnCancelModal" class="btn btn-secondary">Đóng</button>
                     <button type="submit" id="btnSaveStatus" class="btn btn-primary">Lưu cập nhật</button>
                 </div>
@@ -153,8 +218,9 @@
         import { api } from './assets/js/api.js';
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=7';
         import { toast } from './assets/js/toast.js';
+        import { escapeHtml } from './assets/js/utils.js';
 
         const warrantyTableBody = document.getElementById('warrantyTableBody');
         const paginationBar = document.getElementById('paginationBar');
@@ -163,15 +229,81 @@
 
         let currentPage = 0;
         let currentItems = [];
+        let activeStatusFilter = 'ALL';
+        let searchQuery = '';
 
         function getStatusBadge(status) {
             const s = (status || '').toUpperCase();
-            if (s === 'PENDING') return `<span class="badge badge-warning">Chờ tiếp nhận</span>`;
-            if (s === 'RECEIVED') return `<span class="badge badge-info">Đã nhận máy</span>`;
-            if (s === 'REPAIRING') return `<span class="badge badge-info">Đang sửa chữa</span>`;
-            if (s === 'COMPLETED') return `<span class="badge badge-success">Hoàn tất</span>`;
-            if (s === 'REJECTED') return `<span class="badge badge-danger">Từ chối</span>`;
-            return `<span class="badge">${status}</span>`;
+            if (s === 'PENDING') return '<span class="badge badge-warning">Chờ tiếp nhận</span>';
+            if (s === 'RECEIVED') return '<span class="badge badge-info">Đã nhận máy</span>';
+            if (s === 'REPAIRING') return '<span class="badge badge-info">Đang sửa chữa</span>';
+            if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn tất</span>';
+            if (s === 'REJECTED') return '<span class="badge badge-danger">Từ chối</span>';
+            return `<span class="badge">${escapeHtml(status)}</span>`;
+        }
+
+        function renderFilteredTable() {
+            const kw = searchQuery.toLowerCase();
+            const filtered = currentItems.filter(item => {
+                if (activeStatusFilter !== 'ALL' && (item.status || '').toUpperCase() !== activeStatusFilter) {
+                    return false;
+                }
+                if (kw) {
+                    const hay = `${item.serialCode || ''} ${item.customerEmail || ''} ${item.contactPhone || ''} ${item.productName || ''} ${item.issueType || ''}`.toLowerCase();
+                    return hay.includes(kw);
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                warrantyTableBody.innerHTML = `
+                    <tr><td colspan="9" style="text-align: center; padding: 32px; color: var(--text-secondary);">Không có phiếu bảo hành nào khớp bộ lọc hiện tại.</td></tr>
+                `;
+                return;
+            }
+
+            warrantyTableBody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td class="tabular-nums">#${item.id}</td>
+                    <td><span class="serial-badge">${escapeHtml(item.serialCode)}</span></td>
+                    <td>
+                        <div style="font-weight: var(--font-medium); font-size: var(--text-xs);">${escapeHtml(item.customerEmail || 'User #' + item.accountId)}</div>
+                        <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">${escapeHtml(item.contactPhone || '-')}</div>
+                    </td>
+                    <td style="font-weight: var(--font-medium); white-space: normal; min-width: 170px;">${escapeHtml(item.productName || 'SP #' + item.productId)}</td>
+                    <td style="white-space: normal; min-width: 210px;">
+                        <div style="font-weight: var(--font-semibold); font-size: var(--text-xs);">${escapeHtml(item.issueType)}</div>
+                        <div style="font-size: var(--text-xs); color: var(--text-secondary);">${escapeHtml(item.description)}</div>
+                    </td>
+                    <td>${getStatusBadge(item.status)}</td>
+                    <td style="font-size: var(--text-xs); color: var(--text-secondary); white-space: normal; min-width: 180px;">
+                        ${item.adminNote ? escapeHtml(item.adminNote) : '<i>Chưa có ghi chú</i>'}
+                    </td>
+                    <td class="tabular-nums" style="font-size: var(--text-xs);">
+                        ${item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '-'}
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-secondary btn-sm btn-edit-claim" data-id="${item.id}">
+                            Xử lý
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.querySelectorAll('.btn-edit-claim').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const claim = currentItems.find(c => c.id === Number(btn.dataset.id));
+                    if (!claim) return;
+                    document.getElementById('editClaimId').value = claim.id;
+                    document.getElementById('editStatus').value = claim.status || 'PENDING';
+                    document.getElementById('editAdminNote').value = claim.adminNote || '';
+                    document.getElementById('editClaimMeta').innerHTML = `
+                        <div><b>Phiếu #${claim.id}</b> · Serial: <code>${escapeHtml(claim.serialCode)}</code></div>
+                        <div style="margin-top:3px;">Thiết bị: <b>${escapeHtml(claim.productName || '')}</b> · SĐT: ${escapeHtml(claim.contactPhone || '-')}</div>
+                    `;
+                    updateModal.classList.add('active');
+                });
+            });
         }
 
         async function loadClaims(page = 0) {
@@ -179,69 +311,22 @@
             currentPage = page;
 
             try {
-                const data = await api.get(CONFIG.ENDPOINTS.WARRANTY.ADMIN_ALL, { page, size: 10 });
+                const data = await api.get(CONFIG.ENDPOINTS.WARRANTY.ADMIN_ALL, { page, size: 20 });
                 const items = data?.content || [];
                 const totalPages = data?.totalPages || 1;
                 const totalElements = data?.totalElements || items.length;
                 currentItems = items;
 
-                // Update metrics
                 document.getElementById('metricTotal').textContent = totalElements;
                 document.getElementById('metricPending').textContent = items.filter(i => i.status === 'PENDING').length;
                 document.getElementById('metricRepairing').textContent = items.filter(i => i.status === 'RECEIVED' || i.status === 'REPAIRING').length;
                 document.getElementById('metricCompleted').textContent = items.filter(i => i.status === 'COMPLETED').length;
 
-                if (items.length === 0) {
-                    warrantyTableBody.innerHTML = `
-                        <tr><td colspan="9" style="text-align: center; padding: 32px; color: var(--text-secondary);">Chưa có phiếu yêu cầu bảo hành nào trong hệ thống.</td></tr>
-                    `;
-                    paginationBar.innerHTML = '';
-                    return;
-                }
-
-                warrantyTableBody.innerHTML = items.map(item => `
-                    <tr>
-                        <td class="tabular-nums">#${item.id}</td>
-                        <td><span class="serial-badge">${item.serialCode}</span></td>
-                        <td>
-                            <div style="font-weight: var(--font-medium); font-size: var(--text-xs);">${item.customerEmail || 'User #' + item.accountId}</div>
-                            <div class="tabular-nums" style="font-size: var(--text-xs); color: var(--text-secondary);">${item.contactPhone || '-'}</div>
-                        </td>
-                        <td style="font-weight: var(--font-medium);">${item.productName || 'SP #' + item.productId}</td>
-                        <td>
-                            <div style="font-weight: var(--font-semibold); font-size: var(--text-xs);">${item.issueType}</div>
-                            <div style="font-size: var(--text-xs); color: var(--text-secondary); max-width: 240px;">${item.description}</div>
-                        </td>
-                        <td>${getStatusBadge(item.status)}</td>
-                        <td style="font-size: var(--text-xs); color: var(--text-secondary); max-width: 200px;">
-                            ${item.adminNote || '<i>Chưa có ghi chú</i>'}
-                        </td>
-                        <td class="tabular-nums" style="font-size: var(--text-xs);">
-                            ${item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : '-'}
-                        </td>
-                        <td>
-                            <button type="button" class="btn btn-secondary btn-sm btn-edit-claim" data-id="${item.id}">
-                                Xử lý
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-
-                document.querySelectorAll('.btn-edit-claim').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const claim = currentItems.find(c => c.id === Number(btn.dataset.id));
-                        if (!claim) return;
-                        document.getElementById('editClaimId').value = claim.id;
-                        document.getElementById('editStatus').value = claim.status || 'PENDING';
-                        document.getElementById('editAdminNote').value = claim.adminNote || '';
-                        updateModal.classList.add('active');
-                    });
-                });
-
+                renderFilteredTable();
                 renderPagination(currentPage, totalPages);
             } catch (err) {
                 warrantyTableBody.innerHTML = `
-                    <tr><td colspan="9" style="text-align: center; padding: 32px;" class="text-danger">${err.message}</td></tr>
+                    <tr><td colspan="9" style="text-align: center; padding: 32px;" class="text-danger">${escapeHtml(err.message)}</td></tr>
                 `;
             }
         }
@@ -261,8 +346,28 @@
             });
         }
 
+        document.querySelectorAll('#statusFilterPills [data-status]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeStatusFilter = btn.dataset.status;
+                document.querySelectorAll('#statusFilterPills [data-status]').forEach(b => b.classList.toggle('active', b === btn));
+                renderFilteredTable();
+            });
+        });
+
+        document.getElementById('searchWarrantyInput')?.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderFilteredTable();
+        });
+
+        document.querySelectorAll('.note-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('editAdminNote').value = btn.dataset.note || '';
+            });
+        });
+
         document.getElementById('btnCloseModal').addEventListener('click', () => updateModal.classList.remove('active'));
         document.getElementById('btnCancelModal').addEventListener('click', () => updateModal.classList.remove('active'));
+        updateModal.addEventListener('click', (e) => { if (e.target === updateModal) updateModal.classList.remove('active'); });
 
         updateForm.addEventListener('submit', async (e) => {
             e.preventDefault();

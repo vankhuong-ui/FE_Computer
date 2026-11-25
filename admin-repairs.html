@@ -4,11 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Quản lý Lịch hẹn Sửa chữa — HK COMPUTER Admin</title>
-    <link rel="stylesheet" href="./assets/css/admin.css?v=6" />
+    <link rel="stylesheet" href="./assets/css/admin.css?v=7" />
     <style>
-        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+        .filter-pills { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .filter-pill { padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 140ms ease; }
+        .filter-pill.active, .filter-pill:hover { border-color: var(--paper-accent-coral); background: rgba(239, 129, 87, 0.12); color: var(--paper-accent-coral); }
+        .note-presets { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+        .note-preset-btn { font-size: 11px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-subtle); color: var(--text-secondary); cursor: pointer; }
+        .note-preset-btn:hover { border-color: var(--brand-green); color: var(--brand-green); }
+        .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 16px; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 480px; width: 100%; padding: 28px; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 500px; width: 100%; padding: 24px; }
     </style>
 </head>
 <body>
@@ -21,9 +27,10 @@
             <main class="admin-content-body">
                 <div class="table-toolbar">
                     <div>
-                        <h1 style="font-size: var(--text-2xl);">Lịch hẹn Sửa chữa Laptop &amp; PC</h1>
-                        <p style="font-size: var(--text-xs);">Tiếp nhận, xác nhận lịch hẹn theo chi nhánh và cập nhật ghi chú kỹ thuật.</p>
+                        <h1 style="font-size: var(--text-2xl); margin-bottom: 3px;">Lịch hẹn Sửa chữa Laptop &amp; PC</h1>
+                        <p style="font-size: var(--text-xs); margin: 0;">Điều phối lịch tiếp nhận tại 3 chi nhánh (Hà Nội · TP.HCM · Đà Nẵng) và kỹ thuật viên tận nhà.</p>
                     </div>
+                    <input type="search" id="searchRepairInput" class="input" style="max-width: 280px;" placeholder="Tìm tên khách, SĐT, dòng máy..." />
                 </div>
 
                 <div class="metrics-row">
@@ -36,7 +43,7 @@
                         <div class="metric-value" id="metricPending">0</div>
                     </div>
                     <div class="metric-card">
-                        <div class="metric-label">Đang sửa chữa</div>
+                        <div class="metric-label">Đang thực hiện</div>
                         <div class="metric-value" id="metricProgress">0</div>
                     </div>
                     <div class="metric-card">
@@ -45,13 +52,29 @@
                     </div>
                 </div>
 
+                <div class="table-toolbar" style="padding: 10px 16px;">
+                    <div class="filter-pills" id="statusFilterPills">
+                        <button type="button" class="filter-pill active" data-status="ALL">Tất cả trạng thái</button>
+                        <button type="button" class="filter-pill" data-status="PENDING">Chờ xác nhận</button>
+                        <button type="button" class="filter-pill" data-status="CONFIRMED">Đã xác nhận</button>
+                        <button type="button" class="filter-pill" data-status="IN_PROGRESS">Đang sửa</button>
+                        <button type="button" class="filter-pill" data-status="COMPLETED">Hoàn tất</button>
+                        <button type="button" class="filter-pill" data-status="CANCELLED">Đã hủy</button>
+                    </div>
+                    <select id="methodFilterSelect" class="select" style="width: auto; min-width: 165px;">
+                        <option value="ALL">Mọi hình thức</option>
+                        <option value="AT_STORE">Tại cửa hàng</option>
+                        <option value="AT_HOME">Sửa tại nhà</option>
+                    </select>
+                </div>
+
                 <div class="table-container">
                     <table class="table">
                         <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Khách hàng</th>
-                                <th>Chi nhánh</th>
+                                <th>Hình thức &amp; Địa điểm</th>
                                 <th>Thiết bị &amp; Dịch vụ</th>
                                 <th>Thời gian hẹn</th>
                                 <th>Trạng thái</th>
@@ -71,27 +94,33 @@
 
     <div class="modal-backdrop" id="statusModal">
         <div class="modal-box">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                 <h3 style="font-size: var(--text-lg);">Cập nhật lịch hẹn sửa chữa</h3>
-                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-primary);">×</button>
+                <button type="button" id="btnCloseModal" style="background:none; border:none; font-size:22px; cursor:pointer; color:var(--text-primary);">×</button>
             </div>
+            <div id="editRepairMeta" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 14px; padding: 10px 12px; background: var(--surface-subtle); border-radius: 8px;"></div>
             <form id="statusForm">
                 <input type="hidden" id="editId" />
                 <div class="form-group">
                     <label class="form-label" for="editStatus">Trạng thái xử lý</label>
                     <select id="editStatus" class="select">
-                        <option value="PENDING">Chờ xác nhận</option>
-                        <option value="CONFIRMED">Đã xác nhận lịch hẹn</option>
-                        <option value="IN_PROGRESS">Đang kiểm tra / Sửa chữa</option>
-                        <option value="COMPLETED">Đã bàn giao hoàn tất</option>
+                        <option value="PENDING">1. Chờ xác nhận</option>
+                        <option value="CONFIRMED">2. Đã xác nhận lịch hẹn</option>
+                        <option value="IN_PROGRESS">3. Đang kiểm tra / Sửa chữa</option>
+                        <option value="COMPLETED">4. Đã bàn giao hoàn tất</option>
                         <option value="CANCELLED">Đã hủy lịch</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="editNote">Ghi chú kỹ thuật viên</label>
-                    <textarea id="editNote" class="textarea" rows="3"></textarea>
+                    <textarea id="editNote" class="textarea" rows="3" placeholder="Phân công KTV, báo giá linh kiện hoặc kết quả sửa chữa..."></textarea>
+                    <div class="note-presets">
+                        <button type="button" class="note-preset-btn" data-note="Đã xác nhận lịch hẹn và phân công kỹ thuật viên liên hệ trước 30 phút.">+ Xác nhận lịch</button>
+                        <button type="button" class="note-preset-btn" data-note="KTV đang tiến hành vệ sinh, kiểm tra phần cứng và báo giá chi tiết.">+ Đang sửa chữa</button>
+                        <button type="button" class="note-preset-btn" data-note="Đã hoàn tất sửa chữa, test máy ổn định và bàn giao khách hàng.">+ Hoàn tất</button>
+                    </div>
                 </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 18px;">
                     <button type="button" id="btnCancelModal" class="btn btn-secondary">Hủy</button>
                     <button type="submit" class="btn btn-primary">Lưu cập nhật</button>
                 </div>
@@ -104,10 +133,14 @@
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';
-        import { initAdminLayout } from './assets/js/admin-layout.js?v=6';
+        import { escapeHtml } from './assets/js/utils.js';
+        import { initAdminLayout } from './assets/js/admin-layout.js?v=7';
 
         let currentPage = 0;
         let currentItems = [];
+        let activeStatus = 'ALL';
+        let activeMethod = 'ALL';
+        let searchQuery = '';
 
         function getBadge(s) {
             if (s === 'PENDING') return '<span class="badge badge-warning">Chờ xác nhận</span>';
@@ -115,14 +148,80 @@
             if (s === 'IN_PROGRESS') return '<span class="badge badge-info">Đang sửa chữa</span>';
             if (s === 'COMPLETED') return '<span class="badge badge-success">Hoàn tất</span>';
             if (s === 'CANCELLED') return '<span class="badge badge-danger">Đã hủy</span>';
-            return `<span class="badge">${s}</span>`;
+            return `<span class="badge">${escapeHtml(s)}</span>`;
+        }
+
+        function renderFilteredTable() {
+            const tbody = document.getElementById('tableBody');
+            const kw = searchQuery.toLowerCase();
+            const filtered = currentItems.filter(item => {
+                if (activeStatus !== 'ALL' && (item.status || '').toUpperCase() !== activeStatus) return false;
+                if (activeMethod !== 'ALL' && (item.serviceMethod || 'AT_STORE').toUpperCase() !== activeMethod) return false;
+                if (kw) {
+                    const hay = `${item.customerName || ''} ${item.customerPhone || ''} ${item.deviceModel || ''} ${item.branchName || ''} ${item.homeAddress || ''}`.toLowerCase();
+                    return hay.includes(kw);
+                }
+                return true;
+            });
+
+            if (!filtered.length) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-secondary);">Không có lịch hẹn nào khớp bộ lọc hiện tại.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(item => `
+                <tr>
+                    <td class="tabular-nums">#SC-${item.id}</td>
+                    <td>
+                        <div style="font-weight:600; font-size:var(--text-xs);">${escapeHtml(item.customerName)}</div>
+                        <div class="tabular-nums" style="font-size:var(--text-xs); color:var(--text-secondary);">${escapeHtml(item.customerPhone)}</div>
+                    </td>
+                    <td style="font-size:var(--text-xs); white-space:normal; min-width:200px;">
+                        <div style="margin-bottom:4px;">
+                            ${item.serviceMethod === 'AT_HOME'
+                                ? '<span class="badge badge-warning">Sửa tại nhà</span>'
+                                : '<span class="badge badge-info">Tại cửa hàng</span>'}
+                        </div>
+                        <div>${escapeHtml(item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName) : item.branchName)}</div>
+                    </td>
+                    <td style="white-space:normal; min-width:200px;">
+                        <div style="font-weight:600; font-size:var(--text-xs);">${escapeHtml(item.deviceModel)}</div>
+                        <div style="font-size:11.5px; color:var(--text-secondary);">${escapeHtml(item.serviceType)}</div>
+                        ${item.issueDescription ? `<div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${escapeHtml(item.issueDescription)}</div>` : ''}
+                    </td>
+                    <td class="tabular-nums" style="font-size:var(--text-xs);">
+                        <div><b>${escapeHtml(item.appointmentDate)}</b></div>
+                        <div style="color:var(--text-secondary);">${escapeHtml(item.appointmentTime)}</div>
+                    </td>
+                    <td>${getBadge(item.status)}</td>
+                    <td style="font-size:var(--text-xs); color:var(--text-secondary); white-space:normal; min-width:170px;">${item.adminNote ? escapeHtml(item.adminNote) : '<i>Chưa có</i>'}</td>
+                    <td>
+                        <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${item.id}">Xử lý</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const item = currentItems.find(x => x.id === Number(btn.dataset.id));
+                    if (!item) return;
+                    document.getElementById('editId').value = item.id;
+                    document.getElementById('editStatus').value = item.status || 'PENDING';
+                    document.getElementById('editNote').value = item.adminNote || '';
+                    document.getElementById('editRepairMeta').innerHTML = `
+                        <div><b>Lịch hẹn #SC-${item.id}</b> · ${escapeHtml(item.customerName)} (${escapeHtml(item.customerPhone)})</div>
+                        <div style="margin-top:3px;">Thiết bị: <b>${escapeHtml(item.deviceModel)}</b> · ${escapeHtml(item.appointmentTime)} ngày ${escapeHtml(item.appointmentDate)}</div>
+                    `;
+                    document.getElementById('statusModal').classList.add('active');
+                });
+            });
         }
 
         async function loadBookings(page = 0) {
             if (!auth.requireAdmin()) return;
             currentPage = page;
             try {
-                const data = await api.get(CONFIG.ENDPOINTS.REPAIRS.ADMIN_ALL, { page, size: 10 });
+                const data = await api.get(CONFIG.ENDPOINTS.REPAIRS.ADMIN_ALL, { page, size: 20 });
                 const items = data?.content || [];
                 const totalPages = data?.totalPages || 1;
                 currentItems = items;
@@ -132,54 +231,7 @@
                 document.getElementById('metricProgress').textContent = items.filter(i => i.status === 'CONFIRMED' || i.status === 'IN_PROGRESS').length;
                 document.getElementById('metricDone').textContent = items.filter(i => i.status === 'COMPLETED').length;
 
-                const tbody = document.getElementById('tableBody');
-                if (!items.length) {
-                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-secondary);">Chưa có lịch hẹn sửa chữa nào.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = items.map(item => `
-                    <tr>
-                        <td class="tabular-nums">#${item.id}</td>
-                        <td>
-                            <div style="font-weight:600; font-size:var(--text-xs);">${item.customerName}</div>
-                            <div class="tabular-nums" style="font-size:var(--text-xs); color:var(--text-secondary);">${item.customerPhone}</div>
-                        </td>
-                        <td style="font-size:var(--text-xs); max-width:220px;">
-                            <div style="margin-bottom:4px;">
-                                ${item.serviceMethod === 'AT_HOME'
-                                    ? '<span class="badge badge-warning">Sửa tại nhà</span>'
-                                    : '<span class="badge badge-info">Tại cửa hàng</span>'}
-                            </div>
-                            <div>${item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName) : item.branchName}</div>
-                        </td>
-                        <td>
-                            <div style="font-weight:600; font-size:var(--text-xs);">${item.deviceModel}</div>
-                            <div style="font-size:11px; color:var(--text-secondary);">${item.serviceType}</div>
-                            ${item.issueDescription ? `<div style="font-size:11px; color:var(--text-muted);">${item.issueDescription}</div>` : ''}
-                        </td>
-                        <td class="tabular-nums" style="font-size:var(--text-xs);">
-                            <div><b>${item.appointmentDate}</b></div>
-                            <div style="color:var(--text-secondary);">${item.appointmentTime}</div>
-                        </td>
-                        <td>${getBadge(item.status)}</td>
-                        <td style="font-size:var(--text-xs); color:var(--text-secondary); max-width:180px;">${item.adminNote || '<i>Chưa có</i>'}</td>
-                        <td>
-                            <button type="button" class="btn btn-secondary btn-sm btn-edit" data-id="${item.id}">Xử lý</button>
-                        </td>
-                    </tr>
-                `).join('');
-
-                document.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const item = currentItems.find(x => x.id === Number(btn.dataset.id));
-                        if (!item) return;
-                        document.getElementById('editId').value = item.id;
-                        document.getElementById('editStatus').value = item.status || 'PENDING';
-                        document.getElementById('editNote').value = item.adminNote || '';
-                        document.getElementById('statusModal').classList.add('active');
-                    });
-                });
+                renderFilteredTable();
 
                 const pag = document.getElementById('paginationBar');
                 pag.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
@@ -187,12 +239,38 @@
                 ).join('') : '';
                 pag.querySelectorAll('button').forEach(b => b.addEventListener('click', () => loadBookings(Number(b.dataset.page))));
             } catch (err) {
-                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-danger" style="text-align:center; padding:32px;">${err.message}</td></tr>`;
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-danger" style="text-align:center; padding:32px;">${escapeHtml(err.message)}</td></tr>`;
             }
         }
 
-        document.getElementById('btnCloseModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
-        document.getElementById('btnCancelModal').addEventListener('click', () => document.getElementById('statusModal').classList.remove('active'));
+        document.querySelectorAll('#statusFilterPills [data-status]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                activeStatus = btn.dataset.status;
+                document.querySelectorAll('#statusFilterPills [data-status]').forEach(b => b.classList.toggle('active', b === btn));
+                renderFilteredTable();
+            });
+        });
+
+        document.getElementById('methodFilterSelect')?.addEventListener('change', (e) => {
+            activeMethod = e.target.value;
+            renderFilteredTable();
+        });
+
+        document.getElementById('searchRepairInput')?.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderFilteredTable();
+        });
+
+        document.querySelectorAll('.note-preset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('editNote').value = btn.dataset.note || '';
+            });
+        });
+
+        const modal = document.getElementById('statusModal');
+        document.getElementById('btnCloseModal').addEventListener('click', () => modal.classList.remove('active'));
+        document.getElementById('btnCancelModal').addEventListener('click', () => modal.classList.remove('active'));
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
 
         document.getElementById('statusForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -201,10 +279,12 @@
             const adminNote = document.getElementById('editNote').value.trim();
             try {
                 await api.patch(CONFIG.ENDPOINTS.REPAIRS.ADMIN_UPDATE_STATUS(id, status), { adminNote });
-                toast.success(`Đã cập nhật lịch hẹn #${id}`);
-                document.getElementById('statusModal').classList.remove('active');
+                toast.success(`Đã cập nhật lịch hẹn #SC-${id}`);
+                modal.classList.remove('active');
                 loadBookings(currentPage);
-            } catch (err) { toast.error(err.message); }
+            } catch (err) {
+                toast.error(err.message || 'Không thể cập nhật trạng thái lịch hẹn.');
+            }
         });
 
         document.addEventListener('DOMContentLoaded', () => {

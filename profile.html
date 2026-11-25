@@ -11,6 +11,15 @@
         .profile-grid { display: grid; grid-template-columns: 1fr 1.6fr; gap: 24px; margin-bottom: 40px; }
         @media (max-width: 860px) { .profile-grid { grid-template-columns: 1fr; } }
         .address-card { border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; background: var(--surface-subtle); }
+        .repair-track-list { display: flex; flex-direction: column; gap: 14px; }
+        .repair-track-card { border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; background: var(--surface-subtle); display: flex; flex-direction: column; gap: 12px; }
+        .repair-timeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+        @media (max-width: 560px) { .repair-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .repair-step { display: flex; align-items: center; gap: 6px; padding: 7px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); font-size: 11.5px; font-weight: 600; color: var(--text-muted); }
+        .repair-step.done { border-color: rgba(0, 139, 69, 0.35); background: var(--brand-green-soft); color: var(--brand-green); }
+        .repair-step.current { border-color: #288AD6; background: rgba(40, 138, 214, 0.1); color: #288AD6; }
+        .repair-step-dot { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid currentColor; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+        .repair-note { padding: 9px 12px; border-radius: 8px; background: var(--surface); border-left: 3px solid #288AD6; font-size: 12px; color: var(--text-primary); }
         .modal-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); backdrop-filter: blur(2px); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-backdrop.active { display: flex; }
         .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); max-width: 460px; width: 100%; padding: 28px; }
@@ -55,22 +64,8 @@
                 </div>
                 <a href="index.html#repair-center" class="btn btn-secondary btn-sm">+ Đặt lịch mới</a>
             </div>
-            <div class="table-container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Mã lịch</th>
-                            <th>Thiết bị &amp; Dịch vụ</th>
-                            <th>Chi nhánh</th>
-                            <th>Thời gian hẹn</th>
-                            <th>Trạng thái</th>
-                            <th>Ghi chú KTV</th>
-                        </tr>
-                    </thead>
-                    <tbody id="myRepairsBody">
-                        <tr><td colspan="6" style="text-align: center; padding: 24px;">Đang tải lịch hẹn...</td></tr>
-                    </tbody>
-                </table>
+            <div id="myRepairsList" class="repair-track-list">
+                <div style="text-align: center; padding: 24px; color: var(--text-secondary);">Đang tải lịch hẹn...</div>
             </div>
         </section>
     </main>
@@ -115,7 +110,8 @@
         import { auth } from './assets/js/auth.js';
         import { CONFIG } from './assets/js/config.js';
         import { toast } from './assets/js/toast.js';
-        import { initStoreLayout } from './assets/js/layout.js?v=6';
+        import { escapeHtml } from './assets/js/utils.js';
+        import { initStoreLayout } from './assets/js/layout.js?v=12';
 
         const addressModal = document.getElementById('addressModal');
         const addressForm = document.getElementById('addressForm');
@@ -198,37 +194,74 @@
             return `<span class="badge">${s}</span>`;
         }
 
+        const REPAIR_STEPS = [
+            { key: 'PENDING', label: 'Chờ xác nhận' },
+            { key: 'CONFIRMED', label: 'Đã xác nhận' },
+            { key: 'IN_PROGRESS', label: 'Đang sửa chữa' },
+            { key: 'COMPLETED', label: 'Hoàn tất' }
+        ];
+
+        function renderRepairTimeline(status) {
+            const s = (status || 'PENDING').toUpperCase();
+            if (s === 'CANCELLED') {
+                return '<span class="badge badge-danger" style="align-self:flex-start;">Lịch hẹn đã được hủy</span>';
+            }
+            const idxCur = Math.max(0, REPAIR_STEPS.findIndex(st => st.key === s));
+            return `
+                <div class="repair-timeline">
+                    ${REPAIR_STEPS.map((st, idx) => {
+                        const isDone = idx < idxCur || (s === 'COMPLETED' && idx === 3);
+                        const isCurrent = idx === idxCur && s !== 'COMPLETED';
+                        const cls = isDone ? 'done' : (isCurrent ? 'current' : '');
+                        return `
+                            <div class="repair-step ${cls}">
+                                <span class="repair-step-dot">${isDone ? '✓' : (idx + 1)}</span>
+                                <span>${st.label}</span>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
         async function loadMyRepairs() {
-            const tbody = document.getElementById('myRepairsBody');
+            const host = document.getElementById('myRepairsList');
             try {
                 const data = await api.get(CONFIG.ENDPOINTS.REPAIRS.MY_BOOKINGS, { page: 0, size: 10 });
                 const items = data?.content || [];
                 if (!items.length) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px; color: var(--text-secondary);">Bạn chưa có lịch hẹn sửa chữa nào.</td></tr>`;
+                    host.innerHTML = `<div style="text-align: center; padding: 24px; color: var(--text-secondary);">Bạn chưa có lịch hẹn sửa chữa nào.</div>`;
                     return;
                 }
-                tbody.innerHTML = items.map(item => `
-                    <tr>
-                        <td class="tabular-nums">#${item.id}</td>
-                        <td>
-                            <div style="font-weight: 600; font-size: var(--text-xs);">${item.deviceModel}</div>
-                            <div style="font-size: 11px; color: var(--text-secondary);">${item.serviceType}</div>
-                        </td>
-                        <td style="font-size: var(--text-xs);">
-                            <div style="margin-bottom: 2px;">
-                                ${item.serviceMethod === 'AT_HOME'
-                                    ? '<span class="badge badge-warning">Sửa tận nơi</span>'
-                                    : '<span class="badge badge-info">Tại cửa hàng</span>'}
+                host.innerHTML = items.map(item => `
+                    <article class="repair-track-card">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:8px;">
+                            <div>
+                                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px;">
+                                    <span class="badge badge-info tabular-nums">#SC-${item.id}</span>
+                                    <strong style="font-size:14px;">${escapeHtml(item.deviceModel)}</strong>
+                                    ${item.serviceMethod === 'AT_HOME'
+                                        ? '<span class="badge badge-warning">Sửa tận nơi</span>'
+                                        : '<span class="badge badge-success">Tại cửa hàng</span>'}
+                                </div>
+                                <div style="font-size:12px; color:var(--text-secondary);">
+                                    Dịch vụ: <b>${escapeHtml(item.serviceType)}</b> · Hẹn: <b class="tabular-nums">${escapeHtml(item.appointmentTime)} ngày ${escapeHtml(item.appointmentDate)}</b>
+                                </div>
+                                <div style="font-size:12px; color:var(--text-secondary); margin-top:2px;">
+                                    Địa điểm: ${escapeHtml(item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName || '-') : (item.branchName || '-'))}
+                                </div>
                             </div>
-                            <div>${item.serviceMethod === 'AT_HOME' ? (item.homeAddress || item.branchName || '-') : (item.branchName || '-')}</div>
-                        </td>
-                        <td class="tabular-nums" style="font-size: var(--text-xs);">${item.appointmentTime}<br/>${item.appointmentDate}</td>
-                        <td>${getRepairBadge(item.status)}</td>
-                        <td style="font-size: var(--text-xs); color: var(--text-secondary);">${item.adminNote || '<i>Đang chờ tiếp nhận</i>'}</td>
-                    </tr>
+                            ${getRepairBadge(item.status)}
+                        </div>
+                        ${renderRepairTimeline(item.status)}
+                        <div class="repair-note">
+                            <strong>Ghi chú Kỹ thuật viên:</strong>
+                            ${item.adminNote ? escapeHtml(item.adminNote) : '<span style="color:var(--text-secondary);">Đang chờ kỹ thuật viên xác nhận lịch hẹn.</span>'}
+                        </div>
+                    </article>
                 `).join('');
             } catch (_) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 24px;">Không thể tải lịch hẹn sửa chữa.</td></tr>`;
+                host.innerHTML = `<div style="text-align: center; padding: 24px;">Không thể tải lịch hẹn sửa chữa.</div>`;
             }
         }
 
