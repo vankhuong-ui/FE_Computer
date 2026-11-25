@@ -452,9 +452,31 @@
             .products-grid { grid-template-columns: repeat(3, 1fr); }
         }
         @media (max-width: 680px) {
-            .products-grid { grid-template-columns: repeat(2, 1fr); }
+            .products-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 8px;
+            }
+            .tgdd-product-card {
+                padding: 10px 9px 12px;
+            }
+            .tgdd-card-img-wrap {
+                height: 132px;
+            }
+            .tgdd-card-img-wrap img {
+                max-height: 124px;
+            }
+            .tgdd-card-title {
+                font-size: 13px;
+            }
+            .tgdd-price-current {
+                font-size: 14.5px;
+            }
+            .tgdd-card-actions {
+                grid-template-columns: 1fr;
+                gap: 5px;
+            }
         }
-        @media (max-width: 420px) {
+        @media (max-width: 339px) {
             .products-grid { grid-template-columns: 1fr; }
         }
 

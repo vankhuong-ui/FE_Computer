@@ -232,7 +232,7 @@
                 <div class="dash-header">
                     <div>
                         <h1>Trung tâm Điều hành HK COMPUTER</h1>
-                        <p>Báo cáo doanh thu thực thu, cơ cấu ngành hàng, cảnh báo tồn kho 10 cơ sở và tiến độ dịch vụ kỹ thuật.</p>
+                        <p>Báo cáo doanh thu thực thu, cơ cấu ngành hàng, cảnh báo tồn kho 3 cơ sở trọng điểm và tiến độ dịch vụ kỹ thuật.</p>
                     </div>
                     <div class="dash-actions">
                         <button type="button" id="btnRefreshDashboard" class="btn btn-outline btn-sm">Làm mới số liệu</button>
@@ -329,8 +329,8 @@
                             <div class="donut-legend" id="groupDonutLegend"></div>
                         </div>
                         <hr class="paper-card-hr" />
-                        <div class="paper-card-footer" id="customerVoucherFooter">
-                            0 thành viên · 0 mã Voucher đang mở
+                        <div class="paper-card-footer" id="customerFooterStats">
+                            0 tài khoản thành viên đang hoạt động
                         </div>
                     </section>
                 </div>
@@ -380,11 +380,11 @@
                 <!-- Quick Navigation Strip -->
                 <div class="quick-links-strip">
                     <a href="admin-branches.html" class="quick-link-chip">
-                        <span>Quản lý 10 Chi nhánh</span>
+                        <span>Quản lý 3 Chi nhánh</span>
                         <span>→</span>
                     </a>
-                    <a href="admin-vouchers.html" class="quick-link-chip">
-                        <span>Chiến dịch Mã giảm giá</span>
+                    <a href="admin-repairs.html" class="quick-link-chip">
+                        <span>Điều phối Lịch sửa chữa</span>
                         <span>→</span>
                     </a>
                     <a href="admin-warranty.html" class="quick-link-chip">
@@ -598,15 +598,15 @@
 
             document.getElementById('kpiProducts').textContent = `${summary.totalProducts ?? 0} SP`;
             document.getElementById('kpiProductsSub').textContent =
-                `${summary.activeBranches ?? 10} cơ sở · ${summary.lowStockCount ?? 0} điểm báo động kho`;
+                `${summary.activeBranches ?? 3} cơ sở · ${summary.lowStockCount ?? 0} điểm báo động kho`;
 
             const totalPendingSvc = Number(summary.pendingWarranties || 0) + Number(summary.pendingRepairs || 0);
             document.getElementById('kpiServices').textContent = totalPendingSvc;
             document.getElementById('kpiServicesSub').textContent =
                 `${summary.pendingWarranties ?? 0} ca bảo hành · ${summary.pendingRepairs ?? 0} lịch sửa · ${summary.openSupports ?? 0} hỗ trợ`;
 
-            document.getElementById('customerVoucherFooter').textContent =
-                `${summary.totalCustomers ?? 0} tài khoản thành viên · ${summary.activeVouchers ?? 0} mã giảm giá đang kích hoạt`;
+            document.getElementById('customerFooterStats').textContent =
+                `${summary.totalCustomers ?? 0} tài khoản thành viên · ${summary.activeBranches ?? 3} chi nhánh đang hoạt động`;
 
             renderRevenueChart(summary.revenueLast7Days || []);
             renderGroupDonut(summary.revenueByGroup || {});

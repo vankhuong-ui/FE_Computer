@@ -11,7 +11,7 @@ import { auth } from './auth.js?v=10';
 import { cart } from './cart.js?v=7';
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
-import { formatVnd } from './utils.js';
+import { formatVnd, escapeHtml } from './utils.js';
 import { initStoreLayout } from './layout.js?v=11';
 import './chat-widget.js?v=7';
 
@@ -29,6 +29,8 @@ let selectedCity = CONFIG.BRANCHES[0]?.city || 'Hà Nội';
 let allCategories = [];
 let allBrands = [];
 let allBranches = [...CONFIG.BRANCHES];
+let compareList = []; // Up to 3 products for side-by-side comparison
+let renderedProductMap = new Map();
 
 const productsGrid = document.getElementById('productsGrid');
 const paginationBar = document.getElementById('paginationBar');
@@ -424,6 +426,20 @@ async function loadProducts(page = 0) {
             const price = Number(p.price) || 0;
             const discountPct = 8 + ((Number(p.id) || idx) % 9);
             const oldPrice = price > 0 ? Math.round((price / (1 - discountPct / 100)) / 10000) * 10000 : 0;
+            const isCompared = compareList.some(item => Number(item.id) === Number(p.id));
+            const brandName = p.brandsName || allBrands.find(b => Number(b.id) === Number(p.brandsId))?.nameBrands || 'Chính hãng';
+
+            renderedProductMap.set(Number(p.id), {
+                id: p.id,
+                slug: p.slug || '',
+                name,
+                img,
+                price,
+                brandName,
+                catName: catName || getGroupHeadingLabel(),
+                specs: p.specs || hwTags.join(' | '),
+                stockSummaryLine
+            });
 
             return `
                 <article class="tgdd-product-card">
@@ -481,6 +497,12 @@ async function loadProducts(page = 0) {
                             Xem thông số
                         </a>
                     `}
+
+                    ${groupType !== 'ACCESSORY' ? `
+                        <button type="button" class="btn-compare-toggle ${isCompared ? 'active' : ''}" data-compare-id="${p.id}">
+                            ${isCompared ? '✓ Đã chọn so sánh' : '+ So sánh cấu hình'}
+                        </button>
+                    ` : ''}
                 </article>
             `;
         }).join('');
@@ -505,6 +527,10 @@ async function loadProducts(page = 0) {
                     image: btn.dataset.img
                 }, 1);
             });
+        });
+
+        productsGrid.querySelectorAll('[data-compare-id]').forEach(btn => {
+            btn.addEventListener('click', () => toggleCompareProduct(Number(btn.dataset.compareId)));
         });
 
         paginationBar.innerHTML = totalPages > 1 ? Array.from({ length: totalPages }, (_, i) =>
@@ -830,6 +856,158 @@ function initQuickSupportForm() {
             }
         }
     });
+}
+
+function toggleCompareProduct(productId) {
+    const existingIdx = compareList.findIndex(item => Number(item.id) === Number(productId));
+    if (existingIdx >= 0) {
+        compareList.splice(existingIdx, 1);
+    } else {
+        if (compareList.length >= 3) {
+            toast.warning('Chỉ có thể so sánh tối đa 3 sản phẩm cùng lúc.');
+            return;
+        }
+        const prod = renderedProductMap.get(Number(productId));
+        if (!prod) return;
+        compareList.push(prod);
+    }
+    syncCompareButtons();
+    renderCompareFloatingBar();
+}
+
+function syncCompareButtons() {
+    productsGrid?.querySelectorAll('[data-compare-id]').forEach(btn => {
+        const active = compareList.some(i => Number(i.id) === Number(btn.dataset.compareId));
+        btn.classList.toggle('active', active);
+        btn.textContent = active ? '✓ Đã chọn so sánh' : '+ So sánh cấu hình';
+    });
+}
+
+function renderCompareFloatingBar() {
+    let bar = document.getElementById('hkCompareFloatingBar');
+    if (!bar) {
+        bar = document.createElement('div');
+        bar.id = 'hkCompareFloatingBar';
+        bar.className = 'compare-floating-bar';
+        document.body.appendChild(bar);
+    }
+
+    if (!compareList.length) {
+        bar.classList.remove('active');
+        bar.innerHTML = '';
+        return;
+    }
+
+    bar.classList.add('active');
+    bar.innerHTML = `
+        <div class="compare-slots">
+            ${compareList.map(item => `
+                <div class="compare-slot">
+                    <img src="${escapeHtml(item.img)}" alt="${escapeHtml(item.name)}" />
+                    <span class="compare-slot-name">${escapeHtml(item.name)}</span>
+                    <button type="button" class="compare-slot-remove" data-remove-compare="${item.id}" aria-label="Bỏ chọn">×</button>
+                </div>
+            `).join('')}
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; justify-content:flex-end; flex-shrink:0;">
+            <button type="button" id="btnClearCompare" class="btn btn-outline btn-sm">Xóa hết</button>
+            <button type="button" id="btnOpenCompareModal" class="btn btn-primary btn-sm" ${compareList.length < 2 ? 'disabled' : ''}>
+                So sánh ngay (${compareList.length}/3)
+            </button>
+        </div>
+    `;
+
+    bar.querySelectorAll('[data-remove-compare]').forEach(btn => {
+        btn.addEventListener('click', () => toggleCompareProduct(Number(btn.dataset.removeCompare)));
+    });
+    document.getElementById('btnClearCompare')?.addEventListener('click', () => {
+        compareList = [];
+        syncCompareButtons();
+        renderCompareFloatingBar();
+    });
+    document.getElementById('btnOpenCompareModal')?.addEventListener('click', openCompareModal);
+}
+
+function openCompareModal() {
+    if (compareList.length < 2) {
+        toast.info('Vui lòng chọn ít nhất 2 sản phẩm để so sánh.');
+        return;
+    }
+
+    let modal = document.getElementById('hkCompareModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'hkCompareModal';
+        modal.className = 'hk-modal-backdrop';
+        document.body.appendChild(modal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
+    }
+
+    const splitSpecs = (raw) => String(raw || '')
+        .split(/[|;\n]+/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    const parsedCols = compareList.map(p => ({ ...p, specLines: splitSpecs(p.specs) }));
+    const maxSpecRows = Math.max(3, ...parsedCols.map(c => c.specLines.length));
+
+    modal.innerHTML = `
+        <div class="hk-modal-box" style="max-width: 880px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;">
+                <div>
+                    <h3 style="font-size: var(--text-lg); margin: 0 0 2px;">So sánh chi tiết cấu hình &amp; giá bán</h3>
+                    <p style="font-size: 12px; color: var(--text-secondary); margin: 0;">Đặt cạnh nhau ${parsedCols.length} sản phẩm tại HK COMPUTER</p>
+                </div>
+                <button type="button" id="btnCloseCompareModal" style="background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-secondary);">×</button>
+            </div>
+            <div class="compare-table-wrap">
+                <table class="compare-table">
+                    <tbody>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            ${parsedCols.map(c => `
+                                <td>
+                                    <div style="display:flex; flex-direction:column; gap:8px;">
+                                        <img src="${escapeHtml(c.img)}" alt="${escapeHtml(c.name)}" style="width:100%; height:110px; object-fit:contain; background:#fff; border-radius:6px;" />
+                                        <a href="detailproductuser.html?id=${c.id}" style="font-weight:700; color:var(--text-primary); line-height:1.35;">${escapeHtml(c.name)}</a>
+                                    </div>
+                                </td>
+                            `).join('')}
+                        </tr>
+                        <tr>
+                            <th>Giá ưu đãi</th>
+                            ${parsedCols.map(c => `<td class="tabular-nums" style="font-size:15px; font-weight:800; color:#D0021C;">${formatVnd(c.price)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <th>Thương hiệu &amp; Loại</th>
+                            ${parsedCols.map(c => `<td><strong>${escapeHtml(c.brandName)}</strong> · ${escapeHtml(c.catName)}</td>`).join('')}
+                        </tr>
+                        <tr>
+                            <th>Tồn kho hệ thống</th>
+                            ${parsedCols.map(c => `<td><span class="badge badge-success">${escapeHtml(c.stockSummaryLine)}</span></td>`).join('')}
+                        </tr>
+                        ${Array.from({ length: maxSpecRows }, (_, rIdx) => `
+                            <tr>
+                                <th>Thông số #${rIdx + 1}</th>
+                                ${parsedCols.map(c => `<td>${escapeHtml(c.specLines[rIdx] || '—')}</td>`).join('')}
+                            </tr>
+                        `).join('')}
+                        <tr>
+                            <th>Chọn mua</th>
+                            ${parsedCols.map(c => `
+                                <td>
+                                    <a href="detailproductuser.html?id=${c.id}" class="btn btn-primary btn-sm" style="width:100%;">Xem &amp; Mua ngay</a>
+                                </td>
+                            `).join('')}
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('active');
+    document.getElementById('btnCloseCompareModal')?.addEventListener('click', () => modal.classList.remove('active'));
 }
 
 document.addEventListener('DOMContentLoaded', () => {

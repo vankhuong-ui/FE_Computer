@@ -14,18 +14,11 @@ export const CONFIG = {
     OPEN_HOURS: '8:00 - 21:00 (T2 - CN)',
     API_BASE_URL: localStorage.getItem('CUSTOM_API_BASE_URL') || defaultApiUrl,
 
-    // Danh sách 10 chi nhánh mặc định (dùng làm fallback khi chưa tải xong API /api/branches)
+    // Danh sách 3 chi nhánh trọng điểm (fallback khi chưa tải xong API /api/branches)
     BRANCHES: [
-        { id: 1, code: 'HN-THAIHA', city: 'Hà Nội', district: 'Q. Đống Đa', name: 'HK COMPUTER - Thái Hà', address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội', phone: '024 7300 6801', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Bán hàng · Sửa Laptop trong ngày · Bảo hành', active: true },
-        { id: 2, code: 'HN-CAUGIAY', city: 'Hà Nội', district: 'Q. Cầu Giấy', name: 'HK COMPUTER - Cầu Giấy', address: '268 Xuân Thủy, P. Dịch Vọng Hậu, Q. Cầu Giấy, Hà Nội', phone: '024 7300 6802', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Sửa Laptop · Vệ sinh · Nâng cấp RAM/SSD', active: true },
-        { id: 3, code: 'HN-HAIBATRUNG', city: 'Hà Nội', district: 'Q. Hai Bà Trưng', name: 'HK COMPUTER - Hai Bà Trưng', address: '89 Lê Thanh Nghị, P. Bách Khoa, Q. Hai Bà Trưng, Hà Nội', phone: '024 7300 6803', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Build PC Gaming · Sửa phần cứng chuyên sâu', active: true },
-        { id: 4, code: 'HCM-QUAN10', city: 'TP.HCM', district: 'Q. 10', name: 'HK COMPUTER - Quận 10', address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Showroom chính · Bảo hành 1 đổi 1', active: true },
-        { id: 5, code: 'HCM-BINHTHANH', city: 'TP.HCM', district: 'Q. Bình Thạnh', name: 'HK COMPUTER - Bình Thạnh', address: '175 Xô Viết Nghệ Tĩnh, P. 17, Q. Bình Thạnh, TP.HCM', phone: '028 7300 6805', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Sửa Laptop trong ngày · Cài đặt phần mềm', active: true },
-        { id: 6, code: 'HCM-THUDUC', city: 'TP.HCM', district: 'TP. Thủ Đức', name: 'HK COMPUTER - Thủ Đức', address: '312 Võ Văn Ngân, P. Bình Thọ, TP. Thủ Đức, TP.HCM', phone: '028 7300 6806', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Bán Laptop Sinh viên · Nâng cấp linh kiện', active: true },
-        { id: 7, code: 'DN-HAICHAU', city: 'Đà Nẵng', district: 'Q. Thanh Khê', name: 'HK COMPUTER - Hải Châu', address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng', phone: '0236 730 6807', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Bán hàng · Sửa chữa Laptop & PC', active: true },
-        { id: 8, code: 'HP-NGOQUYEN', city: 'Hải Phòng', district: 'Q. Ngô Quyền', name: 'HK COMPUTER - Ngô Quyền', address: '98 Lạch Tray, Q. Ngô Quyền, Hải Phòng', phone: '0225 730 6808', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Sửa Laptop · Vệ sinh · Tiếp nhận Bảo hành', active: true },
-        { id: 9, code: 'CT-NINHKIEU', city: 'Cần Thơ', district: 'Q. Ninh Kiều', name: 'HK COMPUTER - Ninh Kiều', address: '215 Đường 3/2, P. Hưng Lợi, Q. Ninh Kiều, Cần Thơ', phone: '0292 730 6809', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Showroom Miền Tây · Sửa chữa & Bảo hành', active: true },
-        { id: 10, code: 'BD-THUDAUMOT', city: 'Bình Dương', district: 'TP. Thủ Dầu Một', name: 'HK COMPUTER - Thủ Dầu Một', address: '405 Đại lộ Bình Dương, P. Phú Cường, TP. Thủ Dầu Một', phone: '0274 730 6810', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Bán Laptop/PC · Sửa chữa trong ngày', active: true }
+        { id: 1, code: 'HN-THAIHA', city: 'Hà Nội', district: 'Q. Đống Đa', name: 'HK COMPUTER - Thái Hà', address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội', phone: '024 7300 6801', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Showroom Chính · Sửa Laptop trong ngày · Bảo hành', active: true },
+        { id: 2, code: 'HCM-QUAN10', city: 'TP.HCM', district: 'Q. 10', name: 'HK COMPUTER - Quận 10', address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Showroom Miền Nam · Build PC · Bảo hành 1 đổi 1', active: true },
+        { id: 3, code: 'DN-HAICHAU', city: 'Đà Nẵng', district: 'Q. Thanh Khê', name: 'HK COMPUTER - Hải Châu', address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng', phone: '0236 730 6807', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Showroom Miền Trung · Sửa chữa Laptop & PC · Bảo hành', active: true }
     ],
 
     getSelectedLocation() {
@@ -133,14 +126,6 @@ export const CONFIG = {
             CANCEL: (id) => `/api/orders/${id}/cancel`,
             UPDATE_ADDRESS: (id, addressId) => `/api/orders/${id}/update-address?address_id=${addressId}`,
             ADMIN_UPDATE_STATUS: (id, status) => `/api/orders/${id}/update-status?status=${status}`,
-        },
-        VOUCHERS: {
-            AVAILABLE: '/api/vouchers/available',
-            PREVIEW: '/api/vouchers/preview',
-            ADMIN_ALL: '/api/vouchers/admin/all',
-            CREATE: '/api/vouchers/create',
-            UPDATE: (id) => `/api/vouchers/${id}/update`,
-            DELETE: (id) => `/api/vouchers/${id}/delete`,
         },
         PAYMENT: {
             VNPAY_CREATE: (orderId) => `/api/payment/create-vnpay/${orderId}`,

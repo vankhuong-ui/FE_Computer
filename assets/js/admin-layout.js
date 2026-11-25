@@ -16,7 +16,6 @@ const ICONS = {
     inventory: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>',
     branches: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>',
     orders: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>',
-    vouchers: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"></path><path d="M13 5v2"></path><path d="M13 17v2"></path><path d="M13 11v2"></path></svg>',
     payments: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>',
     repairs: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>',
     warranty: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>',
@@ -46,7 +45,6 @@ const MENU_GROUPS = [
         label: 'Kinh doanh & Dịch vụ',
         items: [
             { id: 'orders', href: 'admin-orders.html', label: 'Đơn hàng', badgeKey: 'unpaidOrders' },
-            { id: 'vouchers', href: 'admin-vouchers.html', label: 'Mã giảm giá (Voucher)' },
             { id: 'payments', href: 'admin-payment.html', label: 'Thanh toán' },
             { id: 'repairs', href: 'admin-repairs.html', label: 'Lịch hẹn sửa chữa', badgeKey: 'pendingRepairs' },
             { id: 'warranty', href: 'admin-warranty.html', label: 'Bảo hành điện tử', badgeKey: 'pendingWarranties' },
@@ -136,8 +134,6 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
         year: 'numeric'
     });
 
-    const swaggerUrl = `${CONFIG.API_BASE_URL.replace(/\/$/, '')}/swagger-ui.html`;
-
     const topbarHost = document.getElementById('adminTopbar');
     if (topbarHost) {
         topbarHost.className = 'admin-topbar';
@@ -150,10 +146,6 @@ export function initAdminLayout({ active = 'dashboard', title = 'Bảng điều 
                 <span class="admin-topbar-date tabular-nums">${todayText}</span>
             </div>
             <div class="admin-topbar-right">
-                <a href="${swaggerUrl}" target="_blank" rel="noopener" class="btn btn-outline btn-sm admin-api-doc-link" title="Tài liệu OpenAPI / Swagger UI">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-                    <span>API Docs</span>
-                </a>
                 <a href="index.html" class="btn btn-outline btn-sm admin-topbar-store-btn" title="Xem giao diện cửa hàng">
                     <span>Cửa hàng</span>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>

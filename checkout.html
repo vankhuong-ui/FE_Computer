@@ -113,6 +113,9 @@
             .payment-methods {
                 grid-template-columns: 1fr;
             }
+            .fulfillment-tabs {
+                grid-template-columns: 1fr;
+            }
         }
 
         .payment-method-card {
@@ -210,9 +213,6 @@
         let receiverName = '';
         let receiverPhone = '';
         let selectedPaymentMethod = 'SEPAY'; // SEPAY, VNPAY, LATER
-        let availableVouchers = [];
-        let appliedVoucherCode = '';
-        let appliedDiscountAmount = 0;
 
         function checkBranchCanFulfillAll(branchId) {
             for (const item of selectedItems) {
@@ -247,10 +247,9 @@
 
                 selectedItems = JSON.parse(rawSelected) || [];
 
-                const [addrRes, branchRes, voucherRes, ...invResults] = await Promise.all([
+                const [addrRes, branchRes, ...invResults] = await Promise.all([
                     api.get(CONFIG.ENDPOINTS.AUTH.USER_ADDRESS_MY).catch(() => []),
                     api.get(CONFIG.ENDPOINTS.BRANCHES.LIST).catch(() => []),
-                    api.get(CONFIG.ENDPOINTS.VOUCHERS.AVAILABLE).catch(() => []),
                     ...selectedItems.map(item => {
                         const pId = item.products?.id || item.id;
                         return api.get(CONFIG.ENDPOINTS.INVENTORY.USER_DETAIL(pId)).catch(() => null);
@@ -261,7 +260,6 @@
                 if (Array.isArray(branchRes) && branchRes.length > 0) {
                     branches = branchRes;
                 }
-                availableVouchers = Array.isArray(voucherRes) ? voucherRes : [];
 
                 selectedItems.forEach((item, idx) => {
                     const pId = Number(item.products?.id || item.id);
@@ -452,7 +450,7 @@
                         </div>
 
                         <button type="button" id="btnPlaceOrder" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 12px;">
-                            Xác nhận đặt hàng (${formatPrice(Math.max(0, totalAmount - appliedDiscountAmount))})
+                            Xác nhận đặt hàng (${formatPrice(totalAmount)})
                         </button>
                     </div>
 
@@ -480,54 +478,14 @@
                             }).join('')}
                         </div>
 
-                        <!-- Voucher Box -->
-                        <div style="margin-top: 16px; padding: 12px; border-radius: 8px; background: var(--surface-subtle); border: 1px solid var(--border);">
-                            <div style="font-size: 12.5px; font-weight: 700; margin-bottom: 8px; display:flex; align-items:center; justify-content:space-between;">
-                                <span>Mã giảm giá &amp; Ưu đãi đơn đầu tiên</span>
-                                ${appliedVoucherCode ? `<button type="button" id="btnRemoveVoucher" style="background:none; border:none; color:#EF4444; font-size:11.5px; font-weight:600; cursor:pointer;">Gỡ mã</button>` : ''}
-                            </div>
-                            <div style="display:flex; gap:6px; margin-bottom: 8px;">
-                                <input type="text" id="voucherInput" class="input mono-spec" style="height: 36px; text-transform: uppercase; font-size: 12.5px;" placeholder="Nhập mã giảm giá..." value="${appliedVoucherCode}" />
-                                <button type="button" id="btnApplyVoucher" class="btn btn-secondary btn-sm" style="height: 36px; white-space: nowrap;">Áp dụng</button>
-                            </div>
-                            ${availableVouchers.length ? `
-                                <div style="display:flex; flex-direction:column; gap:6px;">
-                                    ${availableVouchers.map(v => {
-                                        const isApplied = appliedVoucherCode === v.code;
-                                        return `
-                                            <button type="button" class="btn-pick-voucher" data-code="${v.code}"
-                                                style="display:flex; align-items:center; justify-content:space-between; gap:8px; padding:7px 10px; border-radius:6px; border:1px solid ${isApplied ? 'var(--brand-green)' : 'var(--border)'}; background:${isApplied ? 'var(--brand-green-soft)' : 'var(--surface)'}; cursor:pointer; text-align:left;">
-                                                <div style="min-width:0;">
-                                                    <div style="font-size:12px; font-weight:700; color:var(--text-primary);">
-                                                        <span class="mono-spec" style="color:var(--brand-green);">${v.code}</span>
-                                                        ${v.firstOrderOnly ? '<span class="badge badge-warning" style="margin-left:4px; font-size:10px;">Đơn đầu</span>' : ''}
-                                                    </div>
-                                                    <div style="font-size:11px; color:var(--text-secondary);">${v.title}</div>
-                                                </div>
-                                                <span style="font-size:11.5px; font-weight:700; color:${isApplied ? 'var(--brand-green)' : '#288AD6'}; flex-shrink:0;">
-                                                    ${isApplied ? 'Đã áp dụng' : 'Chọn'}
-                                                </span>
-                                            </button>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            ` : ''}
-                        </div>
-
                         <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--text-secondary); margin-top:14px;">
                             <span>Tạm tính</span>
                             <span class="tabular-nums">${formatPrice(totalAmount)}</span>
                         </div>
-                        ${appliedDiscountAmount > 0 ? `
-                            <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--brand-green); font-weight:600; margin-top:6px;">
-                                <span>Giảm giá (${appliedVoucherCode})</span>
-                                <span class="tabular-nums">-${formatPrice(appliedDiscountAmount)}</span>
-                            </div>
-                        ` : ''}
 
                         <div class="summary-total">
                             <span>Tổng thanh toán</span>
-                            <span class="tabular-nums" style="color: #D0021C;">${formatPrice(Math.max(0, totalAmount - appliedDiscountAmount))}</span>
+                            <span class="tabular-nums" style="color: #D0021C;">${formatPrice(totalAmount)}</span>
                         </div>
                         <p style="font-size: var(--text-xs); color: var(--text-secondary); margin-top: 12px;">
                             Phiếu bảo hành điện tử (12 - 36 tháng) sẽ tự động kích hoạt theo tài khoản của bạn ngay sau khi hoàn tất thanh toán.
@@ -587,41 +545,6 @@
                 });
             });
 
-            async function applyVoucherCode(code) {
-                const clean = (code || '').trim().toUpperCase();
-                if (!clean) {
-                    toast.warning('Vui lòng nhập mã giảm giá.');
-                    return;
-                }
-                try {
-                    const res = await api.get(CONFIG.ENDPOINTS.VOUCHERS.PREVIEW, {
-                        code: clean,
-                        orderAmount: totalAmount
-                    });
-                    appliedVoucherCode = res?.voucher?.code || clean;
-                    appliedDiscountAmount = Number(res?.discountAmount) || 0;
-                    toast.success(`Đã áp dụng mã ${appliedVoucherCode} (Giảm ${formatPrice(appliedDiscountAmount)})!`);
-                    renderCheckout();
-                } catch (err) {
-                    toast.error(err.message || 'Không thể áp dụng mã giảm giá này.');
-                }
-            }
-
-            document.getElementById('btnApplyVoucher')?.addEventListener('click', () => {
-                applyVoucherCode(document.getElementById('voucherInput')?.value);
-            });
-
-            document.getElementById('btnRemoveVoucher')?.addEventListener('click', () => {
-                appliedVoucherCode = '';
-                appliedDiscountAmount = 0;
-                toast.info('Đã gỡ mã giảm giá.');
-                renderCheckout();
-            });
-
-            document.querySelectorAll('.btn-pick-voucher').forEach(btn => {
-                btn.addEventListener('click', () => applyVoucherCode(btn.dataset.code));
-            });
-
             document.getElementById('btnPlaceOrder')?.addEventListener('click', handlePlaceOrder);
         }
 
@@ -672,7 +595,6 @@
                     preferredCity: !isPickup ? (loc.city || null) : null,
                     receiverName: receiverName || null,
                     receiverPhone: receiverPhone || null,
-                    voucherCode: appliedVoucherCode || null,
                     orderItems
                 });
 
