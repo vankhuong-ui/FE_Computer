@@ -579,9 +579,9 @@ function mountMobileBottomNav(activeNav = '') {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
             <span>Bảo hành</span>
         </a>
-        <a href="${auth.isLoggedIn() ? (isOrders ? 'order.html' : 'profile.html') : 'dang-nhap.html'}" class="mobile-nav-item ${(isAccount || isOrders) ? 'active' : ''}">
+        <a href="${auth.isAuthenticated() ? (isOrders ? 'order.html' : 'profile.html') : 'dang-nhap.html'}" class="mobile-nav-item ${(isAccount || isOrders) ? 'active' : ''}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>${auth.isLoggedIn() ? 'Tài khoản' : 'Đăng nhập'}</span>
+            <span>${auth.isAuthenticated() ? 'Tài khoản' : 'Đăng nhập'}</span>
         </a>
     `;
     document.body.appendChild(nav);
