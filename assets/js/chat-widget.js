@@ -20,6 +20,31 @@ const QUICK_PROMPTS = [
 
 const WELCOME_MESSAGE = 'Xin chào! Mình là trợ lý AI của **HK COMPUTER** (3 chi nhánh: Hà Nội · TP.HCM · Đà Nẵng). Bạn cần chọn máy theo ngân sách, kiểm tra tồn kho theo chi nhánh, tra cứu bảo hành hay đặt lịch sửa chữa?';
 
+export function formatChatMarkdown(text) {
+    const safe = String(text ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+
+    const withLinks = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
+        const cleanHref = href.trim();
+        const isProduct = /^detailproductuser\.html\?(id=\d+|slug=[a-z0-9-]+)$/i.test(cleanHref);
+        const isAllowed =
+            isProduct ||
+            /^(checkout\.html|cart\.html|warranty\.html|order\.html|index\.html(#repair-center)?)$/i.test(cleanHref) ||
+            /^https:\/\/vankhuongdev\.id\.vn\/[a-z0-9\-._~:/?#=&]*$/i.test(cleanHref);
+        if (!isAllowed) {
+            return label;
+        }
+        const extraCls = isProduct ? ' product-cta' : '';
+        return `<a href="${cleanHref}" class="ai-action-link${extraCls}">${label} &rarr;</a>`;
+    });
+
+    return withLinks.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+}
+
 class GeminiChatWidget {
     constructor() {
         this.isOpen = false;
@@ -479,28 +504,7 @@ class GeminiChatWidget {
     }
 
     formatMessage(text) {
-        const safe = String(text ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-
-        const withLinks = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, label, href) => {
-            const cleanHref = href.trim();
-            const isProduct = /^detailproductuser\.html\?(id=\d+|slug=[a-z0-9-]+)$/i.test(cleanHref);
-            const isAllowed =
-                isProduct ||
-                /^(checkout\.html|cart\.html|warranty\.html|support\.html|order\.html|index\.html)$/i.test(cleanHref) ||
-                /^https:\/\/vankhuongdev\.id\.vn\/[a-z0-9\-._~:/?#=&]*$/i.test(cleanHref);
-            if (!isAllowed) {
-                return label;
-            }
-            const extraCls = isProduct ? ' product-cta' : '';
-            return `<a href="${cleanHref}" class="ai-action-link${extraCls}">${label} &rarr;</a>`;
-        });
-
-        return withLinks.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+        return formatChatMarkdown(text);
     }
 
     renderMessages() {
@@ -527,4 +531,4 @@ class GeminiChatWidget {
     }
 }
 
-export const chatWidget = new GeminiChatWidget();
+export const chatWidget = typeof document !== 'undefined' ? new GeminiChatWidget() : null;
