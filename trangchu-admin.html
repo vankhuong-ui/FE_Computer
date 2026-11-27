@@ -391,8 +391,8 @@
                         <span>Tra cứu &amp; Xử lý Bảo hành</span>
                         <span>→</span>
                     </a>
-                    <a href="admin-support.html" class="quick-link-chip">
-                        <span>Hộp thư Hỗ trợ Khách hàng</span>
+                    <a href="admin-account.html" class="quick-link-chip">
+                        <span>Quản lý Tài khoản Thành viên</span>
                         <span>→</span>
                     </a>
                 </div>
@@ -603,7 +603,7 @@
             const totalPendingSvc = Number(summary.pendingWarranties || 0) + Number(summary.pendingRepairs || 0);
             document.getElementById('kpiServices').textContent = totalPendingSvc;
             document.getElementById('kpiServicesSub').textContent =
-                `${summary.pendingWarranties ?? 0} ca bảo hành · ${summary.pendingRepairs ?? 0} lịch sửa · ${summary.openSupports ?? 0} hỗ trợ`;
+                `${summary.pendingWarranties ?? 0} ca bảo hành · ${summary.pendingRepairs ?? 0} lịch sửa chờ xử lý`;
 
             document.getElementById('customerFooterStats').textContent =
                 `${summary.totalCustomers ?? 0} tài khoản thành viên · ${summary.activeBranches ?? 3} chi nhánh đang hoạt động`;

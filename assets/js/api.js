@@ -10,7 +10,7 @@
 import { CONFIG } from './config.js';
 import { toast } from './toast.js';
 
-let accessToken = sessionStorage.getItem('accessToken') || null;
+let accessToken = (typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('accessToken') : null) || null;
 let isRefreshing = false;
 let failedQueue = [];
 
@@ -27,6 +27,7 @@ const processQueue = (error, token = null) => {
 
 export const setAccessToken = (token) => {
     accessToken = token;
+    if (typeof sessionStorage === 'undefined') return;
     if (token) {
         sessionStorage.setItem('accessToken', token);
     } else {
@@ -120,7 +121,7 @@ export async function request(endpoint, options = {}) {
 /**
  * Handle and parse Spring Boot ApiResponse<T>
  */
-async function handleResponse(response) {
+export async function handleResponse(response) {
     let json = {};
     const text = await response.text();
     

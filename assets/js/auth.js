@@ -414,9 +414,6 @@ export const auth = {
                             <a href="index.html#repair-center" class="dropdown-item">
                                 <span>Đặt lịch sửa chữa</span>
                             </a>
-                            <a href="${CONFIG.ROUTES.SUPPORT}" class="dropdown-item">
-                                <span>Yêu cầu hỗ trợ của tôi</span>
-                            </a>
                             <a href="setpassword.html" class="dropdown-item">
                                 <span>Đổi mật khẩu</span>
                             </a>

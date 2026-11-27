@@ -731,7 +731,7 @@
                                 <div class="perks-box-title">Quyền lợi &amp; Dịch vụ kỹ thuật tại HK COMPUTER</div>
                                 <ul class="perks-list">
                                     <li><span class="perks-check">✓</span><span>Kích hoạt <b>bảo hành điện tử chính hãng 12–36 tháng</b> theo mã đơn hàng</span></li>
-                                    <li><span class="perks-check">✓</span><span><b>Miễn phí công lắp đặt</b> khi nâng cấp thêm RAM hoặc SSD NVMe tại 10 chi nhánh</span></li>
+                                    <li><span class="perks-check">✓</span><span><b>Miễn phí công lắp đặt</b> khi nâng cấp thêm RAM hoặc SSD NVMe tại hệ thống 3 chi nhánh trọng điểm</span></li>
                                     <li><span class="perks-check">✓</span><span><b>Giảm 20.000đ</b> dịch vụ vệ sinh máy &amp; tra keo tản nhiệt khi đặt lịch trước</span></li>
                                 </ul>
                             </div>
@@ -790,7 +790,6 @@
 
                 renderDetailBranchBox(branchStocks, unitLabel, loc.city || '');
                 bindDetailEvents();
-                if (inv?.id) connectInventoryWs(inv.id);
                 loadAccessoryCrossSell(product.id);
                 loadReviews(0);
             } catch (err) {
@@ -969,49 +968,6 @@
                     image: currentProduct.image
                 }, qty);
             });
-        }
-
-        function connectInventoryWs(inventoryId) {
-            try {
-                if (typeof SockJS === 'undefined' || typeof Stomp === 'undefined') return;
-                const socket = new SockJS(`${CONFIG.API_BASE_URL}/ws`);
-                const client = Stomp.over(socket);
-                client.debug = () => {};
-                client.connect({}, () => {
-                    client.subscribe(`/topic/inventory/${inventoryId}`, (msg) => {
-                        try {
-                            const data = JSON.parse(msg.body);
-                            if (data.stockQuantity !== undefined) {
-                                currentStock = data.stockQuantity;
-                                const inStock = currentStock > 0;
-                                const badge = document.getElementById('stockBadge');
-                                const stockHint = document.getElementById('stockHint');
-                                const buyControlsWrap = document.getElementById('buyControlsWrap');
-                                const outOfStockNotice = document.getElementById('outOfStockNotice');
-                                const qtyInput = document.getElementById('qtyInput');
-
-                                if (badge) {
-                                    badge.className = `badge ${inStock ? 'badge-success' : 'badge-danger'}`;
-                                    badge.textContent = inStock ? `Còn ${currentStock} sản phẩm` : 'Tạm hết hàng';
-                                }
-                                if (stockHint) {
-                                    stockHint.textContent = inStock ? `${currentStock} sản phẩm có sẵn` : '';
-                                }
-                                if (qtyInput && inStock) {
-                                    qtyInput.max = currentStock;
-                                }
-                                if (buyControlsWrap) {
-                                    buyControlsWrap.style.display = inStock ? 'flex' : 'none';
-                                }
-                                if (outOfStockNotice) {
-                                    outOfStockNotice.style.display = inStock ? 'none' : 'block';
-                                }
-                                toast.info(`Cập nhật tồn kho mới nhất: còn ${currentStock} sản phẩm.`);
-                            }
-                        } catch (_) {}
-                    });
-                });
-            } catch (_) {}
         }
 
         async function loadReviews(page = 0) {

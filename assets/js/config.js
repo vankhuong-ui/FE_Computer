@@ -1,29 +1,88 @@
 /**
  * config.js - Central Configuration for HK COMPUTER (FE_Computer)
- * Synchronized 1:1 with BE_Computer Spring Boot API (Multi-Branch + Accessories)
+ *
+ * Nguồn dữ liệu chi nhánh:
+ * - Nguồn chính thức (Authoritative Source): API Backend `GET /api/branches` (nạp qua `branch-store.js`).
+ * - `FALLBACK_BRANCHES`: Khớp 1:1 với 3 chi nhánh trọng điểm trong Flyway `V20` (`HN-THAIHA`, `HCM-QUAN10`, `DN-HAICHAU`).
+ *   CHỈ dùng làm giá trị khởi tạo tức thời khi trang vừa mở (trước khi API phản hồi) hoặc khi máy chủ Backend tạm mất kết nối.
  */
 
-const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
 const defaultApiUrl = isLocalhost ? 'http://localhost:8080' : 'https://be-computer.onrender.com';
 
 const LOCATION_STORAGE_KEY = 'hk_selected_location_v1';
+
+const safeStorage = {
+    get(key) {
+        try {
+            return typeof localStorage !== 'undefined' ? localStorage.getItem(key) : null;
+        } catch (_) {
+            return null;
+        }
+    },
+    set(key, value) {
+        try {
+            if (typeof localStorage !== 'undefined') localStorage.setItem(key, value);
+        } catch (_) {}
+    }
+};
+
+export const FALLBACK_BRANCHES = Object.freeze([
+    Object.freeze({
+        id: 1,
+        code: 'HN-THAIHA',
+        city: 'Hà Nội',
+        district: 'Q. Đống Đa',
+        name: 'HK COMPUTER - Thái Hà',
+        address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội',
+        phone: '024 7300 6801',
+        openingHours: '8:00 - 21:00',
+        hours: '8:00 - 21:00',
+        services: 'Showroom Chính · Sửa Laptop trong ngày · Bảo hành',
+        active: true
+    }),
+    Object.freeze({
+        id: 2,
+        code: 'HCM-QUAN10',
+        city: 'TP.HCM',
+        district: 'Q. 10',
+        name: 'HK COMPUTER - Quận 10',
+        address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM',
+        phone: '028 7300 6804',
+        openingHours: '8:00 - 21:00',
+        hours: '8:00 - 21:00',
+        services: 'Showroom Miền Nam · Build PC · Bảo hành 1 đổi 1',
+        active: true
+    }),
+    Object.freeze({
+        id: 3,
+        code: 'DN-HAICHAU',
+        city: 'Đà Nẵng',
+        district: 'Q. Thanh Khê',
+        name: 'HK COMPUTER - Hải Châu',
+        address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng',
+        phone: '0236 730 6807',
+        openingHours: '8:00 - 20:30',
+        hours: '8:00 - 20:30',
+        services: 'Showroom Miền Trung · Sửa chữa Laptop & PC · Bảo hành',
+        active: true
+    })
+]);
 
 export const CONFIG = {
     BRAND_NAME: 'HK COMPUTER',
     HOTLINE: '1800 6889',
     OPEN_HOURS: '8:00 - 21:00 (T2 - CN)',
-    API_BASE_URL: localStorage.getItem('CUSTOM_API_BASE_URL') || defaultApiUrl,
+    API_BASE_URL: safeStorage.get('CUSTOM_API_BASE_URL') || defaultApiUrl,
 
-    // Danh sách 3 chi nhánh trọng điểm (fallback khi chưa tải xong API /api/branches)
-    BRANCHES: [
-        { id: 1, code: 'HN-THAIHA', city: 'Hà Nội', district: 'Q. Đống Đa', name: 'HK COMPUTER - Thái Hà', address: '123 Thái Hà, P. Trung Liệt, Q. Đống Đa, Hà Nội', phone: '024 7300 6801', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Showroom Chính · Sửa Laptop trong ngày · Bảo hành', active: true },
-        { id: 2, code: 'HCM-QUAN10', city: 'TP.HCM', district: 'Q. 10', name: 'HK COMPUTER - Quận 10', address: '456 Cách Mạng Tháng 8, P. 11, Q. 10, TP.HCM', phone: '028 7300 6804', openingHours: '8:00 - 21:00', hours: '8:00 - 21:00', services: 'Showroom Miền Nam · Build PC · Bảo hành 1 đổi 1', active: true },
-        { id: 3, code: 'DN-HAICHAU', city: 'Đà Nẵng', district: 'Q. Thanh Khê', name: 'HK COMPUTER - Hải Châu', address: '142 Hàm Nghi, P. Thạc Gián, Q. Thanh Khê, Đà Nẵng', phone: '0236 730 6807', openingHours: '8:00 - 20:30', hours: '8:00 - 20:30', services: 'Showroom Miền Trung · Sửa chữa Laptop & PC · Bảo hành', active: true }
-    ],
+    // Khởi tạo từ FALLBACK_BRANCHES và sẽ được branch-store.js ghi đè bằng dữ liệu sống từ GET /api/branches
+    BRANCHES: FALLBACK_BRANCHES.map(b => ({ ...b })),
+    BRANCH_SOURCE: 'FALLBACK', // 'FALLBACK' | 'API'
 
     getSelectedLocation() {
         try {
-            const raw = localStorage.getItem(LOCATION_STORAGE_KEY);
+            const raw = safeStorage.get(LOCATION_STORAGE_KEY);
             if (!raw) return { city: '', branchId: null, branchName: '', label: 'Toàn quốc' };
             const parsed = JSON.parse(raw);
             return {
@@ -44,8 +103,10 @@ export const CONFIG = {
             branchName: loc?.branchName || '',
             label: loc?.label || (loc?.branchName ? `${loc.city ? loc.city + ' · ' : ''}${loc.branchName.replace('HK COMPUTER - ', '')}` : (loc?.city || 'Toàn quốc'))
         };
-        localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(clean));
-        window.dispatchEvent(new CustomEvent('hk:location-changed', { detail: clean }));
+        safeStorage.set(LOCATION_STORAGE_KEY, JSON.stringify(clean));
+        if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('hk:location-changed', { detail: clean }));
+        }
         return clean;
     },
 
@@ -67,7 +128,6 @@ export const CONFIG = {
             USER_ADDRESS_CREATE: '/api/useraddresses/create',
             USER_ADDRESS_UPDATE: (id) => `/api/useraddresses/${id}/update`,
             USER_ADDRESS_DELETE: (id) => `/api/useraddresses/${id}/delete`,
-            USER_ADDRESS_ADMIN: '/api/useraddresses',
         },
         BRANCHES: {
             LIST: '/api/branches',
@@ -140,12 +200,6 @@ export const CONFIG = {
             CREATE: '/api/reviews',
             CHECK: '/api/reviews/check',
         },
-        SUPPORT: {
-            MY_REQUESTS: '/api/support/my-requests',
-            CREATE: '/api/support',
-            ADMIN_ALL: '/api/support/admin/all',
-            ADMIN_UPDATE_STATUS: (id, status) => `/api/support/admin/${id}/status?status=${status}`,
-        },
         WARRANTY: {
             LOOKUP: '/api/warranty/lookup',
             MY_CARDS: '/api/warranty/my-cards',
@@ -177,7 +231,6 @@ export const CONFIG = {
         PROFILE: 'profile.html',
         ORDERS: 'order.html',
         WARRANTY: 'warranty.html',
-        SUPPORT: 'support.html',
         ADMIN_DASHBOARD: 'trangchu-admin.html',
         ADMIN_BRANCHES: 'admin-branches.html',
         ADMIN_WARRANTY: 'admin-warranty.html',

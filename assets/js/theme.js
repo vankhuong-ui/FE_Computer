@@ -8,6 +8,7 @@ export const theme = {
     },
 
     apply() {
+        if (typeof document === 'undefined') return;
         document.documentElement.setAttribute('data-theme', 'light');
         try {
             localStorage.removeItem('hk_theme');

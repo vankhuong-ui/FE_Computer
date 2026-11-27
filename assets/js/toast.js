@@ -12,6 +12,7 @@ class ToastService {
     }
 
     init() {
+        if (typeof document === 'undefined') return;
         if (!document.getElementById('toast-container')) {
             this.container = document.createElement('div');
             this.container.id = 'toast-container';
@@ -23,6 +24,7 @@ class ToastService {
     }
 
     show(message, type = 'info', duration = 3500) {
+        if (typeof document === 'undefined') return;
         this.init();
 
         const toast = document.createElement('div');
