@@ -1,0 +1,10 @@
+{
+  "name": "fe-computer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "HK COMPUTER Storefront & Paper Admin Dashboard (Vanilla ES Modules)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}
